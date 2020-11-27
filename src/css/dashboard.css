@@ -1,0 +1,78 @@
+.grid-container {
+    display: grid;
+    grid-auto-rows: auto;
+    grid-template-rows: 6em 6em 10em 30em;
+    grid-template-columns: 17em 1fr 1fr 1fr;
+    grid-gap: 0.2em
+}
+
+.dashboard-item-01 {
+    grid-column : 1/2;
+    grid-row : 1/2;
+}
+
+.dashboard-item-02 {
+    grid-column : 1/2;
+    grid-row : 2/-1;
+}
+
+.dashboard-item-03 {
+    grid-column : 1/-1;
+    grid-row : 1/2;
+}
+
+.dashboard-item-04 {
+    grid-column : 2/3;
+    grid-row : 2/4;
+}
+
+.dashboard-item-05 {
+    grid-column : 3/4;
+    grid-row : 2/4;
+}
+
+.dashboard-item-06 {
+    grid-column : 4/5;
+    grid-row : 2/4;
+}
+
+.dashboard-item-07 {
+    grid-column : 2/-1;
+    grid-row : 4/4;
+}
+
+.lol{
+    background-color: #e6e6e6;
+    /* border-style: solid; */
+}
+
+
+.cardAdjustment{
+    margin-left: 1em;
+    color: white;
+    font-family: 'Playfair Display', serif;
+}
+
+.font-sizing{
+    font-size: 3em;
+}
+
+.weightColor{
+    background-color: #6f6dbf;
+}
+
+.compactorColor{
+    background-color: #747008;
+}
+
+.tableBg{
+    background-color: #ffffff;
+}
+
+.lineBreak{
+    border-bottom: 1px solid black; 
+    margin-top: 5em;
+}
+.dangercolor{
+    background-color: #ee0a09;
+}

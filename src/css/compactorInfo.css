@@ -1,0 +1,135 @@
+body{
+    background-color: #454d55;
+}
+.background{
+    border-style: dotted dashed solid double;;
+}
+.grid-container {
+    display: grid;
+    grid-auto-rows: auto;
+    grid-template-rows: 6em 6em 20em 20em;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+}
+
+.grid-containerTwo {
+    display: grid;
+    grid-auto-rows: auto;
+    grid-template-rows: 10em 2em 5em;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 0.6em;
+}
+
+.grid-item-01 {
+    grid-column : 1/-1;
+    grid-row : 1/2;
+}
+
+.grid-item-02 {
+    grid-column : 1/3;
+    grid-row : 2/3;
+}
+
+.grid-item-03 {
+    grid-column : 1/3;
+    grid-row : 3/-1;
+}
+
+.grid-item-04{
+    grid-column : 3/-1;
+    grid-row : 2/-1;
+}
+
+.grid-item-05{
+    grid-column : 1/-1;
+    grid-row : 1/2;
+    text-align: right;
+}
+
+.grid-item-4 {
+    grid-column : 1/-1;
+    grid-row : 1/2;
+}
+
+.grid-item-5 {
+    grid-column : 1/2;
+    grid-row : 2/3;
+}
+
+.grid-item-6 {
+    grid-column : 2/3;
+    grid-row : 2/3;
+}
+
+.lol{
+    background-color: #e6e6e6;
+}
+
+.adjustment{
+    margin-left: 3em;
+}
+
+.centerTitle{
+    margin-left: 5em;
+    margin-right: 10em;
+}
+
+.titleStyle{
+    font-size: 2em;
+}
+
+.input_field{
+    width: 15em;
+    padding: 0.4em 1px;
+    color: black;
+    border-radius: 8px;
+}
+
+.submitButton{
+    margin-left: 7em;
+    background-color: #008CBA;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    text-decoration: none;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.submitButton:hover{
+    background-color: green;
+}
+
+.labelField{
+    font-size: 1.1em;
+}
+
+.field{
+    font-size: 1.1em;
+    margin-left: 3em;
+}
+.welcome{
+    font-family: 'Libre Baskerville', serif;
+}
+
+.tableTop td, .tableTop th{
+    border: 1px solid rgb(27, 27, 27);
+    /* padding: 50px; */
+    padding-right: 50px;
+    padding-left: 50px;
+    padding-top: 50px;
+    margin-left: 7em;
+    vertical-align:top;
+}
+
+.align{
+    vertical-align:top;
+}
+
+.darkbg{
+    background-color: #454d55;
+}
+
+.lighttext{
+    color: #ebecee;
+}
