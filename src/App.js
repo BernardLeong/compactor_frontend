@@ -22,7 +22,6 @@ class App extends Component {
           <Route path='/editUser' component={UserDetails} />
           <Route path='/dashboard' component={Dashboard} />
           <Route path='/alarmDetails' component={AlarmDetails} />
-          <Route path='/alarmDetails' component={AlarmDetails} />
         </div>
       </Router>
 

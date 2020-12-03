@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import './../css/compactorInfo.css'
 import { Form, Button } from 'react-bootstrap'
+import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
 const axios = require('axios');
 
 class UserDetails extends Component {
@@ -9,7 +10,8 @@ class UserDetails extends Component {
         this.state = {
             'username' : '',
             'password' : '',
-            'loadUserDetails' : false
+            'loadUserDetails' : false,
+            'redirectToLocationData' : false
         }
         this.handleSelectChange = this.handleSelectChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -102,6 +104,13 @@ class UserDetails extends Component {
         }).catch((err)=>{
             console.log(err)
         }) 
+
+        this.setState(
+            {
+                redirectToLocationData : true,
+                loadUserDetails : false
+            }
+        )
     }
     render(){
         if(this.state.loadUserDetails){
@@ -129,6 +138,17 @@ class UserDetails extends Component {
                         </Form>
                     </div>
                 </div>
+            )
+        }else if(this.state.redirectToLocationData){
+            return(
+                <Redirect to={{
+                    pathname: '/locationData',
+                    state: { 
+                        userType: this.props.location.state.userType,
+                        token: this.props.location.state.token
+                    }
+                }}
+            />
             )
         }else{
             return(

@@ -17,9 +17,7 @@ class CompactorInfo extends Component {
     this.redirectToAlarmDetails =this.redirectToAlarmDetails.bind(this)
     this.redirectToDashboard =this.redirectToDashboard.bind(this)
   }
-  componentDidMount(){
-    
-}
+  
   componentDidMount(){
     var token = this.props.token
   
@@ -40,6 +38,12 @@ class CompactorInfo extends Component {
     }) 
   }
 
+  handleInteractiveMap(color){
+    this.setState({
+        compactorFilledLevel : color
+    })
+}
+
   redirectToAlarmDetails(componentID){
     this.setState(
       {
@@ -59,13 +63,13 @@ class CompactorInfo extends Component {
   }
 
   render() {
-    console.log(this.props.userType)
+    console.log(this.props)
     let compactorInfo = null;
     if(this.state.compactorLoaded){
       let compactors = this.state.data
       compactorInfo = compactors.map(compactor => (
            <tr>
-                 <th onClick={()=>{
+                 <th style={{cursor:'pointer'}} onClick={()=>{
                    this.redirectToDashboard(compactor.sectionArea)
                  }}>{compactor.sectionArea}</th>
                 <th>{compactor.address}</th>
@@ -74,6 +78,33 @@ class CompactorInfo extends Component {
                 <th>{compactor.alarmRaised ? <div  onClick={()=>{
                   this.redirectToAlarmDetails(compactor.compactorID)
                 }}>true</div> : <div>false</div>}</th>
+                <th>{(Math.round((compactor.current_weight / compactor.max_weight)*100 )) + ' %'}</th>
+                <th>{Math.round((compactor.current_weight / compactor.max_weight)*100 ) < 25 ? 
+                <span><img
+                  src={require('./greendot.png')}
+                  width="30"
+                  height="30"
+                  className="d-inline-block align-top"
+                  alt="React Bootstrap logo"
+                /></span> 
+                : 
+                Math.round((compactor.current_weight / compactor.max_weight)*100 ) < 50 ? 
+                <span><img
+                  src={require('./yellowdot.png')}
+                  width="30"
+                  height="30"
+                  className="d-inline-block align-top"
+                  alt="React Bootstrap logo"
+                /></span>
+                : 
+                <span><img
+                  src={require('./reddot.png')}
+                  width="30"
+                  height="30"
+                  className="d-inline-block align-top"
+                  alt="React Bootstrap logo"
+                /></span>
+                }</th>
             </tr>
       ))
     }
@@ -91,11 +122,11 @@ class CompactorInfo extends Component {
     )
     }
     if(this.state.renderEditComponentPage){
-      console.log(this.state.currentComponent)
       return(
         <Redirect to={{
             pathname: '/alarmDetails',
             state: { 
+                userType: this.props.userType,
                 token: this.props.token,
                 currentComponent : this.state.currentComponent
             }
@@ -111,8 +142,11 @@ class CompactorInfo extends Component {
                   <th>Section</th>
                   <th>Address</th>
                   <th>CompactorID</th>
-                  <th>Compactor Type</th>
+                  <th>Equipment Type</th>
                   <th>Alarm Raised</th>
+                  <th>Weight Percentage</th>
+                  <th>Weight Status</th>
+
                 </tr>
             </thead>
             <tbody>

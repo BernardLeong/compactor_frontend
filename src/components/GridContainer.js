@@ -5,15 +5,20 @@ import CompactorInfo from './CompactorInfo';
 import Mapping from './Mapping';
 import NavBarContent from './NavBarContent';
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
-import { Card, Table } from 'react-bootstrap'
+import { Card, Table, Container, Row, Col } from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faExclamation } from '@fortawesome/free-solid-svg-icons'
+
 class GridContainer extends Component{
     constructor(props){
         super(props)
         this.state = 
         {
-          'redirectTo': ''
+          'redirectTo': '',
+          'compactorFilledLevel' : ''
         }
         this.handleRedirect = this.handleRedirect.bind(this)
+        this.handleInteractiveMap = this.handleInteractiveMap.bind(this)
     }
 
     handleRedirect(path){
@@ -21,9 +26,14 @@ class GridContainer extends Component{
             redirectTo : path
         })
     }
-    render(){       
+
+    handleInteractiveMap(color){
+        this.setState({
+            compactorFilledLevel : color
+        })
+    }
+    render(){      
         // if(this.props.location.state.userType == 'User' || this.props.location.state.userType == 'Admin'){
-            console.log(this.props)
             if(this.state.redirectTo == 'locationMap'){
                 return(
                     <div>Hi</div>
@@ -56,11 +66,12 @@ class GridContainer extends Component{
                 )
             }else{
                 return(
-                    <div className='grid-container'>
-                         <div className='grid-item grid-item-01'>
+
+                    <div className='grid-container-compactor'>
+                         <div className='grid-item grid-item-01-compactor'>
                              <NavBarContent/>
                         </div>
-                        <div className='grid-item grid-item-02 darkbg'>
+                        <div className='grid-item grid-item-02-compactor'>
                         <Table striped bordered hover variant="dark">
                             <thead>
                             <tr>
@@ -74,11 +85,80 @@ class GridContainer extends Component{
                             </thead>
                         </Table>
                         </div>
-                        <div className='grid-item grid-item-03 darkbg'>
+                        <div className='grid-item grid-item-03-compactor'>
                             <CompactorInfo token={this.props.location.state.token} userType={this.props.location.state.userType} />
                         </div>
-                        <div className='grid-item grid-item-04'>
-                            <Mapping token={this.props.location.state.token} />
+
+
+                        <div className='grid-item grid-item-05-compactor'>
+                            <Mapping compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
+                        </div>
+                    
+                        <div className='grid-item grid-item-06-compactor markBGCompactor'>
+                            <div>&nbsp;</div>
+                            <div>&nbsp;</div>
+
+                            <div>
+                                <Container>
+                                <Row>
+                                    <Col><div className='legendTitle'>Legend</div></Col>
+                                </Row>
+                                <div>&nbsp;</div>
+                                    <Row>
+                                        <Col className='lengendDes'>
+                                            <span style={{cursor:'pointer'}} onClick={()=>{
+                                                this.handleInteractiveMap('green')
+                                            }}><img
+                                                src={require('./greendot.png')}
+                                                width="30"
+                                                height="30"
+                                                className="d-inline-block align-top"
+                                                alt="React Bootstrap logo"
+                                            /></span>
+                                        </Col>
+                                        <Col className='lengendDes'>
+                                            <span style={{cursor:'pointer'}} onClick={()=>{
+                                                this.handleInteractiveMap('yellow')
+                                            }}><img
+                                                src={require('./yellowdot.png')}
+                                                width="30"
+                                                height="30"
+                                                className="d-inline-block align-top"
+                                                alt="React Bootstrap logo"
+                                            /></span></Col>
+                                        <Col className='lengendDes'>
+                                            <span style={{cursor:'pointer'}} onClick={()=>{
+                                                this.handleInteractiveMap('red')
+                                            }}><img
+                                                src={require('./reddot.png')}
+                                                width="30"
+                                                height="30"
+                                                className="d-inline-block align-top"
+                                                alt="React Bootstrap logo"
+                                            /></span>
+                                        </Col>
+                                    </Row>
+                                    <div>&nbsp;</div>
+                                    <Row>
+                                        <Col className='lengendDes'>Compactor less than 25%</Col>
+                                        <Col className='lengendDes'>Compactor more than 50%</Col>
+                                        <Col className='lengendDes'>Compactor more than 75%</Col>
+                                    </Row>
+                                    <div>&nbsp;</div>
+                                    <Row>
+                                        <Col className='legendTitle'></Col>
+                                        <Col onClick={()=>{
+                                            this.handleInteractiveMap('renderAlarm')
+                                        }}className='legendTitle'><FontAwesomeIcon icon={faExclamation} /></Col>
+                                        <Col className='legendTitle'></Col>
+                                    </Row>
+                                    <Row>
+                                        <Col className='lengendDes'></Col>
+                                        <Col className='lengendDes'>Alarm Raised</Col>
+                                        <Col className='lengendDes'></Col>
+                                    </Row>
+                                </Container>
+                            </div>
                         </div>
                     </div>
                 )
