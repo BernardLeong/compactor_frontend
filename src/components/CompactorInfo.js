@@ -63,7 +63,6 @@ class CompactorInfo extends Component {
   }
 
   render() {
-    console.log(this.props)
     let compactorInfo = null;
     if(this.state.compactorLoaded){
       let compactors = this.state.data
@@ -72,10 +71,12 @@ class CompactorInfo extends Component {
                  <th style={{cursor:'pointer'}} onClick={()=>{
                    this.redirectToDashboard(compactor.sectionArea)
                  }}>{compactor.sectionArea}</th>
-                <th>{compactor.address}</th>
+                <th style={{cursor:'pointer'}} onClick={()=>{
+                  this.props.handleAddress(compactor.address)
+                }}>{compactor.address}</th>
                 <th>{compactor.compactorID}</th>
                 <th>{compactor.compactorType}</th>
-                <th>{compactor.alarmRaised ? <div  onClick={()=>{
+                <th>{compactor.alarmRaised ? <div onClick={()=>{
                   this.redirectToAlarmDetails(compactor.compactorID)
                 }}>true</div> : <div>false</div>}</th>
                 <th>{(Math.round((compactor.current_weight / compactor.max_weight)*100 )) + ' %'}</th>
@@ -146,7 +147,6 @@ class CompactorInfo extends Component {
                   <th>Alarm Raised</th>
                   <th>Weight Percentage</th>
                   <th>Weight Status</th>
-
                 </tr>
             </thead>
             <tbody>

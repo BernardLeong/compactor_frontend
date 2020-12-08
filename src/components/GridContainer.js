@@ -15,10 +15,12 @@ class GridContainer extends Component{
         this.state = 
         {
           'redirectTo': '',
-          'compactorFilledLevel' : ''
+          'compactorFilledLevel' : '',
+          'selectedAddress' : ''
         }
         this.handleRedirect = this.handleRedirect.bind(this)
         this.handleInteractiveMap = this.handleInteractiveMap.bind(this)
+        this.handleAddress = this.handleAddress.bind(this)
     }
 
     handleRedirect(path){
@@ -32,11 +34,32 @@ class GridContainer extends Component{
             compactorFilledLevel : color
         })
     }
-    render(){      
+
+    handleAddress(address){
+        this.setState(
+            {
+                selectedAddress : address
+            }
+        )
+    }
+
+    render(){    
         // if(this.props.location.state.userType == 'User' || this.props.location.state.userType == 'Admin'){
             if(this.state.redirectTo == 'locationMap'){
                 return(
-                    <div>Hi</div>
+                    <Container>
+                        <Row>
+                            <Col>
+                            </Col>
+                            <Col>
+                                <div>Hi</div>
+                            </Col>
+                            <Col>
+                            </Col>
+                        </Row>
+                    </Container>
+                    
+
                 )
             }
 
@@ -69,29 +92,28 @@ class GridContainer extends Component{
 
                     <div className='grid-container-compactor'>
                          <div className='grid-item grid-item-01-compactor'>
-                             <NavBarContent/>
+                             <NavBarContent handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
                         </div>
                         <div className='grid-item grid-item-02-compactor'>
-                        <Table striped bordered hover variant="dark">
-                            <thead>
-                            <tr>
-                            <th onClick={()=>{
-                                this.handleRedirect('userDetails')
-                            }} >User Details</th>
-                            <th onClick={()=>{
-                                this.handleRedirect('Dashboard')
-                            }} >Dashboard</th>
-                            </tr>
-                            </thead>
-                        </Table>
+                            <Container>
+                                <Row>
+                                    <Col>
+                                    </Col>
+                                    <Col className='compactorTableTitle'>
+                                        <div>Compactor Details</div>
+                                    </Col>
+                                    <Col>
+                                    </Col>
+                                </Row>
+                            </Container>
                         </div>
                         <div className='grid-item grid-item-03-compactor'>
-                            <CompactorInfo token={this.props.location.state.token} userType={this.props.location.state.userType} />
+                            <CompactorInfo handleAddress={this.handleAddress} token={this.props.location.state.token} userType={this.props.location.state.userType} />
                         </div>
 
 
                         <div className='grid-item grid-item-05-compactor'>
-                            <Mapping compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
+                            <Mapping selectedAddress={this.state.selectedAddress} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
                         </div>
                     
                         <div className='grid-item grid-item-06-compactor markBGCompactor'>

@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import './../css/dashboard.css'
 import NavBarContent from './NavBarContent';
 import DashboardTable from './DashboardTable';
-import { Card, CardGroup, Table, Button, Container, Row, Col } from 'react-bootstrap'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faExclamationTriangle, faBalanceScale, faDumpster } from '@fortawesome/free-solid-svg-icons'
+import { Card, CardGroup, Table, Form, FormControl, Button, Container, Row, Col, Navbar, Nav, NavDropdown } from 'react-bootstrap'
+import { Sidenav, Icon, Dropdown } from 'rsuite';
+import 'rsuite/lib/styles/index.less';
 const axios = require('axios');
 
 class Dashboard extends Component {
@@ -17,7 +17,8 @@ class Dashboard extends Component {
         'alarmsLoaded' : false,
         'renderAlarmTable' : true,
         'renderWeightTable' : false,
-        'renderCompactorInfo' : false
+        'renderCompactorInfo' : false,
+        'renderDetailedAlarmReport' : false
       }
       this.renderCollectionWeight = this.renderCollectionWeight.bind(this)
       this.renderAlarmTable = this.renderAlarmTable.bind(this)
@@ -45,8 +46,6 @@ class Dashboard extends Component {
 
       axios.get(`http://localhost:8080/allCompactorInfo/${currentSection}`,config)
       .then((response)=> {
-        console.log(response)
-        console.log(response.data);
         this.setState({
           compactorData : response.data.compactorInfo,
           compactorDataLength : response.data.compactorInfo.length,
@@ -83,7 +82,6 @@ class Dashboard extends Component {
   }
 
     render(){
-      console.log(this.props.location.state.currentSection)
       if(this.state.numberofAlarms <=0){
         this.state.numberofAlarms = 'No Alarm'
       }
@@ -101,25 +99,70 @@ class Dashboard extends Component {
             }
         }
         var totalCollectedWeight = collectionWeights.reduce(reduceFunc);
-        console.log(totalCollectedWeight)
       }
+
+      if(this.state.renderDetailedAlarmReport){
+        return(
+          <div className='dashboard-grid-container'>
+            <div className='dashboard-item-03 lol bordercolor'>
+              <NavBarContent token={this.props.location.state.token} />
+            </div>
+            <div className='dashboard-item-08 lol'>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>Compactor ID</th>
+                  <th>Alarm Status</th>
+                  <th>Cleared By</th>
+                  <th>Address</th>
+                  <th>Alarm Type</th>
+                  <th>TS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Mark</td>
+                  <td>Otto</td>
+                  <td>@mdo</td>
+                  <td>@mdo</td>
+                  <td>@mdo</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>Jacob</td>
+                  <td>Thornton</td>
+                  <td>@fat</td>
+                  <td>@fat</td>
+                  <td>@fat</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td colSpan="2">Larry the Bird</td>
+                  <td>@twitter</td>
+                </tr>
+              </tbody>
+            </Table>
+            </div>
+          </div>
+        )
+      }else{
         return(
           <div className='dashboard-grid-container'>
             <div className='dashboard-item-02 lol'>
-              <Container>
-                <Row>
-                    <Col><div className='legendTitle'>Current Section</div></Col>
-                </Row>
-              </Container>
-              <Container>
-                <Row>
-                    <Col><div className='centerText'>{this.props.location.state.currentSection}</div></Col>
-                </Row>
-              </Container>
-              
+              <div className='customNavTitle'>Section {this.props.location.state.currentSection}</div>
+              <div onClick={()=>{
+                this.setState(
+                  {
+                    renderDetailedAlarmReport : true
+                  }
+                )
+              }} className='customNavCell'>Detailed Alarm Report</div>
+              <div className='customNavCell'>Detailed Compactor Information</div>
+              <div className='customNavCell'>Admin Add User(Still in Development)</div>
             </div>
             <div className='dashboard-item-03 lol bordercolor'>
-              <NavBarContent/>
+              <NavBarContent token={this.props.location.state.token} />
             </div>
             <div className='dashboard-item-04 dangercolor'>
               <div>
@@ -158,6 +201,7 @@ class Dashboard extends Component {
               </div>
           </div>
         )
+      }
     }
 }
 

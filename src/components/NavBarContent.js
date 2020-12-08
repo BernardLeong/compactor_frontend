@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import './../css/compactorInfo.css'
 import { Navbar, Nav, Form, FormControl, Button  } from 'react-bootstrap'
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
+const axios = require('axios');
 
 class NavBarContent extends Component {
     constructor(props){
@@ -10,7 +11,26 @@ class NavBarContent extends Component {
       {
         'logOut' : false
       }
+      this.logout = this.logout.bind(this)
     }
+
+    logout(){
+      var body = {
+        "token" : this.props.token
+      }
+      axios.post('http://localhost:8080/logout', body).then((result)=>{
+        console.log(result)
+      }).catch((err)=>{
+        console.log(err)
+      })
+
+      this.setState(
+        {
+          logOut : true
+        }
+      )
+    }
+
     render(){
       if(this.state.logOut){
         return(
@@ -33,14 +53,15 @@ class NavBarContent extends Component {
             </Navbar.Brand>
             <Nav.Link target="_blank" href="https://www.sembcorp.com/en/"><span className='welcome'>Home</span></Nav.Link>
             <Form style={{cursor:'pointer'}} inline>
-              &nbsp;&nbsp;<span onClick={()=>{
-                this.setState({logOut : true})
-              }} className='welcome'>Log Out</span>
+              &nbsp;&nbsp;<span onClick={this.logout} className='welcome'>Log Out</span>
             </Form>
+
             <Nav className="mr-auto">
             </Nav>
             <Form inline>
-              <span className='welcome'>Welcome User</span>
+              <span className='welcome'>Welcome <span style={{cursor:'pointer'}} onClick={()=>{
+                this.props.handleRedirect('userDetails')
+              }}>User</span></span>
             </Form>
           </Navbar>
         )

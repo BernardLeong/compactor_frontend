@@ -31,24 +31,32 @@ class Mapping extends Component {
     var coordinateArr = []
     var color = this.props.compactorFilledLevel || ''
     var compactorArr = []
-    for(var i=0;i<compactors.length;i++){
-      var percentage = Math.round((compactors[i].current_weight / compactors[i].max_weight)*100 )
-      var alarmRaised = compactors[i].alarmRaised
-      console.log(alarmRaised)
-      console.log(color == 'renderAlarm')
-
-      if(percentage < 25 && color == 'green'){
-        compactorArr.push(compactors[i])
-      }else if(percentage > 25 && percentage < 50 && color == 'yellow'){
-        compactorArr.push(compactors[i])
-      }else if(percentage >50 && color == 'red'){
-        compactorArr.push(compactors[i])
-      }else if(alarmRaised && color == 'renderAlarm'){
-        compactorArr.push(compactors[i])
+    var selectedAddress = this.props.selectedAddress || ''
+    if(this.props.selectedAddress){
+      // console.log('ciorejioej')
+      for(var i=0;i<compactors.length;i++){
+        if(compactors[i].address == selectedAddress){
+          compactorArr.push(compactors[i])
+        }
+      }
+    }else if(color != ''){
+      for(var i=0;i<compactors.length;i++){
+        var percentage = Math.round((compactors[i].current_weight / compactors[i].max_weight)*100 )
+        var alarmRaised = compactors[i].alarmRaised
+        
+        if(percentage < 25 && color == 'green'){
+          compactorArr.push(compactors[i])
+        }else if(percentage > 25 && percentage < 50 && color == 'yellow'){
+          compactorArr.push(compactors[i])
+        }else if(percentage >50 && color == 'red'){
+          compactorArr.push(compactors[i])
+        }else if(alarmRaised && color == 'renderAlarm'){
+          compactorArr.push(compactors[i])
+        }
       }
     }
 
-    if(compactorArr.length > 0 && color !== ''){
+    if(compactorArr.length > 0 && (color !== '' || selectedAddress !== '')){
       compactors = compactorArr
     }
     

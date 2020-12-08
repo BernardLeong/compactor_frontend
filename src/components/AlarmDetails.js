@@ -2,8 +2,11 @@ import Axios from 'axios'
 import React, {Component} from 'react'
 import axios from 'axios'
 import './../css/alarmDetails.css'
-import { Container, Row, Col, Button, Form } from 'react-bootstrap'
+import { Container, Row, Col, Button, Form, Table } from 'react-bootstrap'
 import { BrowserRouter as Router, Redirect } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faClock } from '@fortawesome/free-solid-svg-icons'
+
 class AlarmDetails extends Component{
     constructor(props){
         super(props)
@@ -28,6 +31,7 @@ class AlarmDetails extends Component{
         let compactorID = this.props.location.state.currentComponent
         axios.get(`http://localhost:8080/getAlarm/${compactorID}`,config)
         .then((response)=> {
+            console.log(response)
             this.setState({
                 data : response.data.alarmInfo,
                 alarmLoaded: true
@@ -54,7 +58,7 @@ class AlarmDetails extends Component{
         )
       }
       
-      handleClearAlarm(){
+      handleClearAlarm(compactorID, AlarmID){
         var token = this.props.location.state.token
 
         var config = {
@@ -68,8 +72,6 @@ class AlarmDetails extends Component{
         if(this.props.location.state.userType == 'Admin'){
             type = 'admin'
         }
-
-        console.log(type)
     
         var apikeys = {
             'admin' : 'jnjirej9reinvuiriuerhuinui',
@@ -79,10 +81,8 @@ class AlarmDetails extends Component{
         if(type !== 'user'){
             config['headers']['apikey'] = apikeys[type]
         }
-    
-        console.log(config)
-        let compactorID = this.state.data.compactorID
-        var body = { compactorID: compactorID}
+
+        var body = { compactorID: compactorID, AlarmID : AlarmID}
         axios.post(`http://localhost:8080/clearAlarm`,body, config)
         .then((response)=> {
             console.log(response)
@@ -109,33 +109,44 @@ class AlarmDetails extends Component{
                 />
                 )
             }else{
+                var alarmsData = this.state.data
+                alarmsData = alarmsData.map(alarm =>(
+                    <tr>
+                        <td>{alarm.AlarmID}</td>
+                        <td>{alarm.compactorID}</td>
+                        <td>{alarm.alarmStatus}</td>
+                        <td>{alarm.humanReadableTS}</td>
+                        <td onClick={()=>{
+                            this.handleClearAlarm(alarm.compactorID, alarm.AlarmID)
+                        }} style={{cursor:'pointer'}}><FontAwesomeIcon icon={faClock} /></td>
+                    </tr>
+                ))
                 return(
                     <div className='alarm-grid-container'>
                         <div className='alarm-grid-item-01 markbg'>
-                        <div>&nbsp;</div>
+                            <div>&nbsp;</div>
                         <Container>
                             <Row>
-                                <Col></Col>
-                                <Col className='titleAdjust'>Alarm Details</Col>
-                                <Col><Button onClick={this.handleClearAlarm} variant="primary">Clear Alarm</Button>{' '}</Col>
-                            </Row>
-                            <div>&nbsp;</div>
-                            <Row>
-                                <Col>
-                                    <div className='alarmDetails'>
-                                        CompactorID: {this.state.data.compactorID}
-                                    </div>
-                                    <div className='alarmDetails'>
-                                        Status: {this.state.data.alarmStatus}
-                                    </div>
-                                    <div className='alarmDetails'>
-                                        TimeStamp: {this.state.data.humanReadableTS}
-                                    </div>
-                                </Col>
-                                <Col></Col>
-                                <Col></Col>
+                                <Col><div></div></Col>
+                                <Col className='titleAdjust'><div>Alarm Details</div></Col>
+                                <Col><div></div></Col>
                             </Row>
                         </Container>
+                        <div>&nbsp;</div>
+                        <Table striped bordered hover>
+                            <thead>
+                                <tr>
+                                <th>Alarm ID</th>
+                                <th>Compactor ID</th>
+                                <th>Status</th>
+                                <th>TS</th>
+                                <th>Clear Alarm</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {alarmsData}
+                            </tbody>
+                        </Table>
                         <div>&nbsp;</div>
                         <Button onClick={this.handleRedirectToLocationData} variant="primary">Back</Button>{' '}
                         </div>
