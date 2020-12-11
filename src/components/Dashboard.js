@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import './../css/dashboard.css'
 import NavBarContent from './NavBarContent';
 import DashboardTable from './DashboardTable';
-import { Card, CardGroup, Table, Form, FormControl, Button, Container, Row, Col, Navbar, Nav, NavDropdown } from 'react-bootstrap'
-import { Sidenav, Icon, Dropdown } from 'rsuite';
-import 'rsuite/lib/styles/index.less';
+import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
+import { Table , Button } from 'react-bootstrap'
+const sortObjectsArray = require('sort-objects-array');
 const axios = require('axios');
 
 class Dashboard extends Component {
@@ -13,6 +13,8 @@ class Dashboard extends Component {
       this.state = 
       {
         'data': [],
+        'detailedAlarmReport' : [],
+        'detailedAlarmReportLoaded' : false,
         'compactorLoaded' : false,
         'alarmsLoaded' : false,
         'renderAlarmTable' : true,
@@ -23,6 +25,8 @@ class Dashboard extends Component {
       this.renderCollectionWeight = this.renderCollectionWeight.bind(this)
       this.renderAlarmTable = this.renderAlarmTable.bind(this)
       this.renderCompactorInfo = this.renderCompactorInfo.bind(this)
+      this.handleRenderDetailedReport = this.handleRenderDetailedReport.bind(this)
+      this.handleRedirect = this.handleRedirect.bind(this)
     }
 
     componentDidMount(){
@@ -30,6 +34,7 @@ class Dashboard extends Component {
       var config = {
         headers: { Authorization: `Bearer ${token}` }
     }
+
     var currentSection = this.props.location.state.currentSection || 'A'
       axios.get(`http://localhost:8080/getTodaysAlarm/${currentSection}`,config)
       .then((response)=> {
@@ -55,6 +60,65 @@ class Dashboard extends Component {
       .catch(function (error) {
         console.log(error);
       })  
+  }
+
+  handleRenderDetailedReport(){
+    var token = this.props.location.state.token
+    var config = {
+      headers: { Authorization: `Bearer ${token}` }
+    }
+
+    axios.get(`http://localhost:8080/getDetailAlarm`,config)
+    .then((response)=> {
+      this.setState({
+        detailedAlarmReport : response.data.alarmInfo,
+        detailedAlarmReportLoaded: true,
+        renderDetailedAlarmReport : true 
+      })
+    })
+    .catch(function (error) {
+      console.log(error);
+    })   
+  }
+
+  handleRedirect(path){
+    this.setState({
+        redirectTo : path
+    })
+  }
+
+  handleClearAlarm(compactorID, AlarmID){
+    var token = this.props.location.state.token
+
+    var config = {
+        headers: { Authorization: `Bearer ${token}`}
+    }
+    var type = 'user'
+    if(this.props.location.state.userType == 'Enginner'){
+        type = 'serviceUser'
+    }
+    
+    if(this.props.location.state.userType == 'Admin'){
+        type = 'admin'
+    }
+
+    var apikeys = {
+        'admin' : 'jnjirej9reinvuiriuerhuinui',
+        'serviceUser' : 'juit959fjji44jcion4moij0kc',
+    }
+
+    if(type !== 'user'){
+      config['headers']['apikey'] = apikeys[type]
+    }
+
+    var body = { compactorID: compactorID, AlarmID : AlarmID}
+    axios.post(`http://localhost:8080/clearAlarm`,body, config)
+    .then((response)=> {
+        console.log(response)
+    })
+    .catch(function (error) {
+        console.log(error);
+    })  
   }
 
   renderCollectionWeight(){
@@ -101,68 +165,80 @@ class Dashboard extends Component {
         var totalCollectedWeight = collectionWeights.reduce(reduceFunc);
       }
 
-      if(this.state.renderDetailedAlarmReport){
+      if(this.state.redirectTo == 'userDetails'){
         return(
-          <div className='dashboard-grid-container'>
-            <div className='dashboard-item-03 lol bordercolor'>
-              <NavBarContent token={this.props.location.state.token} />
-            </div>
-            <div className='dashboard-item-08 lol'>
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>Compactor ID</th>
-                  <th>Alarm Status</th>
-                  <th>Cleared By</th>
-                  <th>Address</th>
-                  <th>Alarm Type</th>
-                  <th>TS</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                  <td>@mdo</td>
-                  <td>@mdo</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>@fat</td>
-                  <td>@fat</td>
-                  <td>@fat</td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td colSpan="2">Larry the Bird</td>
-                  <td>@twitter</td>
-                </tr>
-              </tbody>
-            </Table>
-            </div>
-          </div>
+            <Redirect to={{
+                pathname: '/editUser',
+                state: { 
+                    userType: this.props.location.state.userType,
+                    token: this.props.location.state.token
+                }
+            }}
+        />
         )
+    }else if(this.state.renderDetailedAlarmReport){
+        if(this.state.detailedAlarmReportLoaded){
+          var detailedAlarmData = this.state.detailedAlarmReport
+          detailedAlarmData = sortObjectsArray(detailedAlarmData, 'sectionArea')
+          detailedAlarmData = detailedAlarmData.map(alarm =>(
+              <tr>
+                  <td>{alarm.sectionArea}</td>
+                  <td>{alarm.compactorID}</td>
+                  <td>{alarm.address}</td>
+                  <td>{alarm.alarmStatus}</td>
+                  <td>{alarm.humanReadableTS}</td>
+                  <td>{alarm.type}</td>
+                  <td>{alarm.username}</td>
+              </tr>
+          ))
+          return(
+            <div className='dashboard-grid-container'>
+              <div className='dashboard-item-03 lol bordercolor'>
+                <NavBarContent token={this.props.location.state.token} />
+              </div>
+              <div className='dashboard-item-08 lol'>
+              <Table striped bordered hover>
+                <thead>
+                  <tr>
+                    <th>Section</th>
+                    <th>Compactor ID</th>
+                    <th>Address</th>
+                    <th>Alarm Status</th>
+                    <th>TS</th>
+                    <th>Alarm Type</th>
+                    <th>Cleared By</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {detailedAlarmData}
+                </tbody>
+              </Table>
+              <Button onClick={()=>{
+                this.setState(
+                  {
+                    renderDetailedAlarmReport : false
+                  }
+                )
+              }} variant="primary">Back</Button>{' '}
+              </div>
+            </div>
+          )
+        }else{
+          return(
+            <div>Loading .....</div>
+          )
+        }
+        
       }else{
         return(
           <div className='dashboard-grid-container'>
             <div className='dashboard-item-02 lol'>
               <div className='customNavTitle'>Section {this.props.location.state.currentSection}</div>
-              <div onClick={()=>{
-                this.setState(
-                  {
-                    renderDetailedAlarmReport : true
-                  }
-                )
-              }} className='customNavCell'>Detailed Alarm Report</div>
-              <div className='customNavCell'>Detailed Compactor Information</div>
+              <div style={{cursor:'pointer'}} onClick={this.handleRenderDetailedReport} className='customNavCell'>Detailed Alarm Report</div>
               <div className='customNavCell'>Admin Add User(Still in Development)</div>
             </div>
             <div className='dashboard-item-03 lol bordercolor'>
-              <NavBarContent token={this.props.location.state.token} />
+              <NavBarContent handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
             </div>
             <div className='dashboard-item-04 dangercolor'>
               <div>

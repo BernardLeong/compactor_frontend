@@ -82,6 +82,7 @@ class AlarmDetails extends Component{
             config['headers']['apikey'] = apikeys[type]
         }
 
+        console.log(this.props.location.state.userType)
         var body = { compactorID: compactorID, AlarmID : AlarmID}
         axios.post(`http://localhost:8080/clearAlarm`,body, config)
         .then((response)=> {
@@ -93,7 +94,6 @@ class AlarmDetails extends Component{
       }
 
       render(){
-        console.log(this.state)
         console.log(this.props)
 
         if(this.state.alarmLoaded){
@@ -136,7 +136,7 @@ class AlarmDetails extends Component{
                         <Table striped bordered hover>
                             <thead>
                                 <tr>
-                                <th>Alarm ID</th>
+                                <th>Alarm IDs</th>
                                 <th>Compactor ID</th>
                                 <th>Status</th>
                                 <th>TS</th>

@@ -9,9 +9,46 @@ class NavBarContent extends Component {
       super(props)
       this.state = 
       {
-        'logOut' : false
+        'logOut' : false,
+        'currentUser' : ''
       }
       this.logout = this.logout.bind(this)
+    }
+
+    componentDidMount(){
+      var token = this.props.token
+
+      var config = {
+          headers: { Authorization: `Bearer ${token}`}
+      }
+
+      var type = 'user'
+      if(this.props.userType == 'Enginner'){
+          type = 'serviceUser'
+      }
+      
+      if(this.props.userType == 'Admin'){
+          type = 'admin'
+      }
+  
+      var apikeys = {
+          'admin' : 'jnjirej9reinvuiriuerhuinui',
+          'serviceUser' : 'juit959fjji44jcion4moij0kc',
+      }
+
+      if(type !== 'user'){
+          config['headers']['apikey'] = apikeys[type]
+      }
+
+      axios.get(`http://localhost:8080/getCurrentUser`,config)
+      .then((response)=> {
+        this.setState({
+          currentUser : response.data.username,
+        })
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
     }
 
     logout(){
@@ -32,6 +69,7 @@ class NavBarContent extends Component {
     }
 
     render(){
+      console.log(this.state)
       if(this.state.logOut){
         return(
           <Redirect to={{
@@ -61,7 +99,7 @@ class NavBarContent extends Component {
             <Form inline>
               <span className='welcome'>Welcome <span style={{cursor:'pointer'}} onClick={()=>{
                 this.props.handleRedirect('userDetails')
-              }}>User</span></span>
+              }}>{this.state.currentUser}</span></span>
             </Form>
           </Navbar>
         )

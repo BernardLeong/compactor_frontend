@@ -125,8 +125,6 @@ class DashboardTable extends Component {
   }
 
     render(){
-      console.log(this.state)
-      console.log(this.props)
       if(this.props.alarmsLoaded){
         let allAlarms = this.props.alarmData
         if(allAlarms[0] == null){
@@ -256,7 +254,7 @@ class DashboardTable extends Component {
         }   
       }
 
-      if(this.props.renderCompactorInfo){
+      if(this.props.renderCompactorInfo && this.props.userType == 'Admin'){
         if(this.state.redirectToCompactorEditPage){
           return(
             <div>
@@ -366,15 +364,6 @@ class DashboardTable extends Component {
           }
         }
       }
-      // else{
-      //   console.log(this.state)
-      //   console.log(this.props)
-      //   return(
-      //     <div>Data Saved</div>
-      //   )
-      // }
-
-
     }
 }
 

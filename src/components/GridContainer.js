@@ -69,7 +69,7 @@ class GridContainer extends Component{
                         pathname: '/dashboard',
                         state: { 
                             userType: this.props.location.state.userType,
-                            token: this.props.location.state.token,
+                            token: this.props.location.state.token
                         }
                     }}
                 />
@@ -92,7 +92,7 @@ class GridContainer extends Component{
 
                     <div className='grid-container-compactor'>
                          <div className='grid-item grid-item-01-compactor'>
-                             <NavBarContent handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+                             <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
                         </div>
                         <div className='grid-item grid-item-02-compactor'>
                             <Container>
@@ -163,7 +163,7 @@ class GridContainer extends Component{
                                     <div>&nbsp;</div>
                                     <Row>
                                         <Col className='lengendDes'>Compactor less than 25%</Col>
-                                        <Col className='lengendDes'>Compactor more than 50%</Col>
+                                        <Col className='lengendDes'>Compactor less than 50%</Col>
                                         <Col className='lengendDes'>Compactor more than 75%</Col>
                                     </Row>
                                     <div>&nbsp;</div>

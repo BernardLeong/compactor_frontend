@@ -15,6 +15,7 @@ class UserDetails extends Component {
         }
         this.handleSelectChange = this.handleSelectChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
+        this.handleRedirect = this.handleRedirect.bind(this)
     }
 
     componentDidMount(){
@@ -48,10 +49,10 @@ class UserDetails extends Component {
         }      
         axios.get('http://localhost:8080/getCurrentUser',config)
         .then((response)=> {
-            console.log(response.data.result.username)
+            console.log(response)
           this.setState({
-            username : response.data.result.username,
-            password : response.data.result.password,
+            username : response.data.username,
+            password : response.data.password,
             loadUserDetails : true
           })
         })
@@ -112,6 +113,15 @@ class UserDetails extends Component {
             }
         )
     }
+
+    handleRedirect(){
+        this.setState(
+            {
+                redirectToLocationData : true,
+                loadUserDetails : false
+            }
+        )
+    }
     render(){
         if(this.state.loadUserDetails){
             return(
@@ -134,6 +144,11 @@ class UserDetails extends Component {
                             </Form.Group>
                             <Button onClick={this.handleSubmit} variant="primary">
                                 Submit
+                            </Button>
+                            &nbsp;
+                            &nbsp;
+                            <Button onClick={this.handleRedirect} variant="primary">
+                                Back
                             </Button>
                         </Form>
                     </div>

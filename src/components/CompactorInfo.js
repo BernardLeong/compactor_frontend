@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
 import { Card, Table } from 'react-bootstrap'
+const sortObjectsArray = require('sort-objects-array');
 const axios = require('axios');
 class CompactorInfo extends Component {
   constructor(props){
@@ -65,7 +66,8 @@ class CompactorInfo extends Component {
   render() {
     let compactorInfo = null;
     if(this.state.compactorLoaded){
-      let compactors = this.state.data
+      var compactors = this.state.data
+      compactors = sortObjectsArray(compactors, 'sectionArea')
       compactorInfo = compactors.map(compactor => (
            <tr>
                  <th style={{cursor:'pointer'}} onClick={()=>{
