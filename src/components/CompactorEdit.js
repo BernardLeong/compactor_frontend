@@ -45,7 +45,7 @@ class CompactorEdit extends Component {
             config['headers']['apikey'] = apikeys[type]
         }      
         var currentCompactorID = this.props.currentCompactorID
-        axios.get(`http://localhost:8080/getCompactorInfo/${currentCompactorID}`,config)
+        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getCompactorInfo/${currentCompactorID}`,config)
         .then((response)=> {
             console.log(response.data)
           this.setState({
@@ -99,7 +99,7 @@ class CompactorEdit extends Component {
             config['headers']['apikey'] = apikeys[type]
         }
 
-        axios.post('http://localhost:8080/editCompactor', body, config).then((result)=>{
+        axios.post('http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/editCompactor', body, config).then((result)=>{
             console.log(result)
         }).catch((err)=>{
             console.log(err)

@@ -30,7 +30,7 @@ class Alarm extends Component{
             headers: { Authorization: `Bearer ${token}`, apikey: this.state.adminAPIKey }
           }
         }
-          var url = `http://localhost:8080/getAllAlarm`
+          var url = `http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getAllAlarm`
         axios.get(url,config).then((result)=>{
           this.setState({
             alarms: result.data.alarmInfo,
@@ -40,7 +40,7 @@ class Alarm extends Component{
       }
 
       offAlarm(compactorID){
-        var url = `http://localhost:8080/offMachine`
+        var url = `http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/offMachine`
         var token = this.props.token
         var config = {
           headers: { Authorization: `Bearer ${token}` }

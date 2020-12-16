@@ -27,7 +27,7 @@ class CompactorInfo extends Component {
     }
 
     var currentComponent = this.state.currentComponent
-    axios.get(`http://localhost:8080/allCompactorInfo/${currentComponent}`,config)
+    axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/allCompactorInfo/${currentComponent}`,config)
     .then((response)=> {
       this.setState({
         data : response.data.compactorInfo,

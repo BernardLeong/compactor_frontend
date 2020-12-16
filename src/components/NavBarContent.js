@@ -40,7 +40,7 @@ class NavBarContent extends Component {
           config['headers']['apikey'] = apikeys[type]
       }
 
-      axios.get(`http://localhost:8080/getCurrentUser`,config)
+      axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getCurrentUser`,config)
       .then((response)=> {
         this.setState({
           currentUser : response.data.username,
@@ -55,7 +55,7 @@ class NavBarContent extends Component {
       var body = {
         "token" : this.props.token
       }
-      axios.post('http://localhost:8080/logout', body).then((result)=>{
+      axios.post('http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/logout', body).then((result)=>{
         console.log(result)
       }).catch((err)=>{
         console.log(err)

@@ -17,7 +17,7 @@ class Mapping extends Component {
     var config = {
       headers: { Authorization: `Bearer ${token}` }
   }
-    var url = 'http://localhost:8080/allCompactorInfo'
+    var url = 'http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/allCompactorInfo'
     axios.get(url,config).then((result)=>{
       // console.log(result.data.compactorInfo)
       this.setState({

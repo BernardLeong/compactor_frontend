@@ -50,7 +50,7 @@ class Login extends Component {
             "type" : type
         }
 
-        axios.post('http://localhost:8080/loginUser', body).then((result)=>{
+        axios.post('http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/loginUser', body).then((result)=>{
             this.setState({token: result.data.token, success: result.data.success, error: result.data.error})
         }).catch((err)=>{
             console.log(err)

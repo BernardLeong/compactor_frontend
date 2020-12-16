@@ -36,7 +36,7 @@ class Dashboard extends Component {
     }
 
     var currentSection = this.props.location.state.currentSection || 'A'
-      axios.get(`http://localhost:8080/getTodaysAlarm/${currentSection}`,config)
+      axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getTodaysAlarm/${currentSection}`,config)
       .then((response)=> {
         console.log(response)
         this.setState({
@@ -47,9 +47,10 @@ class Dashboard extends Component {
       })
       .catch(function (error) {
         console.log(error);
+        console.log('hii')
       })
 
-      axios.get(`http://localhost:8080/allCompactorInfo/${currentSection}`,config)
+      axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/allCompactorInfo/${currentSection}`,config)
       .then((response)=> {
         this.setState({
           compactorData : response.data.compactorInfo,
@@ -68,7 +69,7 @@ class Dashboard extends Component {
       headers: { Authorization: `Bearer ${token}` }
     }
 
-    axios.get(`http://localhost:8080/getDetailAlarm`,config)
+    axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getDetailAlarm`,config)
     .then((response)=> {
       this.setState({
         detailedAlarmReport : response.data.alarmInfo,
@@ -112,7 +113,7 @@ class Dashboard extends Component {
     }
 
     var body = { compactorID: compactorID, AlarmID : AlarmID}
-    axios.post(`http://localhost:8080/clearAlarm`,body, config)
+    axios.post(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/clearAlarm`,body, config)
     .then((response)=> {
         console.log(response)
     })

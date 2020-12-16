@@ -51,7 +51,7 @@ class DashboardTable extends Component {
       if(type !== 'user'){
           config['headers']['apikey'] = apikeys[type]
       }  
-      axios.get(`http://localhost:8080/getCompactorInfo/${compactorID}`,config)
+      axios.get(`http://-18-191-176-57.us-east-2.compute.amazonaws.com/getCompactorInfo/${compactorID}`,config)
       .then((response)=> {
           console.log(response.data)
         this.setState({
@@ -112,7 +112,7 @@ class DashboardTable extends Component {
           config['headers']['apikey'] = apikeys[type]
       }
 
-      axios.post('http://localhost:8080/editCompactor', body, config).then((result)=>{
+      axios.post('http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/editCompactor', body, config).then((result)=>{
           console.log(result)
       }).catch((err)=>{
           console.log(err)

@@ -47,7 +47,7 @@ class UserDetails extends Component {
         if(type !== 'user'){
             config['headers']['apikey'] = apikeys[type]
         }      
-        axios.get('http://localhost:8080/getCurrentUser',config)
+        axios.get('http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getCurrentUser',config)
         .then((response)=> {
             console.log(response)
           this.setState({
@@ -100,7 +100,7 @@ class UserDetails extends Component {
             config['headers']['apikey'] = apikeys[type]
         }
 
-        axios.post('http://localhost:8080/editUser', body, config).then((result)=>{
+        axios.post('http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/editUser', body, config).then((result)=>{
             console.log(result)
         }).catch((err)=>{
             console.log(err)

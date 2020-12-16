@@ -29,7 +29,7 @@ class AlarmDetails extends Component{
         headers: { Authorization: `Bearer ${token}` }
         }
         let compactorID = this.props.location.state.currentComponent
-        axios.get(`http://localhost:8080/getAlarm/${compactorID}`,config)
+        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getAlarm/${compactorID}`,config)
         .then((response)=> {
             console.log(response)
             this.setState({
@@ -84,7 +84,7 @@ class AlarmDetails extends Component{
 
         console.log(this.props.location.state.userType)
         var body = { compactorID: compactorID, AlarmID : AlarmID}
-        axios.post(`http://localhost:8080/clearAlarm`,body, config)
+        axios.post(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/clearAlarm`,body, config)
         .then((response)=> {
             console.log(response)
         })
