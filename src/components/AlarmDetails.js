@@ -94,8 +94,6 @@ class AlarmDetails extends Component{
       }
 
       render(){
-        console.log(this.props)
-
         if(this.state.alarmLoaded){
             if(this.state.redirectToLocationData){
                 return(
@@ -116,6 +114,7 @@ class AlarmDetails extends Component{
                         <td>{alarm.compactorID}</td>
                         <td>{alarm.alarmStatus}</td>
                         <td>{alarm.humanReadableTS}</td>
+                        <td>{alarm.type}</td>
                         <td onClick={()=>{
                             this.handleClearAlarm(alarm.compactorID, alarm.AlarmID)
                         }} style={{cursor:'pointer'}}><FontAwesomeIcon icon={faClock} /></td>
@@ -140,6 +139,7 @@ class AlarmDetails extends Component{
                                 <th>Compactor ID</th>
                                 <th>Status</th>
                                 <th>TS</th>
+                                <th>Alarm Type</th>
                                 <th>Clear Alarm</th>
                                 </tr>
                             </thead>

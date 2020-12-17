@@ -78,7 +78,7 @@ class CompactorInfo extends Component {
                 }}>{compactor.address}</th>
                 <th>{compactor.compactorID}</th>
                 <th>{compactor.compactorType}</th>
-                <th>{compactor.alarmRaised ? <div onClick={()=>{
+                <th>{compactor.alarmRaised ? <div style={{cursor:'pointer'}} onClick={()=>{
                   this.redirectToAlarmDetails(compactor.compactorID)
                 }}>true</div> : <div>false</div>}</th>
                 <th>{(Math.round((compactor.current_weight / compactor.max_weight)*100 )) + ' %'}</th>

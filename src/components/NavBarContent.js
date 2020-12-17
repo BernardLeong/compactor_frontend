@@ -56,7 +56,6 @@ class NavBarContent extends Component {
         "token" : this.props.token
       }
       axios.post('http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/logout', body).then((result)=>{
-        console.log(result)
       }).catch((err)=>{
         console.log(err)
       })
@@ -69,7 +68,6 @@ class NavBarContent extends Component {
     }
 
     render(){
-      console.log(this.state)
       if(this.state.logOut){
         return(
           <Redirect to={{

@@ -45,23 +45,6 @@ class GridContainer extends Component{
 
     render(){    
         // if(this.props.location.state.userType == 'User' || this.props.location.state.userType == 'Admin'){
-            if(this.state.redirectTo == 'locationMap'){
-                return(
-                    <Container>
-                        <Row>
-                            <Col>
-                            </Col>
-                            <Col>
-                                <div>Hi</div>
-                            </Col>
-                            <Col>
-                            </Col>
-                        </Row>
-                    </Container>
-                    
-
-                )
-            }
 
             if(this.state.redirectTo == 'Dashboard'){
                 return(
@@ -89,7 +72,6 @@ class GridContainer extends Component{
                 )
             }else{
                 return(
-
                     <div className='grid-container-compactor'>
                          <div className='grid-item grid-item-01-compactor'>
                              <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
@@ -123,7 +105,7 @@ class GridContainer extends Component{
                             <div>
                                 <Container>
                                 <Row>
-                                    <Col><div className='legendTitle'>Legend</div></Col>
+                                    <Col><div className='legendTitle'>&nbsp;</div></Col>
                                 </Row>
                                 <div>&nbsp;</div>
                                     <Row>

@@ -38,7 +38,6 @@ class Dashboard extends Component {
     var currentSection = this.props.location.state.currentSection || 'A'
       axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getTodaysAlarm/${currentSection}`,config)
       .then((response)=> {
-        console.log(response)
         this.setState({
           alarmData : response.data.alarms,
           numberofAlarms : response.data.alarms.length,
@@ -47,7 +46,6 @@ class Dashboard extends Component {
       })
       .catch(function (error) {
         console.log(error);
-        console.log('hii')
       })
 
       axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/allCompactorInfo/${currentSection}`,config)
@@ -226,7 +224,7 @@ class Dashboard extends Component {
           )
         }else{
           return(
-            <div>Loading .....</div>
+            <div>No Alarm Raised</div>
           )
         }
         

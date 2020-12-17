@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import './../css/dashboard.css'
-import CompactorEdit from './CompactorEdit';
 import { Form, Table, Button, Container, Row, Col } from 'react-bootstrap'
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
 const axios = require('axios');
@@ -8,7 +7,6 @@ const axios = require('axios');
 class DashboardTable extends Component {
     constructor(props){
       super(props)
-      console.log(this.props)
       this.state = 
       {
         'redirectToLocationData' : false,
@@ -51,7 +49,7 @@ class DashboardTable extends Component {
       if(type !== 'user'){
           config['headers']['apikey'] = apikeys[type]
       }  
-      axios.get(`http://-18-191-176-57.us-east-2.compute.amazonaws.com/getCompactorInfo/${compactorID}`,config)
+      axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getCompactorInfo/${compactorID}`,config)
       .then((response)=> {
           console.log(response.data)
         this.setState({
@@ -134,9 +132,10 @@ class DashboardTable extends Component {
         }else{
           var alarms = allAlarms.map(al => (
             <tr>
-                 <th>{al.humanReadableTS}</th>
                  <th>{al.compactorID}</th>
-                 <th>{al.userid}</th>
+                 <th>{al.humanReadableTS}</th>
+                 <th>{al.type}</th>
+                 <th>{al.alarmStatus}</th>
                  <th>{al.address}</th>
              </tr>
          ))
@@ -188,6 +187,18 @@ class DashboardTable extends Component {
         }else{
           return(
             <div>
+                   <div>
+                  <div>&nbsp;</div>
+                <Container>
+                  <Row>
+                    <Col></Col>
+                    <Col className='dashboardTableTitle'>Compactor Collection Weight</Col>
+                    <Col></Col>
+                  </Row>
+                </Container>
+                <div>&nbsp;</div>
+
+                </div>
                 <Table striped bordered hover responsive> 
                     <thead>
                     <tr>
@@ -225,20 +236,25 @@ class DashboardTable extends Component {
         }else{
           return(
             <div>
+                <div>
+                  <div>&nbsp;</div>
+                <Container>
+                  <Row>
+                    <Col></Col>
+                    <Col className='dashboardTableTitle'>Alarm Raised Today</Col>
+                    <Col></Col>
+                  </Row>
+                </Container>
+                <div>&nbsp;</div>
+
+                </div>
                 <Table striped bordered hover>
                     <thead>
                     <tr>
-                        <th></th>
-                        <th>Alarm Raised Today</th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <thead>
-                    <tr>
-                        <th>Time</th>
                         <th>Compactor ID</th>
-                        <th>UserID</th>
+                        <th>Time</th>
+                        <th>Alarm Type</th>
+                        <th>Alarm Status</th>
                         <th>Location</th>
                     </tr>
                     </thead>
@@ -255,6 +271,7 @@ class DashboardTable extends Component {
       }
 
       if(this.props.renderCompactorInfo && this.props.userType == 'Admin'){
+        console.log('hii')
         if(this.state.redirectToCompactorEditPage){
           return(
             <div>
@@ -336,15 +353,19 @@ class DashboardTable extends Component {
           }else{
             return(
               <div>
+                     <div>
+                  <div>&nbsp;</div>
+                <Container>
+                  <Row>
+                    <Col></Col>
+                    <Col className='dashboardTableTitle'>Compactor Other Information</Col>
+                    <Col></Col>
+                  </Row>
+                </Container>
+                <div>&nbsp;</div>
+
+                </div>
                   <Table striped bordered hover>
-                      <thead>
-                      <tr>
-                          <th></th>
-                          <th>Compactor Other Information</th>
-                          <th></th>
-                          <th></th>
-                      </tr>
-                      </thead>
                       <thead>
                       <tr>
                           <th>Compactor ID</th>
