@@ -134,7 +134,7 @@ class DashboardTable extends Component {
             <tr>
                  <th>{al.compactorID}</th>
                  <th>{al.humanReadableTS}</th>
-                 <th>{al.type}</th>
+                 <th>{al.AlarmRaisedID}</th>
                  <th>{al.alarmStatus}</th>
                  <th>{al.address}</th>
              </tr>
@@ -206,7 +206,7 @@ class DashboardTable extends Component {
                         <th>Collection Weight</th>
                         <th>Max Load</th>
                         <th>Weight Percentage</th>
-                        <th>Weight Status</th>
+                        <th>Level</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -271,7 +271,6 @@ class DashboardTable extends Component {
       }
 
       if(this.props.renderCompactorInfo && this.props.userType == 'Admin'){
-        console.log('hii')
         if(this.state.redirectToCompactorEditPage){
           return(
             <div>

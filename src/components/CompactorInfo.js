@@ -148,7 +148,7 @@ class CompactorInfo extends Component {
                   <th>Equipment Type</th>
                   <th>Alarm Raised</th>
                   <th>Weight Percentage</th>
-                  <th>Weight Status</th>
+                  <th>Level</th>
                 </tr>
             </thead>
             <tbody>
