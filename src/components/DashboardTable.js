@@ -130,7 +130,7 @@ class DashboardTable extends Component {
         let allAlarms = this.props.alarmData
         if(allAlarms[0] == null){
           var alarms = <tr>
-          <th>Loading ....</th>
+          <th>No Alarm Raised</th>
       </tr>
         }else{
           var alarms = allAlarms.map(al => (
