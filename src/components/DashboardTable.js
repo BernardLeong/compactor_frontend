@@ -49,9 +49,12 @@ class DashboardTable extends Component {
       if(type !== 'user'){
           config['headers']['apikey'] = apikeys[type]
       }  
-      axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getCompactorInfo/${compactorID}`,config)
+      var url = `http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getCompactorInfo/${escape(compactorID)}`
+      console.log(url)
+      axios.get(url,config)
       .then((response)=> {
           console.log(response.data)
+          console.log(response)
         this.setState({
           compactorInfo : response.data.compactorInfo,
           address : response.data.compactorInfo.address,
