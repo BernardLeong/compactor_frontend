@@ -137,7 +137,7 @@ class DashboardTable extends Component {
             <tr>
                  <th>{al.compactorID}</th>
                  <th>{al.humanReadableTS}</th>
-                 <th>{al.AlarmRaisedID}</th>
+                 <th>{al.type}</th>
                  <th>{al.alarmStatus}</th>
                  <th>{al.address}</th>
              </tr>

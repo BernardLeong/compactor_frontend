@@ -1,7 +1,5 @@
 import React, {Component} from 'react'
 import './../css/compactorInfo.css'
-import Alarm from './Alarm';
-import CompactorInfo from './CompactorInfo';
 import Mapping from './Mapping';
 import NavBarContent from './NavBarContent';
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
@@ -44,8 +42,6 @@ class GridContainer extends Component{
     }
 
     render(){    
-        // if(this.props.location.state.userType == 'User' || this.props.location.state.userType == 'Admin'){
-
             if(this.state.redirectTo == 'Dashboard'){
                 return(
                     <Redirect to={{
@@ -76,29 +72,20 @@ class GridContainer extends Component{
                          <div className='grid-item grid-item-01-compactor'>
                              <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
                         </div>
-                        <div className='grid-item grid-item-02-compactor'>
-                            <Container>
-                                <Row>
-                                    <Col>
-                                    </Col>
-                                    <Col className='compactorTableTitle'>
-                                        <div>Compactor Details</div>
-                                    </Col>
-                                    <Col>
-                                    </Col>
-                                </Row>
-                            </Container>
+                        <div className='grid-item grid-item-02-compactor lol'>
+                            Alarm
+                            {/* <CompactorInfo handleAddress={this.handleAddress} token={this.props.location.state.token} userType={this.props.location.state.userType} /> */}
                         </div>
-                        <div className='grid-item grid-item-03-compactor'>
-                            <CompactorInfo handleAddress={this.handleAddress} token={this.props.location.state.token} userType={this.props.location.state.userType} />
+                            
+                        <div className='grid-item grid-item-03-compactor lol'>
+                        Weight
+                            {/* <CompactorInfo handleAddress={this.handleAddress} token={this.props.location.state.token} userType={this.props.location.state.userType} /> */}
                         </div>
-
-
-                        <div className='grid-item grid-item-05-compactor'>
+                        <div className='grid-item grid-item-04-compactor lol'>
                             <Mapping selectedAddress={this.state.selectedAddress} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
                         </div>
                     
-                        <div className='grid-item grid-item-06-compactor markBGCompactor'>
+                        {/* <div className='grid-item grid-item-06-compactor markBGCompactor'>
                             <div>&nbsp;</div>
                             <div>&nbsp;</div>
 
@@ -163,26 +150,10 @@ class GridContainer extends Component{
                                     </Row>
                                 </Container>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 )
             }
-        // }
-
-    //     if(this.props.location.state.userType == 'Enginner'){
-    //         return(
-    //             <div className='grid-container'>
-    //                 <Alarm userType={this.props.location.state.userType} token={this.props.location.state.token} />
-    //             </div>
-    //         )
-    //     }else{
-    //         return(
-    //             <div className='grid-container'>
-    //                 Pls Log In First
-    //             </div>
-    //         )
-    //     }
-    // }
     }
 }
 
