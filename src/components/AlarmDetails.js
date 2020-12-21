@@ -29,7 +29,7 @@ class AlarmDetails extends Component{
         headers: { Authorization: `Bearer ${token}` }
         }
         let compactorID = this.props.location.state.currentComponent
-        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getAlarm/${compactorID}`,config)
+        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/${escape(compactorID)}`,config)
         .then((response)=> {
             console.log(response)
             this.setState({
