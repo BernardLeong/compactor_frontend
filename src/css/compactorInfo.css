@@ -1,5 +1,5 @@
 body{
-    background-color: #454d55;
+    background-color: #1f4e78;
 }
 .background{
     border-style: dotted dashed solid double;;
@@ -9,8 +9,8 @@ body{
     display: grid;
     grid-auto-rows: auto;
     grid-gap: 1px;
-    grid-template-rows: 4.8em 30em 30em;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 4.8em 32.8em 33em;
+    grid-template-columns: 20em 1fr 1fr auto;
 }
 
 .grid-containerTwo {
@@ -30,60 +30,84 @@ body{
     background-color: #faf8f4;
 }
 
-.legendTitle{
-    font-size: 1.5em;
-    text-align: center;
-}
-
-.lengendDes{
-    font-size: 1em;
-    text-align: center;
-}
-
-.grid-item-02-compactor {
+.grid-item-sideDashboard{
     grid-column : 1/2;
-    grid-row : 2/3;
-}
-
-.grid-item-03-compactor {
-    grid-column : 1/2;
-    grid-row : 3/4;
-}
-
-.grid-item-04-compactor {
-    grid-column : 2/4;
     grid-row : 2/-1;
 }
 
-.grid-item-05-compactor {
-    grid-column : 3/-1;
-    grid-row : 2/4;
-}
-
-.grid-item-06-compactor {
-    grid-column : 3/-1;
-    grid-row : 4/5;
-}
-
-.grid-item-4 {
-    grid-column : 1/-1;
-    grid-row : 1/2;
-}
-
-.grid-item-5 {
-    grid-column : 1/2;
-    grid-row : 2/3;
-}
-
-.grid-item-6 {
+.grid-item-alarmDashboard {
     grid-column : 2/3;
     grid-row : 2/3;
 }
 
-
-.lolOverLap{
-    background-color: #994040;
+.alarmTitle{
+    margin-top: 0.5em;
+    font-size: 5em;
+    color: #ff0100;
+    text-align: center;
 }
+
+.alarmRaisedNumber{
+    font-size: 13em;
+    text-align: center;
+}
+
+.grid-item-weightDashboard {
+    grid-column : 2/3;
+    grid-row : 3/4;
+}
+
+.grid-item-mapDashboard {
+    grid-column : 3/-1;
+    grid-row : 2/4;
+}
+
+.whiteBG{
+    background-color: white;
+}
+
+.blueBG{
+    background-color: #1f4e78;
+}
+
+.blueBorder{
+    border: solid #1f4e78 1px;
+}
+
+.adjustPadding{
+    color: white;
+    font-size: 1.3em;
+    padding: 10px;
+}
+
+
+.adjustPaddingContent{
+    text-align: center;
+    font-size: 1.3em;
+    padding: 10px;
+}
+
+.DashboardTitle{
+    text-align: center;
+}
+
+.arrow {
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+  }
+  
+.right {
+transform: rotate(-45deg);
+-webkit-transform: rotate(-45deg);
+}
+
+.left {
+    transform: rotate(135deg);
+    -webkit-transform: rotate(135deg);
+}
+  
 
 .adjustment{
     margin-left: 3em;

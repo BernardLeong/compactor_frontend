@@ -5,155 +5,180 @@ import NavBarContent from './NavBarContent';
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
 import { Card, Table, Container, Row, Col } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faExclamation } from '@fortawesome/free-solid-svg-icons'
-
+import { faBalanceScale, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+const axios = require('axios');
 class GridContainer extends Component{
     constructor(props){
         super(props)
         this.state = 
         {
-          'redirectTo': '',
-          'compactorFilledLevel' : '',
-          'selectedAddress' : ''
+            'compactorSection' : 'A', 
+            'compactorData' : [],
+            'compactorLoaded' : false,
+            'renderWeightInformation' : false
         }
-        this.handleRedirect = this.handleRedirect.bind(this)
-        this.handleInteractiveMap = this.handleInteractiveMap.bind(this)
-        this.handleAddress = this.handleAddress.bind(this)
+        this.renderWeightInformation = this.renderWeightInformation.bind(this)
+        this.switchCompactorSection = this.switchCompactorSection.bind(this)
+        this.getCompactorSectionData = this.getCompactorSectionData.bind(this)
     }
 
-    handleRedirect(path){
+    componentDidMount(){
+        var currentSection = this.state.compactorSection
+        var token = this.props.location.state.token
+        var config = {
+            headers: { Authorization: `Bearer ${token}` }
+        }
+        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/allCompactorInfo/${currentSection}`,config)
+        .then((response)=> {
+            this.setState({
+            compactorData : response.data.compactorInfo,
+            compactorLoaded: true
+            })
+        })
+      .catch(function (error) {
+        console.log(error);
+      })  
+    }
+
+    switchCompactorSection(){
         this.setState({
-            redirectTo : path
+            compactorSection : 'B',
         })
     }
 
-    handleInteractiveMap(color){
-        this.setState({
-            compactorFilledLevel : color
+    getCompactorSectionData(){
+        var currentSection = this.state.compactorSection
+        console.log(currentSection)
+        var token = this.props.location.state.token
+        var config = {
+            headers: { Authorization: `Bearer ${token}` }
+        }
+        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/allCompactorInfo/${currentSection}`,config)
+        .then((response)=> {
+            console.log(response.data.compactorInfo)
+            this.setState({
+            compactorData : response.data.compactorInfo,
+            compactorLoaded: true
+            })
         })
+      .catch(function (error) {
+        console.log(error);
+      })
     }
 
-    handleAddress(address){
+    renderWeightInformation(){
         this.setState(
             {
-                selectedAddress : address
+                renderWeightInformation : true
             }
         )
     }
 
     render(){    
-            if(this.state.redirectTo == 'Dashboard'){
-                return(
-                    <Redirect to={{
-                        pathname: '/dashboard',
-                        state: { 
-                            userType: this.props.location.state.userType,
-                            token: this.props.location.state.token
-                        }
-                    }}
-                />
-                )
+        if(this.state.compactorLoaded){
+            let compactors = this.state.compactorData
+
+            var collectionWeights = []
+            function reduceFunc(total, num) {
+                return total + num;
             }
-            
-            if(this.state.redirectTo == 'userDetails'){
-                return(
-                    <Redirect to={{
-                        pathname: '/editUser',
-                        state: { 
-                            userType: this.props.location.state.userType,
-                            token: this.props.location.state.token
-                        }
-                    }}
-                />
-                )
-            }else{
+
+            for(var i=0;i<compactors.length;i++){
+                if(!(isNaN(compactors[i].current_weight) && compactors[i].current_weight <= 0) ){
+                    collectionWeights.push(compactors[i].current_weight)
+                }
+            }
+            var totalCollectedWeight = collectionWeights.reduce(reduceFunc);
+
+            var compactorInfo = compactors.map(compactor => (
+                <tr>
+                     <th>{compactor.compactorID}</th>
+                     <th>{compactor.current_weight}</th>
+                     <th>{compactor.max_weight}</th>
+                     <th>{(Math.round((compactor.current_weight / compactor.max_weight)*100 )) + ' %'}</th>
+                     <th>{Math.round((compactor.current_weight / compactor.max_weight)*100 ) < 25 ? 'green' : 
+                     Math.round((compactor.current_weight / compactor.max_weight)*100 ) < 50 ? 'yellow' : 'red'
+                     }</th>
+                     
+                 </tr>
+           ))
+
+          }
+
                 return(
                     <div className='grid-container-compactor'>
                          <div className='grid-item grid-item-01-compactor'>
                              <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
                         </div>
-                        <div className='grid-item grid-item-02-compactor lol'>
-                            Alarm
-                            {/* <CompactorInfo handleAddress={this.handleAddress} token={this.props.location.state.token} userType={this.props.location.state.userType} /> */}
-                        </div>
-                            
-                        <div className='grid-item grid-item-03-compactor lol'>
-                        Weight
-                            {/* <CompactorInfo handleAddress={this.handleAddress} token={this.props.location.state.token} userType={this.props.location.state.userType} /> */}
-                        </div>
-                        <div className='grid-item grid-item-04-compactor lol'>
-                            <Mapping selectedAddress={this.state.selectedAddress} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
-                        </div>
-                    
-                        {/* <div className='grid-item grid-item-06-compactor markBGCompactor'>
-                            <div>&nbsp;</div>
-                            <div>&nbsp;</div>
-
-                            <div>
-                                <Container>
-                                <Row>
-                                    <Col><div className='legendTitle'>&nbsp;</div></Col>
-                                </Row>
-                                <div>&nbsp;</div>
+                        <div className="grid-item grid-item-sideDashboard whiteBG">
+                                <Container className="blueBG adjustPadding">
                                     <Row>
-                                        <Col className='lengendDes'>
-                                            <span style={{cursor:'pointer'}} onClick={()=>{
-                                                this.handleInteractiveMap('green')
-                                            }}><img
-                                                src={require('./greendot.png')}
-                                                width="30"
-                                                height="30"
-                                                className="d-inline-block align-top"
-                                                alt="React Bootstrap logo"
-                                            /></span>
-                                        </Col>
-                                        <Col className='lengendDes'>
-                                            <span style={{cursor:'pointer'}} onClick={()=>{
-                                                this.handleInteractiveMap('yellow')
-                                            }}><img
-                                                src={require('./yellowdot.png')}
-                                                width="30"
-                                                height="30"
-                                                className="d-inline-block align-top"
-                                                alt="React Bootstrap logo"
-                                            /></span></Col>
-                                        <Col className='lengendDes'>
-                                            <span style={{cursor:'pointer'}} onClick={()=>{
-                                                this.handleInteractiveMap('red')
-                                            }}><img
-                                                src={require('./reddot.png')}
-                                                width="30"
-                                                height="30"
-                                                className="d-inline-block align-top"
-                                                alt="React Bootstrap logo"
-                                            /></span>
-                                        </Col>
-                                    </Row>
-                                    <div>&nbsp;</div>
-                                    <Row>
-                                        <Col className='lengendDes'>Compactor less than 25%</Col>
-                                        <Col className='lengendDes'>Compactor less than 50%</Col>
-                                        <Col className='lengendDes'>Compactor more than 75%</Col>
-                                    </Row>
-                                    <div>&nbsp;</div>
-                                    <Row>
-                                        <Col className='legendTitle'></Col>
-                                        <Col onClick={()=>{
-                                            this.handleInteractiveMap('renderAlarm')
-                                        }}className='legendTitle'><FontAwesomeIcon icon={faExclamation} /></Col>
-                                        <Col className='legendTitle'></Col>
-                                    </Row>
-                                    <Row>
-                                        <Col className='lengendDes'></Col>
-                                        <Col className='lengendDes'>Alarm Raised</Col>
-                                        <Col className='lengendDes'></Col>
+                                        <Col></Col>
+                                        <Col>Dashboard</Col>
+                                        <Col></Col>
                                     </Row>
                                 </Container>
-                            </div>
-                        </div> */}
+                                <Container className="blueBorder adjustPaddingContent">
+                                    <Row>
+                                        <Col>Map</Col>
+                                    </Row>
+                                </Container>
+                                <Container className="blueBorder adjustPaddingContent">
+                                    <Row>
+                                        <Col>Equipment</Col>
+                                    </Row>
+                                </Container>
+                                <Container className="blueBorder adjustPaddingContent">
+                                    <Row>
+                                        <Col>Report</Col>
+                                    </Row>
+                                </Container>
+                                <Container className="blueBorder adjustPaddingContent">
+                                    <Row>
+                                        <Col>Admin</Col>
+                                    </Row>
+                                </Container>
+                        </div>
+                        <div className="grid-item grid-item-alarmDashboard whiteBG">
+                                <Container>
+                                    <Row>
+                                        <Col className='alarmTitle'>Alarm</Col>
+                                    </Row>
+                                </Container>
+                                <Container>
+                                    <Row>
+                                        <Col className='alarmRaisedNumber'>5</Col>
+                                    </Row>
+                                </Container>
+                                <button>Status</button>
+                                <button>Status</button>
+                                <button>Status</button>
+                        </div>
+                        <div className="grid-item grid-item-weightDashboard whiteBG">
+                                <Container>
+                                    <Row>
+                                        <Col className='alarmTitle'>Weight (tonnes)</Col>
+                                    </Row>
+                                </Container>
+                                <Container>
+                                    <Row>
+                                <Col className='alarmRaisedNumber'>{totalCollectedWeight}</Col>
+                                    </Row>
+                                </Container>
+                                <Container>
+                                    <Row>
+                                        <Col style={{textAlign : 'center', cursor:'pointer'}}><FontAwesomeIcon icon={faArrowLeft} /></Col>
+                                        <Col style={{textAlign : 'center'}}>Section {this.state.compactorSection}</Col>
+                                        <Col onClick={()=>{this.switchCompactorSection(); this.getCompactorSectionData()}} style={{textAlign : 'center', cursor:'pointer'}}><FontAwesomeIcon icon={faArrowRight} /></Col>
+                                    </Row>
+                                </Container>
+                                <FontAwesomeIcon style={{cursor:'pointer', fontSize: '1.4em'}}icon={faBalanceScale} />
+                        </div>
+                        <div className="grid-item grid-item-mapDashboard">
+                            <Mapping selectedAddress={this.state.selectedAddress} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
+                        </div>
                     </div>
                 )
-            }
     }
 }
 
