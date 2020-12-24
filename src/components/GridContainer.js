@@ -12,25 +12,33 @@ class GridContainer extends Component{
         super(props)
         this.state = 
         {
+            'alarmSection' : 'A',
             'compactorSection' : 'A', 
             'compactorData' : [],
             'count' : 0,
+            'countAlarm' : 0,
+            'noOfAlarms' : 0,
             'compactorLoaded' : false,
+            'alarmsLoaded' : false,
             'renderWeightInformation' : false,
-            'pressLeftArrowWeight' : false
+            'renderAlarmInformation' : false,
+            'pressLeftArrowWeight' : false,
+            'pressRightAlarmArrowWeight' : false,
+            'pressLeftAlarmArrowWeight' : false,
         }
         this.renderWeightInformation = this.renderWeightInformation.bind(this)
-        this.switchCompactorSection = this.switchCompactorSection.bind(this)
+        this.toggleAlarmLeftArrow = this.toggleAlarmLeftArrow.bind(this)
+        this.toggleAlarmRightArrow = this.toggleAlarmRightArrow.bind(this)
         this.toggleRightArrow = this.toggleRightArrow.bind(this)
         this.toggleLeftArrow = this.toggleLeftArrow.bind(this)
     }
 
     componentDidMount(){
-        var currentSection = this.state.compactorSection
         var token = this.props.location.state.token
         var config = {
             headers: { Authorization: `Bearer ${token}` }
         }
+
         axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/allCompactorInfo`,config)
         .then((response)=> {
             this.setState({
@@ -38,19 +46,42 @@ class GridContainer extends Component{
             compactorLoaded: true
             })
         })
-      .catch(function (error) {
-        console.log(error);
-      })  
+        .catch(function (error) {
+            console.log(error);
+        })
+
+        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getTodaysAlarm`,config)
+        .then((response)=> {
+            this.setState({
+                alarmData : response.data.alarms,
+                alarmsLoaded: true
+            })
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
     }
 
     reduceFunc(total, num){
         return total + num
     }
 
-    switchCompactorSection(){
-        this.setState({
-            compactorSection : 'B',
-        })
+    toggleAlarmRightArrow(){
+        var sections = ['A','B']
+        var countAlarm = this.state.countAlarm
+        countAlarm = countAlarm +1
+        this.setState({countAlarm : countAlarm})
+        var currentSection = sections[countAlarm]
+        this.setState({alarmSection : currentSection, pressRightAlarmArrowWeight : true, pressLeftAlarmArrowWeight : false})
+    }
+
+    toggleAlarmLeftArrow(){
+        var sections = ['A','B']
+        var countAlarm = this.state.countAlarm
+        countAlarm = countAlarm -1
+        this.setState({countAlarm : countAlarm})
+        var currentSection = sections[countAlarm]
+        this.setState({alarmSection : currentSection, pressRightAlarmArrowWeight : false, pressLeftAlarmArrowWeight : true})
     }
 
     toggleRightArrow(){
@@ -79,7 +110,65 @@ class GridContainer extends Component{
         )
     }
 
-    render(){    
+
+
+    render(){   
+        var dashboard = 
+        <div className="grid-item grid-item-sideDashboard whiteBG">
+        <Container className="blueBG adjustPadding">
+            <Row>
+                <Col></Col>
+                <Col>Dashboard</Col>
+                <Col></Col>
+            </Row>
+        </Container>
+        <Container className="blueBorder adjustPaddingContent">
+            <Row>
+                <Col>Map</Col>
+            </Row>
+        </Container>
+        <Container className="blueBorder adjustPaddingContent">
+            <Row>
+                <Col>Equipment</Col>
+            </Row>
+        </Container>
+        <Container className="blueBorder adjustPaddingContent">
+            <Row>
+                <Col>Report</Col>
+            </Row>
+        </Container>
+        <Container className="blueBorder adjustPaddingContent">
+            <Row>
+                <Col>Admin</Col>
+            </Row>
+        </Container>
+</div>
+        if(this.state.alarmsLoaded){
+            var alarms = []
+            var alarmData = this.state.alarmData
+            if(this.state.pressLeftAlarmArrowWeight || this.state.pressRightAlarmArrowWeight){
+                var alarmSection = this.state.alarmSection
+            }else{
+                var alarmSection = 'A'
+            }
+
+            for(i=0;i<alarmData.length;i++){
+                if(alarmData[i]['sectionArea'] == alarmSection){
+                    alarms.push(alarmData[i])
+                }
+            }
+            var alarmTable = alarms.map(al => (
+                <tr>
+                     <th>{al.compactorID}</th>
+                     <th>{al.humanReadableTS}</th>
+                     <th>{al.type}</th>
+                     <th>{al.alarmDescription}</th>
+                     <th>{al.alarmStatus}</th>
+                 </tr>
+            ))
+            var noOfAlarms = alarms.length
+
+        }
         if(this.state.compactorLoaded){
             var compactors = this.state.compactorData
             if(this.state.pressLeftArrowWeight || this.state.pressRightArrowWeight){
@@ -147,164 +236,118 @@ class GridContainer extends Component{
           }
 
           if(this.state.renderWeightInformation){
-            return(
-                <div className='grid-container-compactor'>
-                <div className='grid-item grid-item-01-compactor'>
-                    <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
-               </div>
-               <div className="grid-item grid-item-sideDashboard whiteBG">
-                       <Container className="blueBG adjustPadding">
-                           <Row>
-                               <Col></Col>
-                               <Col>Dashboard</Col>
-                               <Col></Col>
-                           </Row>
-                       </Container>
-                       <Container className="blueBorder adjustPaddingContent">
-                           <Row>
-                               <Col>Map</Col>
-                           </Row>
-                       </Container>
-                       <Container className="blueBorder adjustPaddingContent">
-                           <Row>
-                               <Col>Equipment</Col>
-                           </Row>
-                       </Container>
-                       <Container className="blueBorder adjustPaddingContent">
-                           <Row>
-                               <Col>Report</Col>
-                           </Row>
-                       </Container>
-                       <Container className="blueBorder adjustPaddingContent">
-                           <Row>
-                               <Col>Admin</Col>
-                           </Row>
-                       </Container>
-               </div>
-               <div className="grid-item grid-item-alarmDashboard whiteBG">
-                       <Container>
-                           <Row>
-                               <Col className='alarmTitle'>Alarm</Col>
-                           </Row>
-                       </Container>
-                       <Container>
-                           <Row>
-                               <Col className='alarmRaisedNumber'>5</Col>
-                           </Row>
-                       </Container>
-                       <button>Status</button>
-                       <button>Status</button>
-                       <button>Status</button>
-               </div>
-               <div className="grid-item grid-item-weightDashboard whiteBG">
-                    <div>
-                        <div>&nbsp;</div>
-                        <Container>
-                        <Row>
-                            <Col style={{textAlign: 'center', fontSize : '1.4em'}}>Collection Weight</Col>
-                        </Row>
-                        </Container>
-                        <div>&nbsp;</div>
-                    </div>
-                    <Table striped bordered hover responsive> 
-                        <thead>
-                        <tr>
-                            <th>Compactor ID</th>
-                            <th>Collection Weight</th>
-                            <th>Max Load</th>
-                            <th>Weight Percentage</th>
-                            <th>Level</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {compactorInfo}
-                        </tbody>
-                    </Table>
-                    <button onClick={()=>{this.setState({renderWeightInformation: false})}}>Back</button>
-               </div>
-               <div className="grid-item grid-item-mapDashboard">
-                   <Mapping selectedAddress={this.state.selectedAddress} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
-               </div>
-           </div>
-            )
-            }else{
-                return(
-                    <div className='grid-container-compactor'>
-                         <div className='grid-item grid-item-01-compactor'>
-                             <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
-                        </div>
-                        <div className="grid-item grid-item-sideDashboard whiteBG">
-                                <Container className="blueBG adjustPadding">
-                                    <Row>
-                                        <Col></Col>
-                                        <Col>Dashboard</Col>
-                                        <Col></Col>
-                                    </Row>
-                                </Container>
-                                <Container className="blueBorder adjustPaddingContent">
-                                    <Row>
-                                        <Col>Map</Col>
-                                    </Row>
-                                </Container>
-                                <Container className="blueBorder adjustPaddingContent">
-                                    <Row>
-                                        <Col>Equipment</Col>
-                                    </Row>
-                                </Container>
-                                <Container className="blueBorder adjustPaddingContent">
-                                    <Row>
-                                        <Col>Report</Col>
-                                    </Row>
-                                </Container>
-                                <Container className="blueBorder adjustPaddingContent">
-                                    <Row>
-                                        <Col>Admin</Col>
-                                    </Row>
-                                </Container>
-                        </div>
-                        <div className="grid-item grid-item-alarmDashboard whiteBG">
-                                <Container>
-                                    <Row>
-                                        <Col className='alarmTitle'>Alarm</Col>
-                                    </Row>
-                                </Container>
-                                <Container>
-                                    <Row>
-                                        <Col className='alarmRaisedNumber'>5</Col>
-                                    </Row>
-                                </Container>
-                                <button>Status</button>
-                                <button>Status</button>
-                                <button>Status</button>
-                        </div>
-                        <div className="grid-item grid-item-weightDashboard whiteBG">
-                                <Container>
-                                    <Row>
-                                        <Col className='alarmTitle'>Weight (tonnes)</Col>
-                                    </Row>
-                                </Container>
-                                <Container>
-                                    <Row>
-                                         {/* <Col className='alarmRaisedNumber'>1000</Col> */}
-                                <Col className='alarmRaisedNumber'>{totalCollectedWeight}</Col>
-                                    </Row>
-                                </Container>
-                                <Container>
-                                    <Row>
-                                        <Col onClick={()=>{this.toggleRightArrow()}} style={{textAlign : 'center', cursor:'pointer'}}><FontAwesomeIcon icon={faArrowLeft} /></Col>
-                                        <Col style={{textAlign : 'center'}}>Section {this.state.compactorSection}</Col>
-                                        <Col onClick={()=>{this.toggleLeftArrow()}} style={{textAlign : 'center', cursor:'pointer'}}><FontAwesomeIcon icon={faArrowRight} /></Col>
-                                    </Row>
-                                </Container>
-                                <div>&nbsp;</div>
-                                <button onClick={this.renderWeightInformation}>Collection Weight</button>
-                        </div>
-                        <div className="grid-item grid-item-mapDashboard">
-                            <Mapping selectedAddress={this.state.selectedAddress} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
-                        </div>
-                    </div>
-                )
-            }
+            var weight = 
+            <div className="grid-item grid-item-weightDashboard whiteBG">
+                <div>
+                    <div>&nbsp;</div>
+                    <Container>
+                    <Row>
+                        <Col style={{textAlign: 'center', fontSize : '1.4em'}}>Collection Weight</Col>
+                    </Row>
+                    </Container>
+                    <div>&nbsp;</div>
+                </div>
+                <Table striped bordered hover responsive> 
+                    <thead>
+                    <tr>
+                        <th>Equipment ID</th>
+                        <th>Collection Weight</th>
+                        <th>Max Load</th>
+                        <th>Weight Percentage</th>
+                        <th>Level</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {compactorInfo}
+                    </tbody>
+                </Table>
+                <button onClick={()=>{this.setState({renderWeightInformation: false})}}>Back</button>
+            </div>
+          }else{
+            var weight = 
+            <div className="grid-item grid-item-weightDashboard whiteBG">
+                <Container>
+                    <Row>
+                        <Col className='alarmTitle'>Weight (tonnes)</Col>
+                    </Row>
+                </Container>
+                <Container>
+                    <Row>
+                        {/* <Col className='alarmRaisedNumber'>1000</Col> */}
+                <Col className='alarmRaisedNumber'>{totalCollectedWeight}</Col>
+                    </Row>
+                </Container>
+                <Container>
+                    <Row>
+                        <Col onClick={()=>{this.toggleRightArrow()}} style={{textAlign : 'center', cursor:'pointer'}}><FontAwesomeIcon icon={faArrowLeft} /></Col>
+                        <Col style={{textAlign : 'center'}}>Section {this.state.compactorSection}</Col>
+                        <Col onClick={()=>{this.toggleLeftArrow()}} style={{textAlign : 'center', cursor:'pointer'}}><FontAwesomeIcon icon={faArrowRight} /></Col>
+                    </Row>
+                </Container>
+                <div>&nbsp;</div>
+                <button onClick={this.renderWeightInformation}>Collection Weight</button>
+            </div>
+        }
+        if(this.state.renderAlarmInformation){
+            var alarmsSection = 
+            <div className="grid-item grid-item-alarmDashboard whiteBG">
+                 <Table striped bordered hover>
+                    <thead>
+                    <tr>
+                        <th>Equipment ID</th>
+                        <th>Date</th>
+                        <th>Failure Mode</th>
+                        <th>Fault Description</th>
+                        <th>Alarm Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                      {alarmTable}
+                    </tbody>
+                </Table>
+                <div>&nbsp;</div>
+                <button onClick={()=>{this.setState({renderAlarmInformation : false})}}>Back</button>
+            </div>
+    }else{
+        var alarmsSection = 
+            <div className="grid-item grid-item-alarmDashboard whiteBG">
+                <Container>
+                    <Row>
+                        <Col className='alarmTitle'>Alarm</Col>
+                    </Row>
+                </Container>
+                <Container>
+                    <Row>
+                        <Col className='alarmRaisedNumber'>{noOfAlarms}</Col>
+                    </Row>
+                </Container>
+                <Container>
+                    <Row>
+                        <Col onClick={()=>{this.toggleAlarmLeftArrow()}} style={{textAlign : 'center', cursor:'pointer'}}><FontAwesomeIcon icon={faArrowLeft} /></Col>
+                        <Col style={{textAlign : 'center'}}>Section {this.state.alarmSection}</Col>
+                        <Col onClick={()=>{this.toggleAlarmRightArrow()}} style={{textAlign : 'center', cursor:'pointer'}}><FontAwesomeIcon icon={faArrowRight} /></Col>
+                    </Row>
+                </Container>
+                <div>&nbsp;</div>
+                <button onClick={()=>{
+                    this.setState({renderAlarmInformation : true})
+                }}>Equipment Fault</button>
+            </div>
+    }
+
+        return(
+            <div className='grid-container-compactor'>
+                 <div className='grid-item grid-item-01-compactor'>
+                     <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+                </div>
+                {dashboard} 
+                {weight}
+                {alarmsSection}
+                <div className="grid-item grid-item-mapDashboard">
+                    <Mapping selectedAddress={this.state.selectedAddress} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
+                </div>
+            </div>
+        )
     }
 }
 
