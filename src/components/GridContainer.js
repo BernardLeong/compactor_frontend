@@ -268,7 +268,7 @@ class GridContainer extends Component{
             <div className="grid-item grid-item-weightDashboard whiteBG">
                 <Container>
                     <Row>
-                        <Col className='alarmTitle'>Weight (tonnes)</Col>
+                        <Col className='alarmTitle'>Weight</Col>
                     </Row>
                 </Container>
                 <Container>
