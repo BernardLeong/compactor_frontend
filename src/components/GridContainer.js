@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import './../css/compactorInfo.css'
 import Mapping from './Mapping';
 import NavBarContent from './NavBarContent';
-import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
 import { Card, Table, Container, Row, Col } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBalanceScale, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
@@ -25,12 +24,14 @@ class GridContainer extends Component{
             'pressLeftArrowWeight' : false,
             'pressRightAlarmArrowWeight' : false,
             'pressLeftAlarmArrowWeight' : false,
+            'handleRedirectToEquipment' : false
         }
         this.renderWeightInformation = this.renderWeightInformation.bind(this)
         this.toggleAlarmLeftArrow = this.toggleAlarmLeftArrow.bind(this)
         this.toggleAlarmRightArrow = this.toggleAlarmRightArrow.bind(this)
         this.toggleRightArrow = this.toggleRightArrow.bind(this)
         this.toggleLeftArrow = this.toggleLeftArrow.bind(this)
+        this.handleRedirectToEquipment = this.handleRedirectToEquipment.bind(this)
     }
 
     componentDidMount(){
@@ -64,6 +65,10 @@ class GridContainer extends Component{
 
     reduceFunc(total, num){
         return total + num
+    }
+
+    handleRedirectToEquipment(){
+        this.setState({handleRedirectToEquipment : true})
     }
 
     toggleAlarmRightArrow(){
@@ -110,8 +115,6 @@ class GridContainer extends Component{
         )
     }
 
-
-
     render(){   
         var dashboard = 
         <div className="grid-item grid-item-sideDashboard whiteBG">
@@ -129,7 +132,7 @@ class GridContainer extends Component{
         </Container>
         <Container className="blueBorder adjustPaddingContent">
             <Row>
-                <Col>Equipment</Col>
+                <Col style={{cursor:'pointer'}} onClick={this.handleRedirectToEquipment}>Equipment</Col>
             </Row>
         </Container>
         <Container className="blueBorder adjustPaddingContent">
@@ -335,19 +338,38 @@ class GridContainer extends Component{
             </div>
     }
 
-        return(
-            <div className='grid-container-compactor'>
-                 <div className='grid-item grid-item-01-compactor'>
-                     <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+        if(this.state.handleRedirectToEquipment){
+            return(
+                <div className='grid-container-equipment'>
+                     <div className='grid-item grid-item-01-compactor'>
+                         <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+                    </div>
+                    <div className="grid-item-equipment-sideDashboard lol">
+                        Dashboard
+                    </div>
+                    <div className="grid-item-equipment-map lol">
+                        Map
+                    </div>
+                    <div className="grid-item-equipment-legend lol">
+                        Legend
+                    </div>
                 </div>
-                {dashboard} 
-                {weight}
-                {alarmsSection}
-                <div className="grid-item grid-item-mapDashboard">
-                    <Mapping selectedAddress={this.state.selectedAddress} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
+            )
+        }else{
+            return(
+                <div className='grid-container-compactor'>
+                     <div className='grid-item grid-item-01-compactor'>
+                         <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+                    </div>
+                    {dashboard} 
+                    {weight}
+                    {alarmsSection}
+                    <div className="grid-item grid-item-mapDashboard">
+                        <Mapping selectedAddress={this.state.selectedAddress} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
+                    </div>
                 </div>
-            </div>
-        )
+            )
+        }
     }
 }
 
