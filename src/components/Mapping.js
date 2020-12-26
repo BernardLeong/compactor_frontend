@@ -85,11 +85,19 @@ class Mapping extends Component {
     })
     var coordinates = coordinateArr.join('')
     var coordinates = `https://www.onemap.sg/amm/amm.html?mapStyle=Default&zoomLevel=20${coordinates}`
-    return(
-      <div>
-        <iframe src={coordinates} height="1100vh" width="100%" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
-      </div>
-    )
+    if(this.props.equipmentMap){
+      return(
+        <div>
+          <iframe src={coordinates} height="800vh" width="100%" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+        </div>
+      )
+    }else{
+      return(
+        <div>
+          <iframe src={coordinates} height="1100vh" width="100%" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+        </div>
+      )
+    }
 }
 }
 

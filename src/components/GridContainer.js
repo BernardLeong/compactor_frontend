@@ -5,6 +5,7 @@ import NavBarContent from './NavBarContent';
 import { Card, Table, Container, Row, Col } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBalanceScale, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+const sortObjectsArray = require('sort-objects-array');
 const axios = require('axios');
 class GridContainer extends Component{
     constructor(props){
@@ -17,6 +18,7 @@ class GridContainer extends Component{
             'count' : 0,
             'countAlarm' : 0,
             'noOfAlarms' : 0,
+            'saveCurrentCompactorID' : '',
             'compactorLoaded' : false,
             'alarmsLoaded' : false,
             'renderWeightInformation' : false,
@@ -24,14 +26,14 @@ class GridContainer extends Component{
             'pressLeftArrowWeight' : false,
             'pressRightAlarmArrowWeight' : false,
             'pressLeftAlarmArrowWeight' : false,
-            'handleRedirectToEquipment' : false
+            'handleRedirectToMap' : false
         }
         this.renderWeightInformation = this.renderWeightInformation.bind(this)
         this.toggleAlarmLeftArrow = this.toggleAlarmLeftArrow.bind(this)
         this.toggleAlarmRightArrow = this.toggleAlarmRightArrow.bind(this)
         this.toggleRightArrow = this.toggleRightArrow.bind(this)
         this.toggleLeftArrow = this.toggleLeftArrow.bind(this)
-        this.handleRedirectToEquipment = this.handleRedirectToEquipment.bind(this)
+        this.handleRedirectToMap = this.handleRedirectToMap.bind(this)
     }
 
     componentDidMount(){
@@ -67,8 +69,8 @@ class GridContainer extends Component{
         return total + num
     }
 
-    handleRedirectToEquipment(){
-        this.setState({handleRedirectToEquipment : true})
+    handleRedirectToMap(){
+        this.setState({handleRedirectToMap : true})
     }
 
     toggleAlarmRightArrow(){
@@ -127,12 +129,12 @@ class GridContainer extends Component{
         </Container>
         <Container className="blueBorder adjustPaddingContent">
             <Row>
-                <Col>Map</Col>
+                <Col style={{cursor:'pointer'}} onClick={this.handleRedirectToMap}>Map</Col>
             </Row>
         </Container>
         <Container className="blueBorder adjustPaddingContent">
             <Row>
-                <Col style={{cursor:'pointer'}} onClick={this.handleRedirectToEquipment}>Equipment</Col>
+                <Col  style={{cursor:'pointer'}}>Equipment</Col>
             </Row>
         </Container>
         <Container className="blueBorder adjustPaddingContent">
@@ -174,6 +176,7 @@ class GridContainer extends Component{
         }
         if(this.state.compactorLoaded){
             var compactors = this.state.compactorData
+            compactors = sortObjectsArray(compactors, 'compactorID')
             if(this.state.pressLeftArrowWeight || this.state.pressRightArrowWeight){
                 var currentSection = this.state.compactorSection
             }else{
@@ -187,7 +190,56 @@ class GridContainer extends Component{
                     compactorData.push(compactors[i])
                 }
             }
+            var allCompactors = compactors
             compactors = compactorData
+            if(this.state.handleRedirectToMap){
+                var renderlistOfCompactorID = allCompactors.map(compactor => (
+                    <Container style={{cursor:'pointer'}} className="blueBorder adjustPaddingContent">
+                        <Row>
+                            <Col onClick={()=>{
+                                this.setState({
+                                    selectedAddress : compactor.address
+                                })
+                            }}>{compactor.compactorID}</Col>
+                        </Row>
+                    </Container>
+               ))
+               var mapDashboard = 
+                <div className="grid-item-equipment-sideDashboard whiteBG">
+                    <Container className="blueBG adjustPadding">
+                    <Row>
+                        <Col style={{textAlign : 'center'}}>Map</Col>
+                    </Row>
+                    </Container>
+                    {renderlistOfCompactorID}
+                    <Container className="blueBorder adjustPaddingContent">
+                        <Row>
+                            <Col onClick={()=>{
+                                this.setState(
+                                    {
+                                        handleRedirectToMap : false
+                                    }
+                                )
+                            }} style={{cursor:'pointer'}}>Dashboard</Col>
+                        </Row>
+                    </Container>
+                    <Container className="blueBorder adjustPaddingContent">
+                        <Row>
+                            <Col>Equipment</Col>
+                        </Row>
+                    </Container>
+                    <Container className="blueBorder adjustPaddingContent">
+                        <Row>
+                            <Col>Admin</Col>
+                        </Row>
+                    </Container>
+                    <Container className="blueBorder adjustPaddingContent">
+                        <Row>
+                            <Col>Report</Col>
+                        </Row>
+                    </Container>
+                </div>
+            }
 
             let reduceFunc = this.reduceFunc
 
@@ -338,20 +390,60 @@ class GridContainer extends Component{
             </div>
     }
 
-        if(this.state.handleRedirectToEquipment){
+        if(this.state.handleRedirectToMap){
             return(
                 <div className='grid-container-equipment'>
                      <div className='grid-item grid-item-01-compactor'>
                          <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
                     </div>
-                    <div className="grid-item-equipment-sideDashboard lol">
-                        Dashboard
-                    </div>
-                    <div className="grid-item-equipment-map lol">
-                        Map
+                    {mapDashboard}
+                    <div className="grid-item grid-item-equipment-map">
+                        <Mapping equipmentMap={this.state.handleRedirectToMap} selectedAddress={this.state.selectedAddress} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
                     </div>
                     <div className="grid-item-equipment-legend lol">
-                        Legend
+                    <button>All Equipment</button>
+                    <button>Section A</button>
+                    <button>Section B</button>
+                    <div>&nbsp;</div>
+                    <Container>
+                        <Row>
+                            <Col style={{textAlign: 'center' , fontSize: '1.4em'}}>Legend</Col>
+                        </Row>
+                    </Container>
+                    <div>&nbsp;</div>
+                    <Container>
+                        <Row>
+                            <Col style={{textAlign: 'center'}}><img
+                            src={require('./greendot.png')}
+                            width="30"
+                            height="30"
+                            className="d-inline-block align-top"
+                            alt="React Bootstrap logo"
+                            /></Col>
+                            <Col style={{textAlign: 'center'}}><img
+                            src={require('./yellowdot.png')}
+                            width="30"
+                            height="30"
+                            className="d-inline-block align-top"
+                            alt="React Bootstrap logo"
+                            /></Col>
+                            <Col style={{textAlign: 'center'}}><img
+                            src={require('./reddot.png')}
+                            width="30"
+                            height="30"
+                            className="d-inline-block align-top"
+                            alt="React Bootstrap logo"
+                            /></Col>
+                        </Row>
+                    </Container>
+                    <div>&nbsp;</div>
+                    <Container>
+                        <Row>
+                            <Col style={{textAlign: 'center'}}>Compactor less than 25%</Col>
+                            <Col style={{textAlign: 'center'}}>Compactor less than 50%</Col>
+                            <Col style={{textAlign: 'center'}}>Compactor more than 75%</Col>
+                        </Row>
+                    </Container>
                     </div>
                 </div>
             )
