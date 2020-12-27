@@ -1,10 +1,12 @@
 import React, {Component} from 'react'
 import './../css/compactorInfo.css'
+import 'react-calendar/dist/Calendar.css';
 import Mapping from './Mapping';
 import NavBarContent from './NavBarContent';
 import { Card, Table, Container, Row, Col } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBalanceScale, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import Calendar from 'react-calendar';
 const sortObjectsArray = require('sort-objects-array');
 const axios = require('axios');
 class GridContainer extends Component{
@@ -15,18 +17,22 @@ class GridContainer extends Component{
             'alarmSection' : 'A',
             'compactorSection' : 'A', 
             'compactorData' : [],
+            'allAlarmData' : [],
             'count' : 0,
             'countAlarm' : 0,
             'noOfAlarms' : 0,
             'saveCurrentCompactorID' : '',
+            'selectStartDate' : '',
+            'selectEndDate' : '',
             'compactorLoaded' : false,
             'alarmsLoaded' : false,
             'renderWeightInformation' : false,
             'renderAlarmInformation' : false,
+            'renderReportPage' : false,
             'pressLeftArrowWeight' : false,
             'pressRightAlarmArrowWeight' : false,
             'pressLeftAlarmArrowWeight' : false,
-            'handleRedirectToMap' : false
+            'handleRedirectToMap' : false,
         }
         this.renderWeightInformation = this.renderWeightInformation.bind(this)
         this.toggleAlarmLeftArrow = this.toggleAlarmLeftArrow.bind(this)
@@ -34,6 +40,7 @@ class GridContainer extends Component{
         this.toggleRightArrow = this.toggleRightArrow.bind(this)
         this.toggleLeftArrow = this.toggleLeftArrow.bind(this)
         this.handleRedirectToMap = this.handleRedirectToMap.bind(this)
+        this.renderReportPage = this.renderReportPage.bind(this)
     }
 
     componentDidMount(){
@@ -63,6 +70,16 @@ class GridContainer extends Component{
         .catch(function (error) {
             console.log(error);
         })
+
+        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getAllAlarm`,config)
+        .then((response)=> {
+            this.setState({
+                allAlarmData : response.data.alarmInfo,
+            })
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
     }
 
     reduceFunc(total, num){
@@ -72,6 +89,8 @@ class GridContainer extends Component{
     handleRedirectToMap(){
         this.setState({handleRedirectToMap : true})
     }
+
+    r
 
     toggleAlarmRightArrow(){
         var sections = ['A','B']
@@ -117,6 +136,14 @@ class GridContainer extends Component{
         )
     }
 
+    renderReportPage(){
+        this.setState(
+            {
+                renderReportPage : true
+            }
+        )
+    }
+
     render(){   
         var dashboard = 
         <div className="grid-item grid-item-sideDashboard whiteBG">
@@ -134,12 +161,12 @@ class GridContainer extends Component{
         </Container>
         <Container className="blueBorder adjustPaddingContent">
             <Row>
-                <Col  style={{cursor:'pointer'}}>Equipment</Col>
+                <Col style={{cursor:'pointer'}}>Equipment</Col>
             </Row>
         </Container>
         <Container className="blueBorder adjustPaddingContent">
             <Row>
-                <Col>Report</Col>
+                <Col style={{cursor:'pointer'}} onClick={this.renderReportPage}>Report</Col>
             </Row>
         </Container>
         <Container className="blueBorder adjustPaddingContent">
@@ -149,6 +176,149 @@ class GridContainer extends Component{
         </Container>
 </div>
         if(this.state.alarmsLoaded){
+            if(this.state.renderReportPage){
+                var allAlarmData = this.state.allAlarmData
+                //sort here
+                allAlarmData = sortObjectsArray(allAlarmData, 'compactorID')
+                var starttime = this.state.selectStartDate
+                var endtime = this.state.selectEndDate
+
+                if(starttime !== '' && endtime !== ''){
+                    var filterAlarmData = []
+                    for(var i=0;i<allAlarmData.length;i++){
+                        if(starttime !== endtime){
+                            if(starttime < allAlarmData[i].timeStamp && endtime > allAlarmData[i].timeStamp){
+                                filterAlarmData.push(allAlarmData[i])
+                            }
+                        }
+                        else{
+                            if(starttime < allAlarmData[i].timeStamp){
+                                filterAlarmData.push(allAlarmData[i])
+                            }
+                        }
+                    }
+
+                    allAlarmData = filterAlarmData
+                    filterAlarmData = []
+                }
+
+                allAlarmData = allAlarmData.map(alarm => (
+                    <tr>
+                         <th>{alarm.compactorID}</th>
+                         <th>{alarm.alarmStatus}</th>
+                         <th>{alarm.address}</th>
+                         <th>{alarm.humanReadableTS}</th>
+                         <th>{alarm.type}</th>
+                     </tr>
+               ))
+                return(
+                    <div className="grid-container-report">
+                          <div className='grid-item grid-item-01-compactor'>
+                           <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+                          </div>
+                        <div className="grid-item grid-item-report-sideDashboard whiteBG">
+                      <Container className="blueBG adjustPadding">
+                          <Row>
+                              <Col style={{textAlign : 'center'}}>Report</Col>
+                          </Row>
+                          </Container>
+                          <Container className="blueBorder adjustPaddingContent">
+                          <Row>
+                              <Col style={{textAlign : 'center'}} onClick={()=>{
+                                  this.setState({renderReportPage : false})
+                              }}>Dashboard</Col>
+                          </Row>
+                          </Container>
+                      </div>
+                      <div className="grid-item grid-item-report-calender whiteBG">
+  
+                          <div>&nbsp;</div>
+                          <Container>
+                              <Row>
+                                  <Col> 
+                                      Start Date : 
+                                  </Col>
+                                  <Col> 
+                                  </Col>
+                                  <Col>
+                                      End Date :
+                                  </Col>
+                              </Row>
+                          </Container>
+                          <Container>
+                              <Row>
+                                  <Col >
+                                      <Calendar style={{ textAlign: 'center' }}
+                                          onChange={(value, event)=>{
+                                            var events = new Date(value).getTime();
+                                            console.log(value)
+                                            this.setState({
+                                                selectStartDate: events
+                                            })
+                                          }}
+                                      />
+                                  </Col>
+                                  <Col></Col>
+                                  <Col>
+                                      <Calendar
+                                          onChange={(value, event)=>{
+                                              var events = new Date(value).getTime();
+                                              this.setState({
+                                                  selectEndDate: events
+                                              })
+                                          }}
+                                      />
+                                  </Col>
+                              </Row>
+                          </Container>
+  
+                         
+                      </div>
+                      <div className="grid-item grid-item-report-table whiteBG">
+                            <Container>
+                                <Row>
+                                    <Col style={{textAlign : 'center', fontSize: '1.6em'}}> 
+                                        Alarm Report 
+                                    </Col>
+                                </Row>
+                            </Container>
+                                    <div>&nbsp;</div>
+                            <Container>
+                                <Row> 
+                                    <Col> 
+                                    <Table striped bordered hover responsive> 
+                                        <thead>
+                                        <tr>
+                                            <th>Equipment ID</th>
+                                            <th>Alarm Status</th>
+                                            <th>Alarm Address</th>
+                                            <th>Alarm TimeStamp</th>
+                                            <th>Fault Type</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {allAlarmData}
+                                        </tbody>
+                                    </Table>
+                                    </Col>
+                                </Row> 
+                            </Container>
+                            <div>&nbsp;</div>
+                            <Container>
+                                <Row> 
+                                    <Col>
+                                        <button style={{ textAlign: 'left', backgroundColor : '#1f4e78', borderRadius: '5px', color: 'white', padding : '3px'}}>Generate</button>
+                                    </Col> 
+                                    <Col></Col> 
+                                    <Col></Col> 
+                                </Row> 
+                            </Container>
+                      </div>
+                      
+                    </div>
+                )
+            }
+
             var alarms = []
             var alarmData = this.state.alarmData
             if(this.state.pressLeftAlarmArrowWeight || this.state.pressRightAlarmArrowWeight){
@@ -290,6 +460,7 @@ class GridContainer extends Component{
 
           }
 
+          
           if(this.state.renderWeightInformation){
             var weight = 
             <div className="grid-item grid-item-weightDashboard whiteBG">

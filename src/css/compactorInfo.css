@@ -21,10 +21,34 @@ body{
     grid-template-columns: 20em 1fr 1fr auto;
 }
 
+.grid-container-report {
+    display: grid;
+    grid-auto-rows: auto;
+    grid-gap: 1px;
+    grid-template-rows: 4.8em 23em 50em;
+    grid-template-columns: 20em 1fr 1fr auto;
+}
+
+.grid-item-report-sideDashboard{
+    grid-column : 1/2;
+    grid-row : 2/-1;
+}
+
+.grid-item-report-calender{
+    grid-column : 2/4;
+    grid-row : 2/3;
+}
+
+.grid-item-report-table{
+    grid-column : 2/4;
+    grid-row : 3/4;
+}
+
 .grid-item-equipment-sideDashboard{
     grid-column : 1/2;
     grid-row : 2/-1;
 }
+
 
 .grid-item-equipment-map{
     grid-column : 2/-1;
