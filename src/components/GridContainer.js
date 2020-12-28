@@ -16,6 +16,7 @@ class GridContainer extends Component{
         {
             'alarmSection' : 'A',
             'compactorSection' : 'A', 
+            'filterSection' : '',
             'compactorData' : [],
             'allAlarmData' : [],
             'count' : 0,
@@ -381,7 +382,6 @@ class GridContainer extends Component{
                         <Col style={{textAlign : 'center'}}>Map</Col>
                     </Row>
                     </Container>
-                    {renderlistOfCompactorID}
                     <Container className="blueBorder adjustPaddingContent">
                         <Row>
                             <Col onClick={()=>{
@@ -393,21 +393,8 @@ class GridContainer extends Component{
                             }} style={{cursor:'pointer'}}>Dashboard</Col>
                         </Row>
                     </Container>
-                    <Container className="blueBorder adjustPaddingContent">
-                        <Row>
-                            <Col>Equipment</Col>
-                        </Row>
-                    </Container>
-                    <Container className="blueBorder adjustPaddingContent">
-                        <Row>
-                            <Col>Admin</Col>
-                        </Row>
-                    </Container>
-                    <Container className="blueBorder adjustPaddingContent">
-                        <Row>
-                            <Col>Report</Col>
-                        </Row>
-                    </Container>
+                    {renderlistOfCompactorID}
+                    
                 </div>
             }
 
@@ -569,12 +556,20 @@ class GridContainer extends Component{
                     </div>
                     {mapDashboard}
                     <div className="grid-item grid-item-equipment-map">
-                        <Mapping equipmentMap={this.state.handleRedirectToMap} selectedAddress={this.state.selectedAddress} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
+                        <Mapping filterSection={this.state.filterSection} equipmentMap={this.state.handleRedirectToMap} selectedAddress={this.state.selectedAddress} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
                     </div>
-                    <div className="grid-item-equipment-legend lol">
+                    <div className="grid-item-equipment-legend whiteBG">
                     <button>All Equipment</button>
-                    <button>Section A</button>
-                    <button>Section B</button>
+                    <button onClick={()=>{
+                        this.setState({
+                            filterSection : 'A'
+                        })
+                    }}>Section A</button>
+                    <button onClick={()=>{
+                        this.setState({
+                            filterSection : 'B'
+                        })
+                    }}>Section B</button>
                     <div>&nbsp;</div>
                     <Container>
                         <Row>

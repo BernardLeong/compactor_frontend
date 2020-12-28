@@ -95,9 +95,7 @@ class NavBarContent extends Component {
             <Nav className="mr-auto">
             </Nav>
             <Form inline>
-              <span className='welcome'>Welcome <span style={{cursor:'pointer'}} onClick={()=>{
-                this.props.handleRedirect('userDetails')
-              }}>{this.state.currentUser}</span></span>
+              <span className='welcome'>Welcome {this.state.currentUser}</span>
             </Form>
           </Navbar>
         )

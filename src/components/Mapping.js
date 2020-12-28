@@ -32,6 +32,11 @@ class Mapping extends Component {
     var color = this.props.compactorFilledLevel || ''
     var compactorArr = []
     var selectedAddress = this.props.selectedAddress || ''
+    var filterSection = this.props.filterSection
+    console.log(filterSection)
+    console.log()
+    
+
     if(this.props.selectedAddress){
       // console.log('ciorejioej')
       for(var i=0;i<compactors.length;i++){
@@ -39,24 +44,15 @@ class Mapping extends Component {
           compactorArr.push(compactors[i])
         }
       }
-    }else if(color != ''){
+    }else if(filterSection !== ''){
       for(var i=0;i<compactors.length;i++){
-        var percentage = Math.round((compactors[i].current_weight / compactors[i].max_weight)*100 )
-        var alarmRaised = compactors[i].alarmRaised
-        
-        if(percentage < 25 && color == 'green'){
-          compactorArr.push(compactors[i])
-        }else if(percentage > 25 && percentage < 50 && color == 'yellow'){
-          compactorArr.push(compactors[i])
-        }else if(percentage >50 && color == 'red'){
-          compactorArr.push(compactors[i])
-        }else if(alarmRaised && color == 'renderAlarm'){
+        if(compactors[i].sectionArea == filterSection){
           compactorArr.push(compactors[i])
         }
       }
     }
 
-    if(compactorArr.length > 0 && (color !== '' || selectedAddress !== '')){
+    if(compactorArr.length > 0 && (filterSection !== '' || selectedAddress !== '')){
       compactors = compactorArr
     }
     
