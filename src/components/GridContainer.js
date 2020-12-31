@@ -30,10 +30,8 @@ class GridContainer extends Component{
             'saveCurrentCompactorID' : '',
             'selectStartDate' : '',
             'selectEndDate' : '',
-            'compactorLoaded' : false,
             'liveCompactorLoaded' : false,
             'liveAlarmsLoaded' : false,
-            'alarmsLoaded' : false,
             'renderWeightInformation' : false,
             'renderAlarmInformation' : false,
             'renderReportPage' : false,
@@ -71,7 +69,7 @@ class GridContainer extends Component{
             console.log(error);
         })
 
-        axios.get(`http://localhost:8080/getTodaysAlarms/live`,config)
+        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getTodaysAlarms/live`,config)
         .then((response)=> {
             console.log(response)
             this.setState({
@@ -83,7 +81,7 @@ class GridContainer extends Component{
             console.log(error);
         })
 
-        axios.get(`http://localhost:8080/getAllAlarms/live`,config)
+        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getAllAlarms/live`,config)
         .then((response)=> {
             this.setState({
                 liveAllAlarmData : response.data.alarmInfo,
@@ -92,16 +90,6 @@ class GridContainer extends Component{
         .catch(function (error) {
             console.log(error);
         })
-
-        // axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getAllAlarm`,config)
-        // .then((response)=> {
-        //     this.setState({
-        //         allAlarmData : response.data.alarmInfo,
-        //     })
-        // })
-        // .catch(function (error) {
-        //     console.log(error);
-        // })
     }
 
     reduceFunc(total, num){
@@ -439,6 +427,7 @@ class GridContainer extends Component{
                 var totalCollectedWeight = 0;
             }else{
                 var totalCollectedWeight = collectionWeights.reduce(reduceFunc);
+                totalCollectedWeight = Math.round(totalCollectedWeight)
             }
 
             var compactorInfo = <tr><th>Loading ......</th></tr>
