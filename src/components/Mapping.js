@@ -33,9 +33,6 @@ class Mapping extends Component {
     var compactorArr = []
     var selectedAddress = this.props.selectedAddress || ''
     var filterSection = this.props.filterSection
-    console.log(filterSection)
-    console.log()
-    
 
     if(this.props.selectedAddress){
       // console.log('ciorejioej')

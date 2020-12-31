@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import ReactDOM from "react-dom";
 import './../css/compactorInfo.css'
 import 'react-calendar/dist/Calendar.css';
 import Mapping from './Mapping';
@@ -8,6 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import Calendar from 'react-calendar';
 const sortObjectsArray = require('sort-objects-array');
+const uniq = require("uniq")
+
 const axios = require('axios');
 class GridContainer extends Component{
     constructor(props){
@@ -17,8 +20,10 @@ class GridContainer extends Component{
             'alarmSection' : 'A',
             'compactorSection' : 'A', 
             'filterSection' : '',
-            'compactorData' : [],
             'allAlarmData' : [],
+            'liveAllAlarmData' : [],
+            'liveAlarmData' : [],
+            'livecompactorData' : [],
             'count' : 0,
             'countAlarm' : 0,
             'noOfAlarms' : 0,
@@ -26,10 +31,13 @@ class GridContainer extends Component{
             'selectStartDate' : '',
             'selectEndDate' : '',
             'compactorLoaded' : false,
+            'liveCompactorLoaded' : false,
+            'liveAlarmsLoaded' : false,
             'alarmsLoaded' : false,
             'renderWeightInformation' : false,
             'renderAlarmInformation' : false,
             'renderReportPage' : false,
+            'renderEquipmentPage' : false,
             'pressLeftArrowWeight' : false,
             'pressRightAlarmArrowWeight' : false,
             'pressLeftAlarmArrowWeight' : false,
@@ -42,6 +50,7 @@ class GridContainer extends Component{
         this.toggleLeftArrow = this.toggleLeftArrow.bind(this)
         this.handleRedirectToMap = this.handleRedirectToMap.bind(this)
         this.renderReportPage = this.renderReportPage.bind(this)
+        this.renderEquipmentPage = this.renderEquipmentPage.bind(this)
     }
 
     componentDidMount(){
@@ -50,37 +59,49 @@ class GridContainer extends Component{
             headers: { Authorization: `Bearer ${token}` }
         }
 
-        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/allCompactorInfo`,config)
+        axios.get(`http://localhost:8080/allCompactorInfos/live`,config)
         .then((response)=> {
+            console.log(response)
             this.setState({
-            compactorData : response.data.compactorInfo,
-            compactorLoaded: true
+            livecompactorData : response.data.compactorInfo,
+            liveCompactorLoaded: true
             })
         })
         .catch(function (error) {
             console.log(error);
         })
 
-        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getTodaysAlarm`,config)
+        axios.get(`http://localhost:8080/getTodaysAlarms/live`,config)
         .then((response)=> {
+            console.log(response)
             this.setState({
-                alarmData : response.data.alarms,
-                alarmsLoaded: true
+                liveAlarmData : response.data.alarms,
+                liveAlarmsLoaded: true
             })
         })
         .catch(function (error) {
             console.log(error);
         })
 
-        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getAllAlarm`,config)
+        axios.get(`http://localhost:8080/getAllAlarms/live`,config)
         .then((response)=> {
             this.setState({
-                allAlarmData : response.data.alarmInfo,
+                liveAllAlarmData : response.data.alarmInfo,
             })
         })
         .catch(function (error) {
             console.log(error);
         })
+
+        // axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getAllAlarm`,config)
+        // .then((response)=> {
+        //     this.setState({
+        //         allAlarmData : response.data.alarmInfo,
+        //     })
+        // })
+        // .catch(function (error) {
+        //     console.log(error);
+        // })
     }
 
     reduceFunc(total, num){
@@ -90,8 +111,6 @@ class GridContainer extends Component{
     handleRedirectToMap(){
         this.setState({handleRedirectToMap : true})
     }
-
-    r
 
     toggleAlarmRightArrow(){
         var sections = ['A','B']
@@ -145,6 +164,14 @@ class GridContainer extends Component{
         )
     }
 
+    renderEquipmentPage(){
+        this.setState(
+            {
+                renderEquipmentPage : true
+            }
+        )
+    }
+
     render(){   
         var dashboard = 
         <div className="grid-item grid-item-sideDashboard whiteBG">
@@ -162,7 +189,7 @@ class GridContainer extends Component{
         </Container>
         <Container className="blueBorder adjustPaddingContent">
             <Row>
-                <Col style={{cursor:'pointer'}}>Equipment</Col>
+                <Col style={{cursor:'pointer'}} onClick={this.renderEquipmentPage}>Equipment</Col>
             </Row>
         </Container>
         <Container className="blueBorder adjustPaddingContent">
@@ -176,11 +203,15 @@ class GridContainer extends Component{
             </Row>
         </Container>
 </div>
-        if(this.state.alarmsLoaded){
+        if(this.state.liveAlarmsLoaded){
+
+            var alarmsData = this.state.liveAlarmData
+
             if(this.state.renderReportPage){
-                var allAlarmData = this.state.allAlarmData
+                var allAlarmData = this.state.liveAllAlarmData
+                console.log(allAlarmData)
                 //sort here
-                allAlarmData = sortObjectsArray(allAlarmData, 'compactorID')
+                allAlarmData = sortObjectsArray(allAlarmData, 'ID')
                 var starttime = this.state.selectStartDate
                 var endtime = this.state.selectEndDate
 
@@ -188,12 +219,18 @@ class GridContainer extends Component{
                     var filterAlarmData = []
                     for(var i=0;i<allAlarmData.length;i++){
                         if(starttime !== endtime){
-                            if(starttime < allAlarmData[i].timeStamp && endtime > allAlarmData[i].timeStamp){
-                                filterAlarmData.push(allAlarmData[i])
-                            }
+                            var todaydate = new Date(allAlarmData[i]['ts']).toISOString().split('T')[0];
+                            console.log([todaydate,allAlarmData[i]['ts'],startTime])
+                            todaydate = new Date(todaydate).getTime()
+                            var startTime = new Date(starttime).getTime()
+                            var endTime = new Date(starttime).getTime()
+
+                            // if(startTime <= todaydate && endtime >= todaydate){
+                            //     filterAlarmData.push(allAlarmData[i])
+                            // }
                         }
                         else{
-                            if(starttime < allAlarmData[i].timeStamp){
+                            if(startTime < todaydate){
                                 filterAlarmData.push(allAlarmData[i])
                             }
                         }
@@ -205,11 +242,10 @@ class GridContainer extends Component{
 
                 allAlarmData = allAlarmData.map(alarm => (
                     <tr>
-                         <th>{alarm.compactorID}</th>
-                         <th>{alarm.alarmStatus}</th>
-                         <th>{alarm.address}</th>
-                         <th>{alarm.humanReadableTS}</th>
-                         <th>{alarm.type}</th>
+                         <th>{alarm.ID}</th>
+                         <th>{alarm.Status}</th>
+                         <th>{alarm.ts}</th>
+                         <th>{alarm.Type}</th>
                      </tr>
                ))
                 return(
@@ -251,8 +287,7 @@ class GridContainer extends Component{
                                   <Col >
                                       <Calendar style={{ textAlign: 'center' }}
                                           onChange={(value, event)=>{
-                                            var events = new Date(value).getTime();
-                                            console.log(value)
+                                            var events = new Date(value).toISOString().split('T')[0];
                                             this.setState({
                                                 selectStartDate: events
                                             })
@@ -263,10 +298,10 @@ class GridContainer extends Component{
                                   <Col>
                                       <Calendar
                                           onChange={(value, event)=>{
-                                              var events = new Date(value).getTime();
-                                              this.setState({
-                                                  selectEndDate: events
-                                              })
+                                            var events = new Date(value).toISOString().split('T')[0];
+                                            this.setState({
+                                                selectEndDate: events
+                                            })
                                           }}
                                       />
                                   </Col>
@@ -292,7 +327,6 @@ class GridContainer extends Component{
                                         <tr>
                                             <th>Equipment ID</th>
                                             <th>Alarm Status</th>
-                                            <th>Alarm Address</th>
                                             <th>Alarm TimeStamp</th>
                                             <th>Fault Type</th>
                                         </tr>
@@ -321,48 +355,45 @@ class GridContainer extends Component{
             }
 
             var alarms = []
-            var alarmData = this.state.alarmData
+
             if(this.state.pressLeftAlarmArrowWeight || this.state.pressRightAlarmArrowWeight){
                 var alarmSection = this.state.alarmSection
             }else{
                 var alarmSection = 'A'
             }
 
-            for(i=0;i<alarmData.length;i++){
-                if(alarmData[i]['sectionArea'] == alarmSection){
-                    alarms.push(alarmData[i])
+            for(i=0;i<alarmsData.length;i++){
+                if(alarmsData[i]['sectionArea'] == alarmSection){
+                    alarms.push(alarmsData[i])
                 }
             }
             var alarmTable = alarms.map(al => (
                 <tr>
-                     <th>{al.compactorID}</th>
-                     <th>{al.humanReadableTS}</th>
-                     <th>{al.type}</th>
-                     <th>{al.alarmDescription}</th>
-                     <th>{al.alarmStatus}</th>
+                     <th>{al.ID}</th>
+                     <th>{al.ts}</th>
+                     <th>{al.Type}</th>
+                     <th>{al.Status}</th>
                  </tr>
             ))
             var noOfAlarms = alarms.length
 
         }
-        if(this.state.compactorLoaded){
-            var compactors = this.state.compactorData
-            compactors = sortObjectsArray(compactors, 'compactorID')
-            if(this.state.pressLeftArrowWeight || this.state.pressRightArrowWeight){
-                var currentSection = this.state.compactorSection
-            }else{
-                var currentSection = 'A'
+        if(this.state.liveCompactorLoaded){
+            
+            var compactors = this.state.livecompactorData
+            var compactorsSort = compactors.reduce((r, a)=> {
+                r[a.ID] = r[a.ID] || [];
+                r[a.ID].push(a);
+                return r;
+            }, Object.create(null));
+            var compactorData = []
+
+            for (var key in compactorsSort) {
+                compactorData.push(compactorsSort[key][( (compactorsSort[key].length) -1)])
             }
 
-            var compactorData = []
-            var collectionWeights = []
-            for(var i=0;i<compactors.length;i++){
-                if(compactors[i].sectionArea == currentSection){
-                    compactorData.push(compactors[i])
-                }
-            }
-            var allCompactors = compactors
             compactors = compactorData
+            var allCompactors = compactors
             if(this.state.handleRedirectToMap){
                 var renderlistOfCompactorID = allCompactors.map(compactor => (
                     <Container style={{cursor:'pointer'}} className="blueBorder adjustPaddingContent">
@@ -376,7 +407,7 @@ class GridContainer extends Component{
                     </Container>
                ))
                var mapDashboard = 
-                <div className="grid-item-equipment-sideDashboard whiteBG">
+                <div className="grid-item-map-sideDashboard whiteBG">
                     <Container className="blueBG adjustPadding">
                     <Row>
                         <Col style={{textAlign : 'center'}}>Map</Col>
@@ -394,29 +425,33 @@ class GridContainer extends Component{
                         </Row>
                     </Container>
                     {renderlistOfCompactorID}
-                    
                 </div>
             }
 
             let reduceFunc = this.reduceFunc
-
+            var collectionWeights = []
             for(var i=0;i<compactors.length;i++){
-                if(!(isNaN(compactors[i].current_weight) && compactors[i].current_weight <= 0) ){
-                    collectionWeights.push(compactors[i].current_weight)
+                if(!(isNaN(compactors[i]) && compactors[i].Weight <= 0) ){
+                    collectionWeights.push(compactors[i].Weight)
                 }
             }
-
-            var totalCollectedWeight = collectionWeights.reduce(reduceFunc);
+            if(collectionWeights.length <= 0){
+                var totalCollectedWeight = 0;
+            }else{
+                var totalCollectedWeight = collectionWeights.reduce(reduceFunc);
+            }
 
             var compactorInfo = <tr><th>Loading ......</th></tr>
-            if(this.state.renderWeightInformation){
+
+            if(this.state.renderWeightInformation || this.state.renderEquipmentPage){
+                // console.log(compactors[0].FilledLevel-Weight)
                 compactorInfo = compactors.map(compactor => (
                     <tr>
-                         <th>{compactor.compactorID}</th>
-                         <th>{compactor.current_weight}</th>
-                         <th>{compactor.max_weight}</th>
-                         <th>{(Math.round((compactor.current_weight / compactor.max_weight)*100 )) + ' %'}</th>
-                         <th>{Math.round((compactor.current_weight / compactor.max_weight)*100 ) < 25 ? 
+                        <th>{compactor.ID}</th>
+                        <th>{compactor.ts}</th>
+                        <th>{compactor.Weight}</th>
+                        <th>{compactor['FilledLevel-Weight']}</th>
+                        <th>{Math.round(compactor['FilledLevel-Weight']) < 25 ? 
                             <span><img
                             src={require('./greendot.png')}
                             width="30"
@@ -424,7 +459,7 @@ class GridContainer extends Component{
                             className="d-inline-block align-top"
                             alt="React Bootstrap logo"
                             /></span> : 
-                         Math.round((compactor.current_weight / compactor.max_weight)*100 ) < 50 ? 
+                            Math.round(compactor['FilledLevel-Weight']) < 50 ? 
                             <span><img
                             src={require('./yellowdot.png')}
                             width="30"
@@ -440,14 +475,55 @@ class GridContainer extends Component{
                             alt="React Bootstrap logo"
                             /></span>
                          }</th>
-                         
                      </tr>
                ))
             }
-
           }
 
-          
+          if(this.state.renderEquipmentPage){
+            return(
+                <div className="grid-container-equipment">
+                    <div className='grid-item grid-item-01-compactor'>
+                        <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+                    </div>
+                    <div className="grid-item-equipment-dashboard whiteBG">
+                        <Container className="blueBG adjustPadding">
+                        <Row>
+                            <Col style={{textAlign : 'center'}}>Equipment</Col>
+                        </Row>
+                        </Container>
+                        <Container className="blueBorder adjustPaddingContent">
+                            <Row>
+                                <Col onClick={()=>{
+                                    this.setState(
+                                        {
+                                            renderEquipmentPage : false
+                                        }
+                                    )
+                                }} style={{cursor:'pointer'}}>Dashboard</Col>
+                            </Row>
+                        </Container>
+                    </div>
+                    <div className="grid-item-equipment-map whiteBG">
+                    <Table striped bordered hover responsive> 
+                        <thead>
+                        <tr>
+                            <th>Equipment ID</th>
+                            <th>TimeStamp</th>
+                            <th>Collection Weight</th>
+                            <th>Weight Percentage</th>
+                            <th>Level</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {compactorInfo}
+                        </tbody>
+                    </Table>
+                    </div>
+                </div>
+            )
+        }
+
           if(this.state.renderWeightInformation){
             var weight = 
             <div className="grid-item grid-item-weightDashboard whiteBG">
@@ -464,8 +540,8 @@ class GridContainer extends Component{
                     <thead>
                     <tr>
                         <th>Equipment ID</th>
+                        <th>TimeStamp</th>
                         <th>Collection Weight</th>
-                        <th>Max Load</th>
                         <th>Weight Percentage</th>
                         <th>Level</th>
                     </tr>
@@ -487,7 +563,9 @@ class GridContainer extends Component{
                 <Container>
                     <Row>
                         {/* <Col className='alarmRaisedNumber'>1000</Col> */}
-                <Col className='alarmRaisedNumber'>{totalCollectedWeight}</Col>
+                <Col className='alarmRaisedNumber'>
+                    {totalCollectedWeight}
+                </Col>
                     </Row>
                 </Container>
                 <Container>
@@ -510,7 +588,6 @@ class GridContainer extends Component{
                         <th>Equipment ID</th>
                         <th>Date</th>
                         <th>Failure Mode</th>
-                        <th>Fault Description</th>
                         <th>Alarm Status</th>
                     </tr>
                     </thead>
@@ -550,15 +627,15 @@ class GridContainer extends Component{
 
         if(this.state.handleRedirectToMap){
             return(
-                <div className='grid-container-equipment'>
+                <div className='grid-container-map'>
                      <div className='grid-item grid-item-01-compactor'>
                          <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
                     </div>
                     {mapDashboard}
-                    <div className="grid-item grid-item-equipment-map">
+                    <div className="grid-item grid-item-map-map">
                         <Mapping filterSection={this.state.filterSection} equipmentMap={this.state.handleRedirectToMap} selectedAddress={this.state.selectedAddress} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
                     </div>
-                    <div className="grid-item-equipment-legend whiteBG">
+                    <div className="grid-item-map-legend whiteBG">
                     <button>All Equipment</button>
                     <button onClick={()=>{
                         this.setState({
