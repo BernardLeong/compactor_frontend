@@ -57,7 +57,7 @@ class GridContainer extends Component{
             headers: { Authorization: `Bearer ${token}` }
         }
 
-        axios.get(`http://localhost:8080/allCompactorInfos/live`,config)
+        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/allCompactorInfos/live`,config)
         .then((response)=> {
             console.log(response)
             this.setState({
@@ -428,6 +428,7 @@ class GridContainer extends Component{
             }else{
                 var totalCollectedWeight = collectionWeights.reduce(reduceFunc);
                 totalCollectedWeight = Math.round(totalCollectedWeight)
+                console.log(totalCollectedWeight)
             }
 
             var compactorInfo = <tr><th>Loading ......</th></tr>
