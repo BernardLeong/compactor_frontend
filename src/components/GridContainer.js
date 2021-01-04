@@ -10,6 +10,7 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import Calendar from 'react-calendar';
 const sortObjectsArray = require('sort-objects-array');
 const uniq = require("uniq")
+const moment = require("moment")
 
 const axios = require('axios');
 class GridContainer extends Component{
@@ -40,6 +41,8 @@ class GridContainer extends Component{
             'pressRightAlarmArrowWeight' : false,
             'pressLeftAlarmArrowWeight' : false,
             'handleRedirectToMap' : false,
+            'paginationDefaultPage' : 1,
+            'paginationAlarmDefaultPage' : 1
         }
         this.renderWeightInformation = this.renderWeightInformation.bind(this)
         this.toggleAlarmLeftArrow = this.toggleAlarmLeftArrow.bind(this)
@@ -85,6 +88,17 @@ class GridContainer extends Component{
         .then((response)=> {
             this.setState({
                 liveAllAlarmData : response.data.alarmInfo,
+            })
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+
+        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/allCompactorAddresses/live`,config)
+        .then((response)=> {
+            this.setState({
+                liveCompactorAddresses : response.data.compactorAddresses,
+
             })
         })
         .catch(function (error) {
@@ -166,7 +180,7 @@ class GridContainer extends Component{
         <Container className="blueBG adjustPadding">
             <Row>
                 <Col></Col>
-                <Col>Dashboard</Col>
+                <Col style={{cursor : 'pointer'}}>Dashboard</Col>
                 <Col></Col>
             </Row>
         </Container>
@@ -197,7 +211,6 @@ class GridContainer extends Component{
 
             if(this.state.renderReportPage){
                 var allAlarmData = this.state.liveAllAlarmData
-                console.log(allAlarmData)
                 //sort here
                 allAlarmData = sortObjectsArray(allAlarmData, 'ID')
                 var starttime = this.state.selectStartDate
@@ -207,18 +220,20 @@ class GridContainer extends Component{
                     var filterAlarmData = []
                     for(var i=0;i<allAlarmData.length;i++){
                         if(starttime !== endtime){
-                            var todaydate = new Date(allAlarmData[i]['ts']).toISOString().split('T')[0];
-                            console.log([todaydate,allAlarmData[i]['ts'],startTime])
+                            var todaydate = moment(allAlarmData[i]['ts']).format()
                             todaydate = new Date(todaydate).getTime()
                             var startTime = new Date(starttime).getTime()
-                            var endTime = new Date(starttime).getTime()
-
-                            // if(startTime <= todaydate && endtime >= todaydate){
-                            //     filterAlarmData.push(allAlarmData[i])
-                            // }
+                            var endTime = new Date(endtime).getTime()
+                            if(startTime <= todaydate && endTime >= todaydate){
+                                filterAlarmData.push(allAlarmData[i])
+                            }
                         }
                         else{
-                            if(startTime < todaydate){
+                            var todaydate = moment(allAlarmData[i]['ts']).format()
+                            todaydate = new Date(todaydate).getTime()
+                            var startTime = new Date(starttime).getTime()
+                            var endTime = new Date(endtime).getTime()
+                            if(startTime <= todaydate){
                                 filterAlarmData.push(allAlarmData[i])
                             }
                         }
@@ -249,7 +264,7 @@ class GridContainer extends Component{
                           </Container>
                           <Container className="blueBorder adjustPaddingContent">
                           <Row>
-                              <Col style={{textAlign : 'center'}} onClick={()=>{
+                              <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
                                   this.setState({renderReportPage : false})
                               }}>Dashboard</Col>
                           </Row>
@@ -275,7 +290,7 @@ class GridContainer extends Component{
                                   <Col >
                                       <Calendar style={{ textAlign: 'center' }}
                                           onChange={(value, event)=>{
-                                            var events = new Date(value).toISOString().split('T')[0];
+                                            var events = moment(value).format();
                                             this.setState({
                                                 selectStartDate: events
                                             })
@@ -286,7 +301,7 @@ class GridContainer extends Component{
                                   <Col>
                                       <Calendar
                                           onChange={(value, event)=>{
-                                            var events = new Date(value).toISOString().split('T')[0];
+                                            var events = moment(value).endOf('day').format();
                                             this.setState({
                                                 selectEndDate: events
                                             })
@@ -294,9 +309,7 @@ class GridContainer extends Component{
                                       />
                                   </Col>
                               </Row>
-                          </Container>
-  
-                         
+                          </Container> 
                       </div>
                       <div className="grid-item grid-item-report-table whiteBG">
                             <Container>
@@ -355,14 +368,51 @@ class GridContainer extends Component{
                     alarms.push(alarmsData[i])
                 }
             }
-            var alarmTable = alarms.map(al => (
-                <tr>
-                     <th>{al.ID}</th>
-                     <th>{al.ts}</th>
-                     <th>{al.Type}</th>
-                     <th>{al.Status}</th>
-                 </tr>
-            ))
+
+            var chunkAlarm = (arr, size) =>
+            Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+                arr.slice(i * size, i * size + size)
+            );
+
+            if(alarms.length < 5){
+                var maxPage = 1
+            }else{
+                var maxPage = Math.round((alarms.length /5))
+            }
+            
+            var range = []
+            for(i=1;i<=maxPage;i++){
+                range.push(i)
+            }
+            
+            var alarmPages = range.map(page => <a onClick={()=>{this.setState(
+                {
+                    paginationAlarmDefaultPage : page
+                }
+                )}} style={{cursor:'pointer'}}>{page}</a>)
+                
+                var paginationAlarmPages = 
+                <div class="pagination">
+            {alarmPages}
+          </div>
+
+                if(alarms.length <= 0){
+                    var renderAlarms = 
+                    <tr>
+
+                    </tr>
+                }else{
+                    var paginatedAlarms = chunkAlarm(alarms,5)
+                    var renderAlarms = paginatedAlarms[this.state.paginationAlarmDefaultPage -1]
+                    var alarmTable = renderAlarms.map(al => (
+                        <tr>
+                            <th>{al.ID}</th>
+                            <th>{al.ts}</th>
+                            <th>{al.Type}</th>
+                            <th>{al.Status}</th>
+                        </tr>
+                    ))
+                }
             var noOfAlarms = alarms.length
 
         }
@@ -386,11 +436,7 @@ class GridContainer extends Component{
                 var renderlistOfCompactorID = allCompactors.map(compactor => (
                     <Container style={{cursor:'pointer'}} className="blueBorder adjustPaddingContent">
                         <Row>
-                            <Col onClick={()=>{
-                                this.setState({
-                                    selectedAddress : compactor.address
-                                })
-                            }}>{compactor.compactorID}</Col>
+                            <Col>{compactor.ID}</Col>
                         </Row>
                     </Container>
                ))
@@ -428,14 +474,40 @@ class GridContainer extends Component{
             }else{
                 var totalCollectedWeight = collectionWeights.reduce(reduceFunc);
                 totalCollectedWeight = Math.round(totalCollectedWeight)
-                console.log(totalCollectedWeight)
             }
 
             var compactorInfo = <tr><th>Loading ......</th></tr>
 
             if(this.state.renderWeightInformation || this.state.renderEquipmentPage){
-                // console.log(compactors[0].FilledLevel-Weight)
-                compactorInfo = compactors.map(compactor => (
+                const chunky = (arr, size) =>
+                Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+                    arr.slice(i * size, i * size + size)
+                );
+
+                if(compactors.length < 5){
+                    var maxPage = 1
+                }else{
+                    var maxPage = Math.round((compactors.length /5))
+                }
+
+                var range = []
+                for(i=1;i<=maxPage;i++){
+                    range.push(i)
+                }
+
+                var pages = range.map(page => <a onClick={()=>{this.setState(
+                    {
+                        paginationDefaultPage : page
+                    }
+                )}} style={{cursor:'pointer'}}>{page}</a>)
+                var paginationPages = 
+                <div class="pagination">
+                {pages}
+              </div>
+
+                var paginatedCompactors = chunky(compactors,5)
+                var renderCompactors = paginatedCompactors[this.state.paginationDefaultPage -1]
+                compactorInfo = renderCompactors.map(compactor => (
                     <tr>
                         <th>{compactor.ID}</th>
                         <th>{compactor.ts}</th>
@@ -509,6 +581,7 @@ class GridContainer extends Component{
                         {compactorInfo}
                         </tbody>
                     </Table>
+                    {paginationPages}
                     </div>
                 </div>
             )
@@ -540,7 +613,10 @@ class GridContainer extends Component{
                     {compactorInfo}
                     </tbody>
                 </Table>
-                <button onClick={()=>{this.setState({renderWeightInformation: false})}}>Back</button>
+                {paginationPages}
+                <div>
+                    <button onClick={()=>{this.setState({renderWeightInformation: false})}}>Back</button>
+                </div>
             </div>
           }else{
             var weight = 
@@ -570,6 +646,7 @@ class GridContainer extends Component{
             </div>
         }
         if(this.state.renderAlarmInformation){
+            
             var alarmsSection = 
             <div className="grid-item grid-item-alarmDashboard whiteBG">
                  <Table striped bordered hover>
@@ -584,8 +661,8 @@ class GridContainer extends Component{
                     <tbody>
                       {alarmTable}
                     </tbody>
+                    {paginationAlarmPages}
                 </Table>
-                <div>&nbsp;</div>
                 <button onClick={()=>{this.setState({renderAlarmInformation : false})}}>Back</button>
             </div>
     }else{
@@ -690,7 +767,7 @@ class GridContainer extends Component{
                     {weight}
                     {alarmsSection}
                     <div className="grid-item grid-item-mapDashboard">
-                        <Mapping selectedAddress={this.state.selectedAddress} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
+                        <Mapping compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
                     </div>
                 </div>
             )
