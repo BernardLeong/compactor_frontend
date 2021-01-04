@@ -2,7 +2,7 @@
 import React, { Component } from "react";
 import './../css/compactorInfo.css'
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
-import { Form, Button, Alert } from 'react-bootstrap'
+import { Form, Button, Alert, Container, Row, Col } from 'react-bootstrap'
 const axios = require('axios');
 
 class Login extends Component {
@@ -62,7 +62,6 @@ class Login extends Component {
     }
 
     render(){
-        console.log(this.state)
         if(this.state.success){
             return(
                 <Redirect to={{
@@ -78,80 +77,79 @@ class Login extends Component {
             if(this.state.error){
                 var error = this.state.error
                 return(
-                    <div>
-                        
-                        <div className='grid-containerTwo'>
-                        <div className='grid-item grid-item-4'>
-                        </div>
-                        <div className='grid-item grid-item-5'>
-                           
-                        </div>
-                        <div className='grid-item grid-item-6 lighttext'>
-                            <Alert variant='danger'>
-                                {error}
-                            </Alert>
-                            <Form>
-                                <Form.Label>Login</Form.Label>
-                                <Form.Group onChange={this.handleSelectChange} controlId="exampleForm.ControlSelect1">
-                                    <Form.Label>User Type</Form.Label>
-                                    <Form.Control as="select">
-                                    <option>User</option>
-                                    <option>Enginner</option>
-                                    <option>Admin</option>
-                                    </Form.Control>
-                                </Form.Group>
-                                <Form.Group controlId="formBasicEmail">
-                                <div><Form.Label>Username</Form.Label></div>
-                                    <Form.Control onChange={this.handleChange} name='username' placeholder="Enter username" />
-                                </Form.Group>
-                                <Form.Group controlId="formBasicPassword">
-                                    <Form.Label>Password</Form.Label>
-                                    <Form.Control onChange={this.handleChange}  name='password' type="password" placeholder="Password" />
-                                </Form.Group>
-                                <Button onClick={this.handleSubmit} variant="primary">
-                                    Submit
-                                </Button>
-                            </Form>
+                    <div> 
+                        <div className='grid-container-login'>
+                        <div className='grid-item grid-container-login-login whiteBG'>
+                            <Container>
+                                <Row>
+                                    <Col>
+                                        <Alert variant='danger'>
+                                            {error}
+                                        </Alert>
+                                        <Form>
+                                            <Form.Label style={{fontSize: '2em',textAlign: 'center'}} >Login</Form.Label>
+                                            <Form.Group onChange={this.handleSelectChange} controlId="exampleForm.ControlSelect1">
+                                                <Form.Label>User Type</Form.Label>
+                                                <Form.Control as="select">
+                                                <option>User</option>
+                                                <option>Enginner</option>
+                                                <option>Admin</option>
+                                                </Form.Control>
+                                            </Form.Group>
+                                            <Form.Group controlId="formBasicEmail">
+                                            <div><Form.Label>Username</Form.Label></div>
+                                                <Form.Control onChange={this.handleChange} name='username' placeholder="Enter username" />
+                                            </Form.Group>
+                                            <Form.Group controlId="formBasicPassword">
+                                                <Form.Label>Password</Form.Label>
+                                                <Form.Control onChange={this.handleChange}  name='password' type="password" placeholder="Password" />
+                                            </Form.Group>
+                                            <Button onClick={this.handleSubmit} variant="primary">
+                                                Submit
+                                            </Button>
+                                        </Form>
+                                    </Col>
+                                </Row>
+                            </Container>
                         </div>
                         </div>
                     </div>
                 )
             }else{
                 return(
-                    <div>
-                        <div className='grid-containerTwo'>
-                        <div className='grid-item grid-item-4'>
+                    <div> 
+                        <div className='grid-container-login'>
+                        <div className='grid-item grid-container-login-login whiteBG'>
+                            <Container>
+                                <Row>
+                                    <Col>
+                                        <Form>
+                                            <Form.Label style={{fontSize: '2em',textAlign: 'center'}} >Login</Form.Label>
+                                            <Form.Group onChange={this.handleSelectChange} controlId="exampleForm.ControlSelect1">
+                                                <Form.Label>User Type</Form.Label>
+                                                <Form.Control as="select">
+                                                <option>User</option>
+                                                <option>Enginner</option>
+                                                <option>Admin</option>
+                                                </Form.Control>
+                                            </Form.Group>
+                                            <Form.Group controlId="formBasicEmail">
+                                            <div><Form.Label>Username</Form.Label></div>
+                                                <Form.Control onChange={this.handleChange} name='username' placeholder="Enter username" />
+                                            </Form.Group>
+                                            <Form.Group controlId="formBasicPassword">
+                                                <Form.Label>Password</Form.Label>
+                                                <Form.Control onChange={this.handleChange}  name='password' type="password" placeholder="Password" />
+                                            </Form.Group>
+                                            <Button onClick={this.handleSubmit} variant="primary">
+                                                Submit
+                                            </Button>
+                                        </Form>
+                                    </Col>
+                                </Row>
+                            </Container>
                         </div>
-                        <div className='grid-item grid-item-5'>
-                           
                         </div>
-                        <div className='grid-item grid-item-6 lighttext'>
-                            <Form>
-                                <Form.Label>Login</Form.Label>
-                                <Form.Group onChange={this.handleSelectChange} controlId="exampleForm.ControlSelect1">
-                                    <Form.Label>User Type</Form.Label>
-                                    <Form.Control as="select">
-                                    <option>User</option>
-                                    <option>Enginner</option>
-                                    <option>Admin</option>
-                                    </Form.Control>
-                                </Form.Group>
-                                <Form.Group controlId="formBasicEmail">
-                                <div><Form.Label>Username</Form.Label></div>
-                                    <Form.Control onChange={this.handleChange} name='username' placeholder="Enter username" />
-                                </Form.Group>
-                                <Form.Group controlId="formBasicPassword">
-                                    <Form.Label>Password</Form.Label>
-                                    <Form.Control onChange={this.handleChange}  name='password' type="password" placeholder="Password" />
-                                </Form.Group>
-                                <Button onClick={this.handleSubmit} variant="primary">
-                                    Submit
-                                </Button>
-                            </Form>
-                        </div>
-                          
-                        </div>
-                        
                     </div>
                 )
             }

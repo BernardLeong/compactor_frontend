@@ -41,11 +41,9 @@ class Mapping extends Component {
   }
   
   render() {
-    if(this.state.liveCompactorLoadedMap){
+    if(this.state.liveCompactorLoadedMap && this.state.liveCompactorAddressLoadedMap){
       var liveCompactorData = this.state.livecompactorDataMap
       var liveCompactorAddresses = this.state.liveCompactorAddressesMap
-  
-
       var color = this.props.compactorFilledLevel || ''
       var filterSection = this.props.filterSection
   
@@ -59,8 +57,6 @@ class Mapping extends Component {
       for (var key in compactorsSort) {
           compactorData.push(compactorsSort[key][( (compactorsSort[key].length) -1)])
       }
-  
-      console.log(compactorData)
       liveCompactorData = compactorData
       var compactorArr = []
       if(filterSection !== ''){
@@ -70,6 +66,7 @@ class Mapping extends Component {
           }
         }
       }
+      console.log(liveCompactorData)
   
       if(compactorArr.length > 0 && (filterSection !== '')){
         liveCompactorData = compactorArr
@@ -82,6 +79,18 @@ class Mapping extends Component {
           }
         }
       }
+
+      var liveCompactor = []
+      var currentCompactorID = this.props.currentCompactorID
+      if(this.props.currentCompactorID){
+        for(i=0;i<liveCompactorData.length;i++){
+          if(liveCompactorData[i].ID == currentCompactorID){
+            liveCompactor.push(liveCompactorData[i])
+          }
+        }
+        liveCompactorData = liveCompactor
+      }
+
       var coordinateArr = []
       liveCompactorData.map(compactor => {
         let percentage = compactor['FilledLevel-Weight']
@@ -92,21 +101,26 @@ class Mapping extends Component {
         }else{
           color = 'red'
         }
-        if(compactor.description){
-            let buffer = new Buffer(compactor.description)
-            let string = buffer.toString('base64')
-        if(compactor.alarmRaised){
-          return coordinateArr.push(`&marker=latLng:${compactor.coordinates.lat},${compactor.coordinates.long}!colour:${color}!iwt:${string}!icon:fa-exclamation`)
-        }else{
-          return coordinateArr.push(`&marker=latLng:${compactor.coordinates.lat},${compactor.coordinates.long}!colour:${color}!iwt:${string}`)
-        }
-        }else{
-          return coordinateArr.push(`&marker=latLng:${compactor.coordinates.lat},${compactor.coordinates.long}!colour:${color}!icon:fa-exclamation`)
-        }
+        let buffer = new Buffer(
+          `Compactor ID: ${compactor.ID}`
+          )
+        let string = buffer.toString('base64')
+        return coordinateArr.push(`&marker=latLng:${compactor.coordinates.lat},${compactor.coordinates.long}!colour:${color}!iwt:${string}`)
+        // if(compactor.description){
+        //     let buffer = new Buffer(compactor.description)
+        //     let string = buffer.toString('base64')
+        // if(compactor.alarmRaised){
+        //   return coordinateArr.push(`&marker=latLng:${compactor.coordinates.lat},${compactor.coordinates.long}!colour:${color}!iwt:${string}!icon:fa-exclamation`)
+        // }else{
+        //   return coordinateArr.push(`&marker=latLng:${compactor.coordinates.lat},${compactor.coordinates.long}!colour:${color}!iwt:${string}`)
+        // }
+        // }else{
+        //   return coordinateArr.push(`&marker=latLng:${compactor.coordinates.lat},${compactor.coordinates.long}!colour:${color}!icon:fa-exclamation`)
+        // }
       })
       var coordinates = coordinateArr.join('')
       var coordinates = `https://www.onemap.sg/amm/amm.html?mapStyle=Default&zoomLevel=20${coordinates}`
-      if(this.props.equipmentMap){
+      if(this.props.handleRedirectToMap){
         return(
           <div>
             <iframe src={coordinates} height="800vh" width="100%" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen"></iframe>

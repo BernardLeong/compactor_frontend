@@ -26,7 +26,13 @@ body{
   
 .pagination a:hover:not(.active) {background-color: #ddd;}
 
-
+.grid-container-login {
+    display: grid;
+    grid-auto-rows: auto;
+    grid-gap: 1px;
+    grid-template-rows: 5em 30em 5em;
+    grid-template-columns: 1fr 2fr 2fr 1fr;
+}
 .grid-container-compactor {
     display: grid;
     grid-auto-rows: auto;
@@ -39,8 +45,8 @@ body{
     display: grid;
     grid-auto-rows: auto;
     grid-gap: 1px;
-    grid-template-rows: 4.8em 50em 13em;
-    grid-template-columns: 20em 1fr 1fr auto;
+    grid-template-rows: 4.8em 16em 30em 13em;
+    grid-template-columns: 20em 1fr 1fr 1fr auto;
 }
 
 .grid-container-report {
@@ -58,6 +64,11 @@ body{
     grid-gap: 1px;
     grid-template-rows: 4.8em 50em 13em;
     grid-template-columns: 20em 1fr 1fr auto;
+}
+
+.grid-container-login-login{
+    grid-column : 2/4;
+    grid-row : 2/-1;
 }
 
 .grid-item-equipment-dashboard{
@@ -93,12 +104,17 @@ body{
 
 .grid-item-map-map{
     grid-column : 2/-1;
+    grid-row : 2/4;
+}
+
+.grid-item-map-information{
+    grid-column : 4/5;
     grid-row : 2/3;
 }
 
 .grid-item-map-legend{
     grid-column : 2/-1;
-    grid-row : 3/-1;
+    grid-row : 4/-1;
 }
 
 .grid-item-01-compactor {

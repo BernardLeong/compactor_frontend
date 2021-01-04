@@ -20,8 +20,8 @@ class GridContainer extends Component{
         {
             'alarmSection' : 'A',
             'compactorSection' : 'A', 
+            'currentCompactorID' : '',
             'filterSection' : '',
-            'allAlarmData' : [],
             'liveAllAlarmData' : [],
             'liveAlarmData' : [],
             'livecompactorData' : [],
@@ -377,7 +377,7 @@ class GridContainer extends Component{
             if(alarms.length < 5){
                 var maxPage = 1
             }else{
-                var maxPage = Math.round((alarms.length /5))
+                var maxPage = Math.ceil((alarms.length /5))
             }
             
             var range = []
@@ -419,6 +419,16 @@ class GridContainer extends Component{
         if(this.state.liveCompactorLoaded){
             
             var compactors = this.state.livecompactorData
+
+            var filteredSectionData = []
+            var currentSection = this.state.compactorSection
+            for(var i=0;i<compactors.length;i++){
+                if(compactors[i].sectionArea == currentSection){
+                    filteredSectionData.push(compactors[i])
+                }
+            }
+            compactors = filteredSectionData;
+
             var compactorsSort = compactors.reduce((r, a)=> {
                 r[a.ID] = r[a.ID] || [];
                 r[a.ID].push(a);
@@ -433,8 +443,11 @@ class GridContainer extends Component{
             compactors = compactorData
             var allCompactors = compactors
             if(this.state.handleRedirectToMap){
+                allCompactors = sortObjectsArray(allCompactors, 'ID')
                 var renderlistOfCompactorID = allCompactors.map(compactor => (
-                    <Container style={{cursor:'pointer'}} className="blueBorder adjustPaddingContent">
+                    <Container onClick={()=>{
+                        this.setState({currentCompactorID : compactor.ID})
+                    }} style={{cursor:'pointer'}} className="blueBorder adjustPaddingContent">
                         <Row>
                             <Col>{compactor.ID}</Col>
                         </Row>
@@ -478,34 +491,46 @@ class GridContainer extends Component{
 
             var compactorInfo = <tr><th>Loading ......</th></tr>
 
-            if(this.state.renderWeightInformation || this.state.renderEquipmentPage){
+            if(this.state.renderWeightInformation || this.state.renderEquipmentPage || this.state.handleRedirectToMap){
                 const chunky = (arr, size) =>
                 Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
                     arr.slice(i * size, i * size + size)
                 );
 
-                if(compactors.length < 5){
+                if(this.state.handleRedirectToMap){
+                    var maxLength = 3
+                }else{
+                    var maxLength = 5
+                }
+                if(compactors.length < maxLength){
                     var maxPage = 1
                 }else{
-                    var maxPage = Math.round((compactors.length /5))
+                    var maxPage = Math.ceil((compactors.length / maxLength))
                 }
-
                 var range = []
                 for(i=1;i<=maxPage;i++){
                     range.push(i)
                 }
 
-                var pages = range.map(page => <a onClick={()=>{this.setState(
-                    {
-                        paginationDefaultPage : page
-                    }
-                )}} style={{cursor:'pointer'}}>{page}</a>)
+                if(this.state.handleRedirectToMap){
+                    var pages = range.map(page => <a onClick={()=>{this.setState(
+                        {
+                            paginationDefaultPage : page
+                        }
+                    )}} style={{cursor:'pointer', fontSize: '0.6em'}}>{page}</a>)
+                }else{
+                    var pages = range.map(page => <a onClick={()=>{this.setState(
+                        {
+                            paginationDefaultPage : page
+                        }
+                    )}} style={{cursor:'pointer'}}>{page}</a>)
+                }
                 var paginationPages = 
                 <div class="pagination">
                 {pages}
               </div>
 
-                var paginatedCompactors = chunky(compactors,5)
+                var paginatedCompactors = chunky(compactors,maxLength)
                 var renderCompactors = paginatedCompactors[this.state.paginationDefaultPage -1]
                 compactorInfo = renderCompactors.map(compactor => (
                     <tr>
@@ -628,7 +653,6 @@ class GridContainer extends Component{
                 </Container>
                 <Container>
                     <Row>
-                        {/* <Col className='alarmRaisedNumber'>1000</Col> */}
                 <Col className='alarmRaisedNumber'>
                     {totalCollectedWeight}
                 </Col>
@@ -699,11 +723,35 @@ class GridContainer extends Component{
                          <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
                     </div>
                     {mapDashboard}
-                    <div className="grid-item grid-item-map-map">
-                        <Mapping filterSection={this.state.filterSection} equipmentMap={this.state.handleRedirectToMap} selectedAddress={this.state.selectedAddress} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
+                    <div className="grid-item grid-item-map-map whiteBG">
+
+                        <Mapping handleRedirectToMap={this.state.handleRedirectToMap} currentCompactorID={this.state.currentCompactorID} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />                        
                     </div>
+                    <div className="grid-item grid-item-map-information whiteBG">
+                        <div>
+                            <Table style={{fontSize : '0.7em', padding: '0.3px'}} striped bordered hover responsive size="sm"> 
+                                <thead>
+                                <tr>
+                                    <th>Equipment ID</th>
+                                    <th>TimeStamp</th>
+                                    <th>Collection Weight</th>
+                                    <th>Weight Percentage</th>
+                                    <th>Level</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {compactorInfo}
+                                </tbody>
+                            </Table>
+                            {paginationPages}
+                        </div>
+                    </div>
+                    {/* <div className="grid-item grid-item-map-map whiteBG">
+                Map
+                        <Mapping handleRedirectToMap={this.state.handleRedirectToMap} currentCompactorID={this.state.currentCompactorID} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />                        
+                    </div> */}
                     <div className="grid-item-map-legend whiteBG">
-                    <button>All Equipment</button>
+                    {/* <button>All Equipment</button>
                     <button onClick={()=>{
                         this.setState({
                             filterSection : 'A'
@@ -714,7 +762,7 @@ class GridContainer extends Component{
                             filterSection : 'B'
                         })
                     }}>Section B</button>
-                    <div>&nbsp;</div>
+                    <div>&nbsp;</div> */}
                     <Container>
                         <Row>
                             <Col style={{textAlign: 'center' , fontSize: '1.4em'}}>Legend</Col>
@@ -766,7 +814,7 @@ class GridContainer extends Component{
                     {dashboard} 
                     {weight}
                     {alarmsSection}
-                    <div className="grid-item grid-item-mapDashboard">
+                    <div className="grid-item grid-item-mapDashboard whiteBG">
                         <Mapping compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
                     </div>
                 </div>
