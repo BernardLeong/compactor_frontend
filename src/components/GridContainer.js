@@ -45,6 +45,7 @@ class GridContainer extends Component{
             'registeredUser' : false,
             'paginationDefaultPage' : 1,
             'paginationAlarmDefaultPage' : 1,
+            'paginationAlarmReportPage' : 1,
             'userTypeOption' : '',
             'username' : '',
             'password' : ''
@@ -369,14 +370,51 @@ if(this.state.handleRedirectToAdminPage){
                     filterAlarmData = []
                 }
 
-                allAlarmData = allAlarmData.map(alarm => (
+                //paginate here
+                const chunkyReportAlarm = (arr, size) =>
+                Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+                    arr.slice(i * size, i * size + size)
+                );
+
+                var maxLength = 5
+
+                if(allAlarmData.length < maxLength){
+                    var maxPage = 1
+                }else{
+                    var maxPage = Math.ceil((allAlarmData.length / maxLength))
+                }
+                var range = []
+                for(i=1;i<=maxPage;i++){
+                    range.push(i)
+                }
+
+                var alarmReportPaginate = range.map(page => <a onClick={()=>{this.setState(
+                    {
+                        paginationAlarmReportPage : page
+                    }
+                    )}} style={{cursor:'pointer'}}>{page}</a>)
+                    
+                    var paginationAlarmPages = 
+                    <div className="pagination">
+                        {alarmReportPaginate}
+                    </div>
+
+                if(allAlarmData.length <= 0){
+                    var renderAlarms = 
                     <tr>
-                         <th>{alarm.ID}</th>
-                         <th>{alarm.Status}</th>
-                         <th>{alarm.ts}</th>
-                         <th>{alarm.Type}</th>
-                     </tr>
-               ))
+                    </tr>
+                }else{
+                    var paginatedAlarms = chunkyReportAlarm(allAlarmData,maxLength)
+                    var renderAlarms = paginatedAlarms[this.state.paginationAlarmReportPage -1]
+                    allAlarmData = renderAlarms.map(al => (
+                        <tr>
+                            <th>{al.ID}</th>
+                            <th>{al.ts}</th>
+                            <th>{al.Type}</th>
+                            <th>{al.Status}</th>
+                        </tr>
+                    ))
+                }
                 return(
                     <div className="grid-container-report">
                           <div className='grid-item grid-item-01-compactor'>
@@ -462,6 +500,7 @@ if(this.state.handleRedirectToAdminPage){
                                         {allAlarmData}
                                         </tbody>
                                     </Table>
+                                    {paginationAlarmPages}
                                     </Col>
                                 </Row> 
                             </Container>
@@ -525,7 +564,6 @@ if(this.state.handleRedirectToAdminPage){
                 if(alarms.length <= 0){
                     var renderAlarms = 
                     <tr>
-
                     </tr>
                 }else{
                     var paginatedAlarms = chunkAlarm(alarms,5)
@@ -540,7 +578,6 @@ if(this.state.handleRedirectToAdminPage){
                     ))
                 }
             var noOfAlarms = alarms.length
-
         }
         if(this.state.liveCompactorLoaded){
             
