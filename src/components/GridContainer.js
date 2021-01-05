@@ -41,6 +41,7 @@ class GridContainer extends Component{
             'pressRightAlarmArrowWeight' : false,
             'pressLeftAlarmArrowWeight' : false,
             'handleRedirectToMap' : false,
+            'handleRedirectToAdminPage' : false,
             'paginationDefaultPage' : 1,
             'paginationAlarmDefaultPage' : 1
         }
@@ -50,6 +51,7 @@ class GridContainer extends Component{
         this.toggleRightArrow = this.toggleRightArrow.bind(this)
         this.toggleLeftArrow = this.toggleLeftArrow.bind(this)
         this.handleRedirectToMap = this.handleRedirectToMap.bind(this)
+        this.handleRedirectToAdminPage = this.handleRedirectToAdminPage.bind(this)
         this.renderReportPage = this.renderReportPage.bind(this)
         this.renderEquipmentPage = this.renderEquipmentPage.bind(this)
     }
@@ -114,6 +116,10 @@ class GridContainer extends Component{
         this.setState({handleRedirectToMap : true})
     }
 
+    handleRedirectToAdminPage(){
+        this.setState({handleRedirectToAdminPage : true})
+    }
+
     toggleAlarmRightArrow(){
         var sections = ['A','B']
         var countAlarm = this.state.countAlarm
@@ -175,6 +181,11 @@ class GridContainer extends Component{
     }
 
     render(){   
+        if(this.state.handleRedirectToAdminPage){
+            return(
+                <div>Hiii</div>
+            )
+        }
         var dashboard = 
         <div className="grid-item grid-item-sideDashboard whiteBG">
         <Container className="blueBG adjustPadding">
@@ -201,7 +212,7 @@ class GridContainer extends Component{
         </Container>
         <Container className="blueBorder adjustPaddingContent">
             <Row>
-                <Col>Admin</Col>
+                <Col style={{cursor:'pointer'}} onClick={this.handleRedirectToAdminPage} >Admin</Col>
             </Row>
         </Container>
 </div>

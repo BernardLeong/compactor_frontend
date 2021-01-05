@@ -123,7 +123,7 @@ class Mapping extends Component {
       if(this.props.handleRedirectToMap){
         return(
           <div>
-            <iframe src={coordinates} height="800vh" width="100%" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+            <iframe src={coordinates} height="730vh" width="100%" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
           </div>
         )
       }else{
