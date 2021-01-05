@@ -4,7 +4,7 @@ import './../css/compactorInfo.css'
 import 'react-calendar/dist/Calendar.css';
 import Mapping from './Mapping';
 import NavBarContent from './NavBarContent';
-import { Card, Table, Container, Row, Col } from 'react-bootstrap'
+import { Alert, Table, Container, Row, Col, Form, Button } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import Calendar from 'react-calendar';
@@ -42,8 +42,12 @@ class GridContainer extends Component{
             'pressLeftAlarmArrowWeight' : false,
             'handleRedirectToMap' : false,
             'handleRedirectToAdminPage' : false,
+            'registeredUser' : false,
             'paginationDefaultPage' : 1,
-            'paginationAlarmDefaultPage' : 1
+            'paginationAlarmDefaultPage' : 1,
+            'userTypeOption' : '',
+            'username' : '',
+            'password' : ''
         }
         this.renderWeightInformation = this.renderWeightInformation.bind(this)
         this.toggleAlarmLeftArrow = this.toggleAlarmLeftArrow.bind(this)
@@ -54,6 +58,9 @@ class GridContainer extends Component{
         this.handleRedirectToAdminPage = this.handleRedirectToAdminPage.bind(this)
         this.renderReportPage = this.renderReportPage.bind(this)
         this.renderEquipmentPage = this.renderEquipmentPage.bind(this)
+        this.handleRegisterUserType = this.handleRegisterUserType.bind(this)
+        this.handleRegisterCreditials = this.handleRegisterCreditials.bind(this)
+        this.handleRegisterUser = this.handleRegisterUser.bind(this)
     }
 
     componentDidMount(){
@@ -120,6 +127,43 @@ class GridContainer extends Component{
         this.setState({handleRedirectToAdminPage : true})
     }
 
+    handleRegisterUserType(event){ 
+        this.setState({ 
+            userTypeOption : event.target.value
+        });
+    }
+
+    handleRegisterCreditials(event){
+        var name = event.target.name
+        this.setState({ 
+            [name] : event.target.value
+        });
+    }
+
+    handleRegisterUser(){
+        var type = 'user'
+        if(this.state.userTypeOption == 'Enginner'){
+            type = 'serviceUser'
+        }
+
+        if(this.state.userTypeOption == 'Admin'){
+            type = 'admin'
+        }
+
+        var body = {
+            "username" : this.state.username,
+            "password" : this.state.password,
+            "type" : type
+        }
+
+        axios.post('http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/registerUser', body).then((result)=>{
+            console.log(result)
+            this.setState({registeredUser: result.data.success, error: result.data.error})
+        }).catch((err)=>{
+            console.log(err)
+        })
+    }
+
     toggleAlarmRightArrow(){
         var sections = ['A','B']
         var countAlarm = this.state.countAlarm
@@ -181,11 +225,6 @@ class GridContainer extends Component{
     }
 
     render(){   
-        if(this.state.handleRedirectToAdminPage){
-            return(
-                <div>Hiii</div>
-            )
-        }
         var dashboard = 
         <div className="grid-item grid-item-sideDashboard whiteBG">
         <Container className="blueBG adjustPadding">
@@ -216,6 +255,82 @@ class GridContainer extends Component{
             </Row>
         </Container>
 </div>
+
+if(this.state.handleRedirectToAdminPage){
+    if(this.state.registeredUser){
+        var message = 
+        <Alert variant='success'>
+            Successfully Registered User
+        </Alert>
+    }else{
+        var message = <span></span>
+    }
+    return(
+        <div className="grid-container-adminPage">
+            <div className='grid-item grid-item-01-compactor whiteBG'>
+                <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+            </div>
+            <div className="grid-item grid-container-adminPage-dashBoard whiteBG">
+
+                <Container className="blueBG adjustPadding">
+                    <Row>
+                        <Col style={{textAlign : 'center'}}>Admin</Col>
+                    </Row>
+                    </Container>
+                    <Container className="blueBorder adjustPaddingContent">
+                    <Row>
+                        <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
+                            this.setState({handleRedirectToAdminPage : false})
+                        }}>Dashboard</Col>
+                    </Row>
+                    </Container>
+            </div>
+            <div className="grid-item grid-container-adminPage-registerPage whiteBG">
+                <div>&nbsp;</div>
+                <Container>
+                    <Row>
+                        <Col style={{textAlign : 'center', fontSize: '1.4em'}}>Register User</Col>
+                    </Row>
+                </Container>
+                <div>&nbsp;</div>
+                <Container>
+                    <Row>
+                        <Col>
+                            {message}
+                            <Form>
+                                <Form.Group onChange={this.handleRegisterUserType} controlId="exampleForm.ControlSelect1">
+                                    <Form.Label>User Type</Form.Label>
+                                    <Form.Control as="select">
+                                    <option>User</option>
+                                    <option>Enginner</option>
+                                    <option>Admin</option>
+                                    </Form.Control>
+                                </Form.Group>
+                                <Form.Group controlId="formBasicEmail">
+                                <div><Form.Label>Username</Form.Label></div>
+                                    <Form.Control onChange={this.handleRegisterCreditials} name='username' type="username" placeholder="Enter username" />
+                                </Form.Group>
+                                <Form.Group controlId="formBasicPassword">
+                                    <Form.Label>Password</Form.Label>
+                                    <Form.Control onChange={this.handleRegisterCreditials} name='password' type="password" placeholder="Password" />
+                                </Form.Group>
+                                <Button onClick={this.handleRegisterUser} variant="primary">
+                                    Submit
+                                </Button>
+                                <span>&nbsp;</span>
+                                <Button onClick={()=>{
+                                    this.setState({handleRedirectToAdminPage : false})
+                                }} variant="primary">
+                                    Back
+                                </Button>
+                            </Form>
+                        </Col>
+                    </Row>
+                </Container>
+            </div>
+        </div>
+    )
+}
         if(this.state.liveAlarmsLoaded){
 
             var alarmsData = this.state.liveAlarmData

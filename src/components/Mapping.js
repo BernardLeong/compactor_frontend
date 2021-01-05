@@ -111,13 +111,13 @@ class Mapping extends Component {
       if(this.props.handleRedirectToMap){
         return(
           <div>
-            <iframe src={coordinates} height="700vh" width="100%" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+            <iframe src={coordinates} height="700vh" width="100%" scrolling="no" frameBorder="0" allowFullScreen="allowfullscreen"></iframe>
           </div>
         )
       }else{
         return(
           <div>
-            <iframe src={coordinates} height="1100vh" width="100%" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+            <iframe src={coordinates} height="1100vh" width="100%" scrolling="no" frameBorder="0" allowFullScreen="allowfullscreen"></iframe>
           </div>
         )
       }

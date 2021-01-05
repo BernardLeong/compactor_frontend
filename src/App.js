@@ -15,7 +15,7 @@ class App extends Component {
       <Router>
         <div>
           <Route path='/login' component={Login} />
-          <Route path='/locationData' component={GridContainer} />>
+          <Route path='/locationData' component={GridContainer} />
         </div>
       </Router>
 
