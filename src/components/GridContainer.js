@@ -403,7 +403,7 @@ class GridContainer extends Component{
                 )}} style={{cursor:'pointer'}}>{page}</a>)
                 
                 var paginationAlarmPages = 
-                <div class="pagination">
+                <div className="pagination">
             {alarmPages}
           </div>
 
@@ -537,7 +537,7 @@ class GridContainer extends Component{
                     )}} style={{cursor:'pointer'}}>{page}</a>)
                 }
                 var paginationPages = 
-                <div class="pagination">
+                <div className="pagination">
                 {pages}
               </div>
 

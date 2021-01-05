@@ -87,7 +87,6 @@ class NavBarContent extends Component {
                   alt="React Bootstrap logo"
                 />
             </Navbar.Brand>
-            <Nav.Link target="_blank" href="https://www.sembcorp.com/en/"><span className='welcome'>Home</span></Nav.Link>
             <Form style={{cursor:'pointer'}} inline>
               &nbsp;&nbsp;<span onClick={this.logout} className='welcome'>Log Out</span>
             </Form>

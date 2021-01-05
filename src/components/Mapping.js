@@ -66,7 +66,6 @@ class Mapping extends Component {
           }
         }
       }
-      console.log(liveCompactorData)
   
       if(compactorArr.length > 0 && (filterSection !== '')){
         liveCompactorData = compactorArr
@@ -106,24 +105,13 @@ class Mapping extends Component {
           )
         let string = buffer.toString('base64')
         return coordinateArr.push(`&marker=latLng:${compactor.coordinates.lat},${compactor.coordinates.long}!colour:${color}!iwt:${string}`)
-        // if(compactor.description){
-        //     let buffer = new Buffer(compactor.description)
-        //     let string = buffer.toString('base64')
-        // if(compactor.alarmRaised){
-        //   return coordinateArr.push(`&marker=latLng:${compactor.coordinates.lat},${compactor.coordinates.long}!colour:${color}!iwt:${string}!icon:fa-exclamation`)
-        // }else{
-        //   return coordinateArr.push(`&marker=latLng:${compactor.coordinates.lat},${compactor.coordinates.long}!colour:${color}!iwt:${string}`)
-        // }
-        // }else{
-        //   return coordinateArr.push(`&marker=latLng:${compactor.coordinates.lat},${compactor.coordinates.long}!colour:${color}!icon:fa-exclamation`)
-        // }
       })
       var coordinates = coordinateArr.join('')
       var coordinates = `https://www.onemap.sg/amm/amm.html?mapStyle=Default&zoomLevel=20${coordinates}`
       if(this.props.handleRedirectToMap){
         return(
           <div>
-            <iframe src={coordinates} height="730vh" width="100%" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+            <iframe src={coordinates} height="700vh" width="100%" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
           </div>
         )
       }else{
