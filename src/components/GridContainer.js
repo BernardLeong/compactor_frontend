@@ -376,7 +376,7 @@ if(this.state.handleRedirectToAdminPage){
                     arr.slice(i * size, i * size + size)
                 );
 
-                var maxLength = 5
+                var maxLength = 11
 
                 if(allAlarmData.length < maxLength){
                     var maxPage = 1
@@ -566,7 +566,7 @@ if(this.state.handleRedirectToAdminPage){
                     <tr>
                     </tr>
                 }else{
-                    var paginatedAlarms = chunkAlarm(alarms,5)
+                    var paginatedAlarms = chunkAlarm(alarms,4)
                     var renderAlarms = paginatedAlarms[this.state.paginationAlarmDefaultPage -1]
                     var alarmTable = renderAlarms.map(al => (
                         <tr>
@@ -663,7 +663,7 @@ if(this.state.handleRedirectToAdminPage){
                 if(this.state.handleRedirectToMap){
                     var maxLength = 3
                 }else{
-                    var maxLength = 5
+                    var maxLength = 4
                 }
                 if(compactors.length < maxLength){
                     var maxPage = 1
@@ -693,40 +693,45 @@ if(this.state.handleRedirectToAdminPage){
                 {pages}
               </div>
 
-                var paginatedCompactors = chunky(compactors,maxLength)
-                var renderCompactors = paginatedCompactors[this.state.paginationDefaultPage -1]
-                compactorInfo = renderCompactors.map(compactor => (
-                    <tr>
-                        <th>{compactor.ID}</th>
-                        <th>{compactor.ts}</th>
-                        <th>{compactor.Weight}</th>
-                        <th>{compactor['FilledLevel-Weight']}</th>
-                        <th>{Math.round(compactor['FilledLevel-Weight']) < 25 ? 
-                            <span><img
-                            src={require('./greendot.png')}
-                            width="30"
-                            height="30"
-                            className="d-inline-block align-top"
-                            alt="React Bootstrap logo"
-                            /></span> : 
-                            Math.round(compactor['FilledLevel-Weight']) < 50 ? 
-                            <span><img
-                            src={require('./yellowdot.png')}
-                            width="30"
-                            height="30"
-                            className="d-inline-block align-top"
-                            alt="React Bootstrap logo"
-                            /></span> : 
-                            <span><img
-                            src={require('./reddot.png')}
-                            width="30"
-                            height="30"
-                            className="d-inline-block align-top"
-                            alt="React Bootstrap logo"
-                            /></span>
-                         }</th>
-                     </tr>
-               ))
+                if(compactors.length <= 0){
+                    compactorInfo = <tr><th></th></tr>
+                }else{
+                    var paginatedCompactors = chunky(compactors,maxLength)
+                    var renderCompactors = paginatedCompactors[this.state.paginationDefaultPage -1]
+                    compactorInfo = renderCompactors.map(compactor => (
+                        <tr>
+                            <th>{compactor.ID}</th>
+                            <th>{compactor.ts}</th>
+                            <th>{compactor.Weight}</th>
+                            <th>{compactor['FilledLevel-Weight']}</th>
+                            <th>{Math.round(compactor['FilledLevel-Weight']) < 25 ? 
+                                <span><img
+                                src={require('./greendot.png')}
+                                width="30"
+                                height="30"
+                                className="d-inline-block align-top"
+                                alt="React Bootstrap logo"
+                                /></span> : 
+                                Math.round(compactor['FilledLevel-Weight']) < 50 ? 
+                                <span><img
+                                src={require('./yellowdot.png')}
+                                width="30"
+                                height="30"
+                                className="d-inline-block align-top"
+                                alt="React Bootstrap logo"
+                                /></span> : 
+                                <span><img
+                                src={require('./reddot.png')}
+                                width="30"
+                                height="30"
+                                className="d-inline-block align-top"
+                                alt="React Bootstrap logo"
+                                /></span>
+                             }</th>
+                         </tr>
+                   ))
+                }
+                
             }
           }
 

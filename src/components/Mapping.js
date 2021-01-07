@@ -91,6 +91,7 @@ class Mapping extends Component {
       }
 
       var coordinateArr = []
+      console.log(liveCompactorData)
       liveCompactorData.map(compactor => {
         let percentage = compactor['FilledLevel-Weight']
         if(percentage < 25){
