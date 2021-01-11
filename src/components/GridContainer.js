@@ -591,7 +591,6 @@ if(this.state.handleRedirectToAdminPage){
                 }
             }
             compactors = filteredSectionData;
-
             var compactorsSort = compactors.reduce((r, a)=> {
                 r[a.ID] = r[a.ID] || [];
                 r[a.ID].push(a);
@@ -696,6 +695,15 @@ if(this.state.handleRedirectToAdminPage){
                 if(compactors.length <= 0){
                     compactorInfo = <tr><th></th></tr>
                 }else{
+                    for(var i=0;i<compactors.length;i++){
+                        if(compactors[i]['Weight'] <= 0){
+                            compactors[i]['Weight'] = 0
+                            compactors[i]['FilledLevel-Weight'] = 0
+                        }else{
+                            compactors[i]['Weight'] = Math.round(compactors[i]['Weight'])
+                            compactors[i]['FilledLevel-Weight'] = Math.round(compactors[i]['FilledLevel-Weight'])
+                        }
+                    }
                     var paginatedCompactors = chunky(compactors,maxLength)
                     var renderCompactors = paginatedCompactors[this.state.paginationDefaultPage -1]
                     compactorInfo = renderCompactors.map(compactor => (
