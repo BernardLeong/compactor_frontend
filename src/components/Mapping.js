@@ -91,7 +91,15 @@ class Mapping extends Component {
       }
 
       var coordinateArr = []
-      console.log(liveCompactorData)
+
+      var filterOffNoCoordinates = []
+      for(var i=0;i<liveCompactorData.length;i++){
+        if(liveCompactorData[i].coordinates){
+          filterOffNoCoordinates.push(liveCompactorData[i])
+        }
+      }
+      //filter off ID not in master lists when presenting coordinates
+      liveCompactorData = filterOffNoCoordinates
       liveCompactorData.map(compactor => {
         let percentage = compactor['FilledLevel-Weight']
         if(percentage < 25){
