@@ -675,7 +675,7 @@ if(this.state.handleRedirectToAdminPage){
                     var maxLength = 5
                 }
                 //mark
-                compactors = sortObjectsArray(compactors, 'ts')
+                compactors = sortObjectsArray(compactors, 'ts', {order: 'desc'})
 
                 if(this.state.equipmentSearchResult !== ''){
                     //filter using search bar result
