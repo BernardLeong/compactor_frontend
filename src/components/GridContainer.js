@@ -4,7 +4,7 @@ import './../css/compactorInfo.css'
 import 'react-calendar/dist/Calendar.css';
 import Mapping from './Mapping';
 import NavBarContent from './NavBarContent';
-import { Alert, Table, Container, Row, Col, Form, Button } from 'react-bootstrap'
+import { Alert, Table, Container, Row, Col, Form, Button, InputGroup, FormControl } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import Calendar from 'react-calendar';
@@ -674,7 +674,25 @@ if(this.state.handleRedirectToAdminPage){
                 }else{
                     var maxLength = 5
                 }
-                
+                //mark
+                compactors = sortObjectsArray(compactors, 'ts')
+
+                if(this.state.equipmentSearchResult !== ''){
+                    //filter using search bar result
+                    //filter only ID and ts
+                    var filterSearch = []
+                    for(var i=0;i<compactors.length;i++){
+                        var compactorID = compactors[i].ID
+                        var timestamp = compactors[i].ts
+                        if(compactorID.includes(this.state.equipmentSearchResult) || timestamp.includes(this.state.equipmentSearchResult)){
+                            filterSearch.push(compactors[i])
+                        }
+                    }
+                    if(filterSearch.length > 0){
+                        compactors = filterSearch
+                    }
+                }
+
                 if(compactors.length < maxLength){
                     var maxPage = 1
                 }else{
@@ -715,23 +733,6 @@ if(this.state.handleRedirectToAdminPage){
                             compactors[i]['FilledLevel-Weight'] = Math.round(compactors[i]['FilledLevel-Weight'])
                         }
                     }
-                    compactors = sortObjectsArray(compactors, 'ts')
-                    //mark
-                    if(this.state.equipmentSearchResult !== ''){
-                        //filter only ID and ts
-                        var filterSearch = []
-                        for(var i=0;i<compactors.length;i++){
-                            var compactorID = compactors[i].ID
-                            var timestamp = compactors[i].ts
-                            if(compactorID.includes(this.state.equipmentSearchResult) || timestamp.includes(this.state.equipmentSearchResult)){
-                                filterSearch.push(compactors[i])
-                            }
-                        }
-                        if(filterSearch.length > 0){
-                            compactors = filterSearch
-                        }
-                    }
-                    //filter using search bar result
                         var paginatedCompactors = chunky(compactors,maxLength)
                         var renderCompactors = paginatedCompactors[this.state.paginationDefaultPage -1]
                         compactorInfo = renderCompactors.map(compactor => (
@@ -805,12 +806,12 @@ if(this.state.handleRedirectToAdminPage){
                             <Col>    
                             </Col>
                             <Col>
-                            {/* mark */}
-                                <Form>
-                                    <Form.Group controlId="formBasicEmail">
-                                            <Form.Control onChange={this.handleEquipmentSearch} name='equipmentSearchResult' placeholder="Search" />
-                                    </Form.Group>
-                                </Form>
+                                <InputGroup className="mb-3">
+                                    <FormControl onChange={this.handleEquipmentSearch}
+                                    name="equipmentSearchResult"
+                                    placeholder="Search"
+                                    />
+                                </InputGroup>
                             </Col>
                         </Row>
                     </Container>
