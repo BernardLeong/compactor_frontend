@@ -21,6 +21,7 @@ class GridContainer extends Component{
             'alarmSection' : 'A',
             'compactorSection' : 'A', 
             'currentCompactorID' : '',
+            'equipmentSearchResult' : '',
             'filterSection' : '',
             'liveAllAlarmData' : [],
             'liveAlarmData' : [],
@@ -62,6 +63,7 @@ class GridContainer extends Component{
         this.handleRegisterUserType = this.handleRegisterUserType.bind(this)
         this.handleRegisterCreditials = this.handleRegisterCreditials.bind(this)
         this.handleRegisterUser = this.handleRegisterUser.bind(this)
+        this.handleEquipmentSearch = this.handleEquipmentSearch.bind(this)
     }
 
     componentDidMount(){
@@ -135,6 +137,13 @@ class GridContainer extends Component{
     }
 
     handleRegisterCreditials(event){
+        var name = event.target.name
+        this.setState({ 
+            [name] : event.target.value
+        });
+    }
+
+    handleEquipmentSearch(event){
         var name = event.target.name
         this.setState({ 
             [name] : event.target.value
@@ -582,7 +591,6 @@ if(this.state.handleRedirectToAdminPage){
         if(this.state.liveCompactorLoaded){
             
             var compactors = this.state.livecompactorData
-
             var filteredSectionData = []
             var currentSection = this.state.compactorSection
             for(var i=0;i<compactors.length;i++){
@@ -661,9 +669,12 @@ if(this.state.handleRedirectToAdminPage){
 
                 if(this.state.handleRedirectToMap){
                     var maxLength = 3
+                }else if(this.state.renderEquipmentPage){
+                    var maxLength = 8
                 }else{
-                    var maxLength = 4
+                    var maxLength = 5
                 }
+                
                 if(compactors.length < maxLength){
                     var maxPage = 1
                 }else{
@@ -704,46 +715,63 @@ if(this.state.handleRedirectToAdminPage){
                             compactors[i]['FilledLevel-Weight'] = Math.round(compactors[i]['FilledLevel-Weight'])
                         }
                     }
-                    var paginatedCompactors = chunky(compactors,maxLength)
-                    var renderCompactors = paginatedCompactors[this.state.paginationDefaultPage -1]
-                    compactorInfo = renderCompactors.map(compactor => (
-                        <tr>
-                            <th>{compactor.ID}</th>
-                            <th>{compactor.ts}</th>
-                            <th>{compactor.Weight}</th>
-                            <th>{compactor['FilledLevel-Weight']}</th>
-                            <th>{Math.round(compactor['FilledLevel-Weight']) < 25 ? 
-                                <span><img
-                                src={require('./greendot.png')}
-                                width="30"
-                                height="30"
-                                className="d-inline-block align-top"
-                                alt="React Bootstrap logo"
-                                /></span> : 
-                                Math.round(compactor['FilledLevel-Weight']) < 50 ? 
-                                <span><img
-                                src={require('./yellowdot.png')}
-                                width="30"
-                                height="30"
-                                className="d-inline-block align-top"
-                                alt="React Bootstrap logo"
-                                /></span> : 
-                                <span><img
-                                src={require('./reddot.png')}
-                                width="30"
-                                height="30"
-                                className="d-inline-block align-top"
-                                alt="React Bootstrap logo"
-                                /></span>
-                             }</th>
-                         </tr>
-                   ))
+                    compactors = sortObjectsArray(compactors, 'ts')
+                    //mark
+                    if(this.state.equipmentSearchResult !== ''){
+                        //filter only ID and ts
+                        var filterSearch = []
+                        for(var i=0;i<compactors.length;i++){
+                            var compactorID = compactors[i].ID
+                            var timestamp = compactors[i].ts
+                            if(compactorID.includes(this.state.equipmentSearchResult) || timestamp.includes(this.state.equipmentSearchResult)){
+                                filterSearch.push(compactors[i])
+                            }
+                        }
+                        if(filterSearch.length > 0){
+                            compactors = filterSearch
+                        }
+                    }
+                    //filter using search bar result
+                        var paginatedCompactors = chunky(compactors,maxLength)
+                        var renderCompactors = paginatedCompactors[this.state.paginationDefaultPage -1]
+                        compactorInfo = renderCompactors.map(compactor => (
+                            <tr>
+                                <th>{compactor.ts}</th>
+                                <th>{compactor.ID}</th>
+                                <th>{compactor.Weight}</th>
+                                <th>{compactor['FilledLevel-Weight']}</th>
+                                <th>{Math.round(compactor['FilledLevel-Weight']) < 25 ? 
+                                    <span><img
+                                    src={require('./greendot.png')}
+                                    width="30"
+                                    height="30"
+                                    className="d-inline-block align-top"
+                                    alt="React Bootstrap logo"
+                                    /></span> : 
+                                    Math.round(compactor['FilledLevel-Weight']) < 50 ? 
+                                    <span><img
+                                    src={require('./yellowdot.png')}
+                                    width="30"
+                                    height="30"
+                                    className="d-inline-block align-top"
+                                    alt="React Bootstrap logo"
+                                    /></span> : 
+                                    <span><img
+                                    src={require('./reddot.png')}
+                                    width="30"
+                                    height="30"
+                                    className="d-inline-block align-top"
+                                    alt="React Bootstrap logo"
+                                    /></span>
+                                 }</th>
+                             </tr>
+                    ))
                 }
-                
             }
           }
 
           if(this.state.renderEquipmentPage){
+              console.log(this.state.equipmentSearchResult)
             return(
                 <div className="grid-container-equipment">
                     <div className='grid-item grid-item-01-compactor'>
@@ -768,14 +796,32 @@ if(this.state.handleRedirectToAdminPage){
                         </Container>
                     </div>
                     <div className="grid-item-equipment-map whiteBG">
+                    <Container>
+                        <Row>
+                            <Col>
+                            </Col>
+                            <Col>    
+                            </Col>
+                            <Col>    
+                            </Col>
+                            <Col>
+                            {/* mark */}
+                                <Form>
+                                    <Form.Group controlId="formBasicEmail">
+                                            <Form.Control onChange={this.handleEquipmentSearch} name='equipmentSearchResult' placeholder="Search" />
+                                    </Form.Group>
+                                </Form>
+                            </Col>
+                        </Row>
+                    </Container>
                     <Table striped bordered hover responsive> 
                         <thead>
                         <tr>
-                            <th>Equipment ID</th>
-                            <th>TimeStamp</th>
-                            <th>Collection Weight</th>
-                            <th>Weight Percentage</th>
-                            <th>Level</th>
+                            <th style={{textAlign:'center'}}>TimeStamp</th>
+                            <th style={{textAlign:'center'}}>Equipment ID</th>
+                            <th style={{textAlign:'center'}}>Collection Weights</th>
+                            <th style={{textAlign:'center'}}>Weight Percentage</th>
+                            <th style={{textAlign:'center'}}>Level</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -798,13 +844,12 @@ if(this.state.handleRedirectToAdminPage){
                         <Col style={{textAlign: 'center', fontSize : '1.4em'}}>Collection Weight</Col>
                     </Row>
                     </Container>
-                    <div>&nbsp;</div>
                 </div>
-                <Table striped bordered hover responsive> 
+                <Table style={{fontSize : '0.85em'}} striped bordered hover responsive> 
                     <thead>
                     <tr>
-                        <th>Equipment ID</th>
                         <th>TimeStamp</th>
+                        <th>Equipment ID</th>
                         <th>Collection Weight</th>
                         <th>Weight Percentage</th>
                         <th>Level</th>
@@ -870,7 +915,7 @@ if(this.state.handleRedirectToAdminPage){
             <div className="grid-item grid-item-alarmDashboard whiteBG">
                 <Container>
                     <Row>
-                        <Col className='alarmTitle'>Alarm</Col>
+                        <Col className='alarmTitle'>No. of Alarms</Col>
                     </Row>
                 </Container>
                 <Container>
@@ -927,18 +972,6 @@ if(this.state.handleRedirectToAdminPage){
                         <Mapping handleRedirectToMap={this.state.handleRedirectToMap} currentCompactorID={this.state.currentCompactorID} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />                        
                     </div> */}
                     <div className="grid-item-map-legend whiteBG">
-                    {/* <button>All Equipment</button>
-                    <button onClick={()=>{
-                        this.setState({
-                            filterSection : 'A'
-                        })
-                    }}>Section A</button>
-                    <button onClick={()=>{
-                        this.setState({
-                            filterSection : 'B'
-                        })
-                    }}>Section B</button>
-                    <div>&nbsp;</div> */}
                     <Container>
                         <Row>
                             <Col style={{textAlign: 'center' , fontSize: '1.4em'}}>Legend</Col>
