@@ -404,7 +404,7 @@ if(this.state.handleRedirectToAdminPage){
                     )}} style={{cursor:'pointer'}}>{page}</a>)
                     
                     var paginationAlarmPages = 
-                    <div className="pagination">
+                    <div style={{fontSize: '0.8em'}} className="pagination">
                         {alarmReportPaginate}
                     </div>
 
@@ -542,12 +542,13 @@ if(this.state.handleRedirectToAdminPage){
                     alarms.push(alarmsData[i])
                 }
             }
-
+            //mark
             var chunkAlarm = (arr, size) =>
             Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
-                arr.slice(i * size, i * size + size)
+            arr.slice(i * size, i * size + size)
             );
-
+            //mark
+            alarms = sortObjectsArray(alarms, 'ts', {order: 'desc'})
             if(alarms.length < 5){
                 var maxPage = 1
             }else{
@@ -566,7 +567,7 @@ if(this.state.handleRedirectToAdminPage){
                 )}} style={{cursor:'pointer'}}>{page}</a>)
                 
                 var paginationAlarmPages = 
-                <div className="pagination">
+                <div style={{fontSize: '0.8em'}} className="pagination">
             {alarmPages}
           </div>
 
@@ -575,7 +576,7 @@ if(this.state.handleRedirectToAdminPage){
                     <tr>
                     </tr>
                 }else{
-                    var paginatedAlarms = chunkAlarm(alarms,4)
+                    var paginatedAlarms = chunkAlarm(alarms,5)
                     var renderAlarms = paginatedAlarms[this.state.paginationAlarmDefaultPage -1]
                     var alarmTable = renderAlarms.map(al => (
                         <tr>
@@ -717,7 +718,7 @@ if(this.state.handleRedirectToAdminPage){
                     )}} style={{cursor:'pointer'}}>{page}</a>)
                 }
                 var paginationPages = 
-                <div className="pagination">
+                <div style={{fontSize: '0.8em'}} className="pagination">
                 {pages}
               </div>
 
@@ -846,7 +847,7 @@ if(this.state.handleRedirectToAdminPage){
                     </Row>
                     </Container>
                 </div>
-                <Table style={{fontSize : '0.85em'}} striped bordered hover responsive> 
+                <Table style={{fontSize : '0.9em'}} striped bordered hover> 
                     <thead>
                     <tr>
                         <th>TimeStamp</th>
@@ -892,10 +893,10 @@ if(this.state.handleRedirectToAdminPage){
             </div>
         }
         if(this.state.renderAlarmInformation){
-            
+            //mark
             var alarmsSection = 
             <div className="grid-item grid-item-alarmDashboard whiteBG">
-                 <Table striped bordered hover>
+                 <Table style={{fontSize: '0.9em'}} striped bordered hover>
                     <thead>
                     <tr>
                         <th>Equipment ID</th>
