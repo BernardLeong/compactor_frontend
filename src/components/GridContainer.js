@@ -202,7 +202,9 @@ class GridContainer extends Component{
         count = count -1
         this.setState({count : count})
         var currentSection = sections[count]
-        this.setState({compactorSection : currentSection, pressRightArrowWeight : true, pressLeftArrowWeight : false})
+        if(currentSection){
+            this.setState({compactorSection : currentSection, pressRightArrowWeight : true, pressLeftArrowWeight : false})
+        }
     }
 
     toggleLeftArrow(){
@@ -211,7 +213,9 @@ class GridContainer extends Component{
         count = count + 1
         this.setState({count : count})
         var currentSection = sections[count]
-        this.setState({compactorSection : currentSection, pressRightArrowWeight : false, pressLeftArrowWeight : true})
+        if(currentSection){
+            this.setState({compactorSection : currentSection, pressRightArrowWeight : false, pressLeftArrowWeight : true})
+        }
     }
 
     renderWeightInformation(){
