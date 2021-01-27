@@ -18,8 +18,8 @@ class GridContainer extends Component{
         super(props)
         this.state = 
         {
-            'alarmSection' : 'A',
-            'compactorSection' : 'A', 
+            'alarmSection' : 'CBM',
+            'compactorSection' : 'CBM', 
             'currentCompactorID' : '',
             'equipmentSearchResult' : '',
             'filterSection' : '',
@@ -175,25 +175,29 @@ class GridContainer extends Component{
     }
 
     toggleAlarmRightArrow(){
-        var sections = ['A','B']
+        var sections = ['CBM']
         var countAlarm = this.state.countAlarm
         countAlarm = countAlarm +1
         this.setState({countAlarm : countAlarm})
         var currentSection = sections[countAlarm]
-        this.setState({alarmSection : currentSection, pressRightAlarmArrowWeight : true, pressLeftAlarmArrowWeight : false})
+        if(currentSection){
+            this.setState({alarmSection : currentSection, pressRightAlarmArrowWeight : true, pressLeftAlarmArrowWeight : false})
+        }
     }
 
     toggleAlarmLeftArrow(){
-        var sections = ['A','B']
+        var sections = ['CBM']
         var countAlarm = this.state.countAlarm
         countAlarm = countAlarm -1
         this.setState({countAlarm : countAlarm})
         var currentSection = sections[countAlarm]
-        this.setState({alarmSection : currentSection, pressRightAlarmArrowWeight : false, pressLeftAlarmArrowWeight : true})
+        if(currentSection){
+            this.setState({alarmSection : currentSection, pressRightAlarmArrowWeight : false, pressLeftAlarmArrowWeight : true})
+        }
     }
 
     toggleRightArrow(){
-        var sections = ['A','B']
+        var sections = ['CBM']
         var count = this.state.count
         count = count -1
         this.setState({count : count})
@@ -202,7 +206,7 @@ class GridContainer extends Component{
     }
 
     toggleLeftArrow(){
-        var sections = ['A','B']
+        var sections = ['CBM']
         var count = this.state.count
         count = count + 1
         this.setState({count : count})
@@ -534,7 +538,7 @@ if(this.state.handleRedirectToAdminPage){
             if(this.state.pressLeftAlarmArrowWeight || this.state.pressRightAlarmArrowWeight){
                 var alarmSection = this.state.alarmSection
             }else{
-                var alarmSection = 'A'
+                var alarmSection = 'CBM'
             }
 
             for(i=0;i<alarmsData.length;i++){
