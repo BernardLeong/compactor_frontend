@@ -102,9 +102,9 @@ class Mapping extends Component {
       liveCompactorData = filterOffNoCoordinates
       liveCompactorData.map(compactor => {
         let percentage = compactor['FilledLevel-Weight']
-        if(percentage < 25){
+        if(percentage <= 70){
           color = 'green'
-        }else if(percentage < 50){
+        }else if(percentage <= 90){
           color = 'lightgreen'
         }else{
           color = 'red'

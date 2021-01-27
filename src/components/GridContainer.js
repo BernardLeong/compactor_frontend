@@ -508,8 +508,8 @@ if(this.state.handleRedirectToAdminPage){
                                         <thead>
                                         <tr>
                                             <th>Equipment ID</th>
-                                            <th>Alarm Status</th>
-                                            <th>Alarm TimeStamp</th>
+                                            <th>Alarm Trigger Timestamp</th>
+                                            <th>Alarm Type</th>
                                             <th>Fault Type</th>
                                         </tr>
                                         </thead>
@@ -588,8 +588,8 @@ if(this.state.handleRedirectToAdminPage){
                     var renderAlarms = paginatedAlarms[this.state.paginationAlarmDefaultPage -1]
                     var alarmTable = renderAlarms.map(al => (
                         <tr>
-                            <th>{al.ID}</th>
                             <th>{al.ts}</th>
+                            <th>{al.ID}</th>
                             <th>{al.Type}</th>
                             <th>{al.Status}</th>
                         </tr>
@@ -746,11 +746,11 @@ if(this.state.handleRedirectToAdminPage){
                         var renderCompactors = paginatedCompactors[this.state.paginationDefaultPage -1]
                         compactorInfo = renderCompactors.map(compactor => (
                             <tr>
-                                <th>{compactor.ts}</th>
-                                <th>{compactor.ID}</th>
-                                <th>{compactor.Weight}</th>
-                                <th>{compactor['FilledLevel-Weight']}</th>
-                                <th>{Math.round(compactor['FilledLevel-Weight']) < 25 ? 
+                                <th style={{textAlign : 'center'}}>{compactor.ts}</th>
+                                <th style={{textAlign : 'center'}}>{compactor.ID}</th>
+                                <th style={{textAlign : 'center'}}>{compactor.Weight}</th>
+                                <th style={{textAlign : 'center'}}>{compactor['FilledLevel-Weight']}</th>
+                                <th style={{textAlign : 'center'}}>{Math.round(compactor['FilledLevel-Weight']) <= 70 ? 
                                     <span><img
                                     src={require('./greendot.png')}
                                     width="30"
@@ -758,7 +758,7 @@ if(this.state.handleRedirectToAdminPage){
                                     className="d-inline-block align-top"
                                     alt="React Bootstrap logo"
                                     /></span> : 
-                                    Math.round(compactor['FilledLevel-Weight']) < 50 ? 
+                                    Math.round(compactor['FilledLevel-Weight']) <= 90 ? 
                                     <span><img
                                     src={require('./yellowdot.png')}
                                     width="30"
@@ -829,8 +829,8 @@ if(this.state.handleRedirectToAdminPage){
                         <tr>
                             <th style={{textAlign:'center'}}>TimeStamp</th>
                             <th style={{textAlign:'center'}}>Equipment ID</th>
-                            <th style={{textAlign:'center'}}>Collection Weights</th>
-                            <th style={{textAlign:'center'}}>Weight Percentage</th>
+                            <th style={{textAlign:'center'}}>Collected weight (KG)</th>
+                            <th style={{textAlign:'center'}}>Collected weight (%)</th>
                             <th style={{textAlign:'center'}}>Level</th>
                         </tr>
                         </thead>
@@ -847,22 +847,14 @@ if(this.state.handleRedirectToAdminPage){
           if(this.state.renderWeightInformation){
             var weight = 
             <div className="grid-item grid-item-weightDashboard whiteBG">
-                <div>
-                    <div>&nbsp;</div>
-                    <Container>
-                    <Row>
-                        <Col style={{textAlign: 'center', fontSize : '1.4em'}}>Collection Weight</Col>
-                    </Row>
-                    </Container>
-                </div>
                 <Table style={{fontSize : '0.9em'}} striped bordered hover> 
                     <thead>
                     <tr>
-                        <th>TimeStamp</th>
-                        <th>Equipment ID</th>
-                        <th>Collection Weight</th>
-                        <th>Weight Percentage</th>
-                        <th>Level</th>
+                        <th style={{textAlign : 'center'}}>TimeStamp</th>
+                        <th style={{textAlign : 'center'}}>Equipment ID</th>
+                        <th style={{textAlign : 'center'}}>Collected weight (KG)</th>
+                        <th style={{textAlign : 'center'}}>Collected weight (%)</th>
+                        <th style={{textAlign : 'center'}}>Level</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -907,8 +899,8 @@ if(this.state.handleRedirectToAdminPage){
                  <Table style={{fontSize: '0.9em'}} striped bordered hover>
                     <thead>
                     <tr>
+                        <th>TimeStamp</th>
                         <th>Equipment ID</th>
-                        <th>Date</th>
                         <th>Failure Mode</th>
                         <th>Alarm Status</th>
                     </tr>
@@ -1016,9 +1008,9 @@ if(this.state.handleRedirectToAdminPage){
                     <div>&nbsp;</div>
                     <Container>
                         <Row>
-                            <Col style={{textAlign: 'center'}}>Compactor less than 25%</Col>
-                            <Col style={{textAlign: 'center'}}>Compactor less than 50%</Col>
-                            <Col style={{textAlign: 'center'}}>Compactor more than 75%</Col>
+                            <Col style={{textAlign: 'center'}}>Less than 70%</Col>
+                            <Col style={{textAlign: 'center'}}>70 – 90%</Col>
+                            <Col style={{textAlign: 'center'}}>More than 90%</Col>
                         </Row>
                     </Container>
                     </div>
