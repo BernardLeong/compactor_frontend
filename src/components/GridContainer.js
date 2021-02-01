@@ -11,6 +11,8 @@ import Calendar from 'react-calendar';
 const sortObjectsArray = require('sort-objects-array');
 const uniq = require("uniq")
 const moment = require("moment")
+const CryptoJS = require("crypto-js");
+const cryptKey = "someKey"
 
 const axios = require('axios');
 class GridContainer extends Component{
@@ -360,6 +362,14 @@ if(this.state.handleRedirectToAdminPage){
                 var starttime = this.state.selectStartDate
                 var endtime = this.state.selectEndDate
 
+                var downloadUrl = false
+                if(starttime && endtime){
+                    var json = {"from" : starttime,"to" : endtime}
+                    var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(json), cryptKey).toString();
+                    ciphertext = encodeURIComponent(ciphertext)
+                    downloadUrl = `http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/generatePDF/${ciphertext}`
+                }
+
                 if(starttime !== '' && endtime !== ''){
                     var filterAlarmData = []
                     for(var i=0;i<allAlarmData.length;i++){
@@ -432,109 +442,218 @@ if(this.state.handleRedirectToAdminPage){
                         </tr>
                     ))
                 }
-                return(
-                    <div className="grid-container-report">
-                          <div className='grid-item grid-item-01-compactor'>
-                           <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+
+                if(downloadUrl){
+                    return(
+                        <div className="grid-container-report">
+                              <div className='grid-item grid-item-01-compactor'>
+                               <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+                              </div>
+                            <div className="grid-item grid-item-report-sideDashboard whiteBG">
+                          <Container className="blueBG adjustPadding">
+                              <Row>
+                                  <Col style={{textAlign : 'center'}}>Report</Col>
+                              </Row>
+                              </Container>
+                              <Container className="blueBorder adjustPaddingContent">
+                              <Row>
+                                  <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
+                                      this.setState({renderReportPage : false})
+                                  }}>Dashboard</Col>
+                              </Row>
+                              </Container>
                           </div>
-                        <div className="grid-item grid-item-report-sideDashboard whiteBG">
-                      <Container className="blueBG adjustPadding">
-                          <Row>
-                              <Col style={{textAlign : 'center'}}>Report</Col>
-                          </Row>
-                          </Container>
-                          <Container className="blueBorder adjustPaddingContent">
-                          <Row>
-                              <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
-                                  this.setState({renderReportPage : false})
-                              }}>Dashboard</Col>
-                          </Row>
-                          </Container>
-                      </div>
-                      <div className="grid-item grid-item-report-calender whiteBG">
-  
-                          <div>&nbsp;</div>
-                          <Container>
+                          <div className="grid-item grid-item-report-calender whiteBG">
+      
+                              <div>&nbsp;</div>
+                              <Container>
+                                  <Row>
+                                      <Col> 
+                                          Start Date : 
+                                      </Col>
+                                      <Col> 
+                                      </Col>
+                                      <Col>
+                                          End Date :
+                                      </Col>
+                                  </Row>
+                              </Container>
+                              <Container>
+                                  <Row>
+                                      <Col >
+                                          <Calendar style={{ textAlign: 'center' }}
+                                              onChange={(value, event)=>{
+                                                var events = moment(value).format();
+                                                this.setState({
+                                                    selectStartDate: events
+                                                })
+                                              }}
+                                          />
+                                      </Col>
+                                      <Col></Col>
+                                      <Col>
+                                          <Calendar
+                                              onChange={(value, event)=>{
+                                                var events = moment(value).endOf('day').format();
+                                                this.setState({
+                                                    selectEndDate: events
+                                                })
+                                              }}
+                                          />
+                                      </Col>
+                                  </Row>
+                              </Container> 
+                          </div>
+                          <div className="grid-item grid-item-report-table whiteBG">
+                                <Container>
+                                    <Row>
+                                        <Col style={{textAlign : 'center', fontSize: '1.6em'}}> 
+                                            Alarm Report 
+                                        </Col>
+                                    </Row>
+                                </Container>
+                                        <div>&nbsp;</div>
+                                <Container>
+                                    <Row> 
+                                        <Col> 
+                                        <Table striped bordered hover responsive> 
+                                            <thead>
+                                            <tr>
+                                                <th>Equipment ID</th>
+                                                <th>Alarm Trigger Timestamp</th>
+                                                <th>Alarm Type</th>
+                                                <th>Fault Type</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {allAlarmData}
+                                            </tbody>
+                                        </Table>
+                                        {paginationAlarmPages}
+                                        </Col>
+                                    </Row> 
+                                </Container>
+                                <div>&nbsp;</div>
+                                <Container>
+                                    <Row> 
+                                        <Col>
+                                        <a style={{ textAlign: 'left', backgroundColor : '#1f4e78', borderRadius: '5px', color: 'white', padding : '3px'}} href={downloadUrl}>Generate</a>
+                                            {/* <button style={{ textAlign: 'left', backgroundColor : '#1f4e78', borderRadius: '5px', color: 'white', padding : '3px'}}>Generate</button> */}
+                                        </Col> 
+                                        <Col></Col> 
+                                        <Col></Col> 
+                                    </Row> 
+                                </Container>
+                          </div>
+                          
+                        </div>
+                    )
+                }else{
+                    return(
+                        <div className="grid-container-report">
+                              <div className='grid-item grid-item-01-compactor'>
+                               <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+                              </div>
+                            <div className="grid-item grid-item-report-sideDashboard whiteBG">
+                          <Container className="blueBG adjustPadding">
                               <Row>
-                                  <Col> 
-                                      Start Date : 
-                                  </Col>
-                                  <Col> 
-                                  </Col>
-                                  <Col>
-                                      End Date :
-                                  </Col>
+                                  <Col style={{textAlign : 'center'}}>Report</Col>
                               </Row>
-                          </Container>
-                          <Container>
+                              </Container>
+                              <Container className="blueBorder adjustPaddingContent">
                               <Row>
-                                  <Col >
-                                      <Calendar style={{ textAlign: 'center' }}
-                                          onChange={(value, event)=>{
-                                            var events = moment(value).format();
-                                            this.setState({
-                                                selectStartDate: events
-                                            })
-                                          }}
-                                      />
-                                  </Col>
-                                  <Col></Col>
-                                  <Col>
-                                      <Calendar
-                                          onChange={(value, event)=>{
-                                            var events = moment(value).endOf('day').format();
-                                            this.setState({
-                                                selectEndDate: events
-                                            })
-                                          }}
-                                      />
-                                  </Col>
+                                  <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
+                                      this.setState({renderReportPage : false})
+                                  }}>Dashboard</Col>
                               </Row>
-                          </Container> 
-                      </div>
-                      <div className="grid-item grid-item-report-table whiteBG">
-                            <Container>
-                                <Row>
-                                    <Col style={{textAlign : 'center', fontSize: '1.6em'}}> 
-                                        Alarm Report 
-                                    </Col>
-                                </Row>
-                            </Container>
-                                    <div>&nbsp;</div>
-                            <Container>
-                                <Row> 
-                                    <Col> 
-                                    <Table striped bordered hover responsive> 
-                                        <thead>
-                                        <tr>
-                                            <th>Equipment ID</th>
-                                            <th>Alarm Trigger Timestamp</th>
-                                            <th>Alarm Type</th>
-                                            <th>Fault Type</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {allAlarmData}
-                                        </tbody>
-                                    </Table>
-                                    {paginationAlarmPages}
-                                    </Col>
-                                </Row> 
-                            </Container>
-                            <div>&nbsp;</div>
-                            <Container>
-                                <Row> 
-                                    <Col>
-                                        <button style={{ textAlign: 'left', backgroundColor : '#1f4e78', borderRadius: '5px', color: 'white', padding : '3px'}}>Generate</button>
-                                    </Col> 
-                                    <Col></Col> 
-                                    <Col></Col> 
-                                </Row> 
-                            </Container>
-                      </div>
-                      
-                    </div>
-                )
+                              </Container>
+                          </div>
+                          <div className="grid-item grid-item-report-calender whiteBG">
+      
+                              <div>&nbsp;</div>
+                              <Container>
+                                  <Row>
+                                      <Col> 
+                                          Start Date : 
+                                      </Col>
+                                      <Col> 
+                                      </Col>
+                                      <Col>
+                                          End Date :
+                                      </Col>
+                                  </Row>
+                              </Container>
+                              <Container>
+                                  <Row>
+                                      <Col >
+                                          <Calendar style={{ textAlign: 'center' }}
+                                              onChange={(value, event)=>{
+                                                var events = moment(value).format();
+                                                this.setState({
+                                                    selectStartDate: events
+                                                })
+                                              }}
+                                          />
+                                      </Col>
+                                      <Col></Col>
+                                      <Col>
+                                          <Calendar
+                                              onChange={(value, event)=>{
+                                                var events = moment(value).endOf('day').format();
+                                                this.setState({
+                                                    selectEndDate: events
+                                                })
+                                              }}
+                                          />
+                                      </Col>
+                                  </Row>
+                              </Container> 
+                          </div>
+                          <div className="grid-item grid-item-report-table whiteBG">
+                                <Container>
+                                    <Row>
+                                        <Col style={{textAlign : 'center', fontSize: '1.6em'}}> 
+                                            Alarm Report 
+                                        </Col>
+                                    </Row>
+                                </Container>
+                                        <div>&nbsp;</div>
+                                <Container>
+                                    <Row> 
+                                        <Col> 
+                                        <Table striped bordered hover responsive> 
+                                            <thead>
+                                            <tr>
+                                                <th>Equipment ID</th>
+                                                <th>Alarm Trigger Timestamp</th>
+                                                <th>Alarm Type</th>
+                                                <th>Fault Type</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {allAlarmData}
+                                            </tbody>
+                                        </Table>
+                                        {paginationAlarmPages}
+                                        </Col>
+                                    </Row> 
+                                </Container>
+                                <div>&nbsp;</div>
+                                <Container>
+                                    <Row> 
+                                        <Col>
+                                        <a style={{ textAlign: 'left', backgroundColor : 'gray', borderRadius: '5px', color: 'black', padding : '3px'}} disabled="disabled">Generate</a>
+                                            {/* <button style={{ textAlign: 'left', backgroundColor : '#1f4e78', borderRadius: '5px', color: 'white', padding : '3px'}}>Generate</button> */}
+                                        </Col> 
+                                        <Col></Col> 
+                                        <Col></Col> 
+                                    </Row> 
+                                </Container>
+                          </div>
+                          
+                        </div>
+                    )
+                }
             }
 
             var alarms = []
