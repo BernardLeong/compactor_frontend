@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import './../css/compactorInfo.css'
 import 'react-calendar/dist/Calendar.css';
 import Mapping from './Mapping';
+import GoogleApiWrapper from './GoogleApiWrapper';
 import NavBarContent from './NavBarContent';
 import { Alert, Table, Container, Row, Col, Form, Button, InputGroup, FormControl } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -74,11 +75,11 @@ class GridContainer extends Component{
             headers: { Authorization: `Bearer ${token}` }
         }
 
-        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/allCompactorInfos/live`,config)
+        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/CompactorCurrentStatus/live`,config)
         .then((response)=> {
             console.log(response)
             this.setState({
-            livecompactorData : response.data.compactorInfo,
+            livecompactorData : response.data.compactorCurrentStatus,
             liveCompactorLoaded: true
             })
         })
@@ -722,14 +723,16 @@ if(this.state.handleRedirectToAdminPage){
             var filteredSectionData = []
             var currentSection = this.state.compactorSection
             for(var i=0;i<compactors.length;i++){
-                if(compactors[i].sectionArea == currentSection){
+                console.log(currentSection)
+                if(compactors[i].Section == currentSection){
                     filteredSectionData.push(compactors[i])
                 }
             }
             compactors = filteredSectionData;
+            console.log(compactors)
             var compactorsSort = compactors.reduce((r, a)=> {
-                r[a.ID] = r[a.ID] || [];
-                r[a.ID].push(a);
+                r[a.EquipmentID] = r[a.EquipmentID] || [];
+                r[a.EquipmentID].push(a);
                 return r;
             }, Object.create(null));
             var compactorData = []
@@ -747,7 +750,7 @@ if(this.state.handleRedirectToAdminPage){
                         this.setState({currentCompactorID : compactor.ID})
                     }} style={{cursor:'pointer'}} className="blueBorder adjustPaddingContent">
                         <Row>
-                            <Col>{compactor.ID}</Col>
+                            <Col>{compactor.EquipmentID}</Col>
                         </Row>
                     </Container>
                ))
@@ -786,7 +789,8 @@ if(this.state.handleRedirectToAdminPage){
                 var totalCollectedWeight = collectionWeights.reduce(reduceFunc);
                 totalCollectedWeight = Math.round(totalCollectedWeight)
             }
-
+            //mark
+            console.log(compactors)
             var compactorInfo = <tr><th>Loading ......</th></tr>
 
             if(this.state.renderWeightInformation || this.state.renderEquipmentPage || this.state.handleRedirectToMap){
@@ -865,11 +869,11 @@ if(this.state.handleRedirectToAdminPage){
                         var renderCompactors = paginatedCompactors[this.state.paginationDefaultPage -1]
                         compactorInfo = renderCompactors.map(compactor => (
                             <tr>
-                                <th style={{textAlign : 'center'}}>{compactor.ts}</th>
-                                <th style={{textAlign : 'center'}}>{compactor.ID}</th>
-                                <th style={{textAlign : 'center'}}>{compactor.Weight}</th>
-                                <th style={{textAlign : 'center'}}>{compactor['FilledLevel-Weight']}</th>
-                                <th style={{textAlign : 'center'}}>{Math.round(compactor['FilledLevel-Weight']) <= 70 ? 
+                                <th style={{textAlign : 'center'}}>{compactor["WeightInformation"]["ts"]}</th>
+                                <th style={{textAlign : 'center'}}>{compactor.EquipmentID}</th>
+                                <th style={{textAlign : 'center'}}>{compactor["WeightInformation"]["WeightValue"]}</th>
+                                <th style={{textAlign : 'center'}}>{compactor["WeightInformation"]['FilledLevel']}</th>
+                                <th style={{textAlign : 'center'}}>{Math.round(compactor["WeightInformation"]['FilledLevel']) <= 70 ? 
                                     <span><img
                                     src={require('./greendot.png')}
                                     width="30"
@@ -877,7 +881,7 @@ if(this.state.handleRedirectToAdminPage){
                                     className="d-inline-block align-top"
                                     alt="React Bootstrap logo"
                                     /></span> : 
-                                    Math.round(compactor['FilledLevel-Weight']) <= 90 ? 
+                                    Math.round(compactor["WeightInformation"]['FilledLevel']) <= 90 ? 
                                     <span><img
                                     src={require('./yellowdot.png')}
                                     width="30"
@@ -1144,8 +1148,13 @@ if(this.state.handleRedirectToAdminPage){
                     {dashboard} 
                     {weight}
                     {alarmsSection}
-                    <div className="grid-item grid-item-mapDashboard whiteBG">
-                        <Mapping compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
+                    <div className="grid-item grid-item-mapDashboard grayBG">
+                    <Container>
+                        <Row>
+                            <Col ><GoogleApiWrapper/></Col>
+                        </Row>
+                    </Container>
+                        {/* <Mapping compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} /> */}
                     </div>
                 </div>
             )
