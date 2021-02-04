@@ -23,14 +23,17 @@ class GridContainer extends Component{
         {
             'alarmSection' : 'CBM',
             'compactorSection' : 'CBM', 
+            'alarmType' : 'EStop',
             'currentCompactorID' : '',
             'equipmentSearchResult' : '',
             'filterSection' : '',
             'liveAllAlarmData' : [],
             'liveAlarmData' : [],
             'livecompactorData' : [],
+            'allAlarmReport' : [],
             'count' : 0,
             'countAlarm' : 0,
+            'countAlarmType' : 0,
             'noOfAlarms' : 0,
             'saveCurrentCompactorID' : '',
             'selectStartDate' : '',
@@ -44,6 +47,8 @@ class GridContainer extends Component{
             'pressLeftArrowWeight' : false,
             'pressRightAlarmArrowWeight' : false,
             'pressLeftAlarmArrowWeight' : false,
+            'pressRightAlarmType': false,
+            'pressLeftAlarmType' : false,
             'handleRedirectToMap' : false,
             'handleRedirectToAdminPage' : false,
             'registeredUser' : false,
@@ -55,6 +60,8 @@ class GridContainer extends Component{
             'password' : ''
         }
         this.renderWeightInformation = this.renderWeightInformation.bind(this)
+        this.toggleAlarmTypeRightArrow = this.toggleAlarmTypeRightArrow.bind(this)
+        this.toggleAlarmTypeLeftArrow = this.toggleAlarmTypeLeftArrow.bind(this)
         this.toggleAlarmLeftArrow = this.toggleAlarmLeftArrow.bind(this)
         this.toggleAlarmRightArrow = this.toggleAlarmRightArrow.bind(this)
         this.toggleRightArrow = this.toggleRightArrow.bind(this)
@@ -75,6 +82,18 @@ class GridContainer extends Component{
             headers: { Authorization: `Bearer ${token}` }
         }
 
+        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/alarmCurrentStatus/live`,config)
+        .then((response)=> {
+            console.log(response)
+            this.setState({
+                liveAlarmData : response.data.alarmCurrentStatus,
+                liveAlarmsLoaded: true
+            })
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+
         axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/CompactorCurrentStatus/live`,config)
         .then((response)=> {
             console.log(response)
@@ -87,22 +106,12 @@ class GridContainer extends Component{
             console.log(error);
         })
 
-        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getTodaysAlarms/live`,config)
+        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getAllAlarms/live`,config)
         .then((response)=> {
             console.log(response)
             this.setState({
-                liveAlarmData : response.data.alarms,
-                liveAlarmsLoaded: true
-            })
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
-
-        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getAllAlarms/live`,config)
-        .then((response)=> {
-            this.setState({
-                liveAllAlarmData : response.data.alarmInfo,
+            allAlarmReport : response.data.alarmInfo,
+            liveAlarmsLoaded: true
             })
         })
         .catch(function (error) {
@@ -175,6 +184,31 @@ class GridContainer extends Component{
         }).catch((err)=>{
             console.log(err)
         })
+    }
+
+    toggleAlarmTypeRightArrow(){
+
+        //mark2
+        var sections = [ "EStop", "FireAlarm", "GateNotClose", "TransferScrewMotorTrip", "WeightExceedLimit" ]
+        var countAlarmType = this.state.countAlarmType
+        countAlarmType = countAlarmType +1
+        this.setState({countAlarmType : countAlarmType})
+        var currentSection = sections[countAlarmType]
+        console.log(currentSection)
+        if(currentSection){
+            this.setState({alarmType : currentSection, pressRightAlarmType : true, pressLeftAlarmType : false})
+        }
+    }
+
+    toggleAlarmTypeLeftArrow(){
+        var sections = [ "EStop", "FireAlarm", "GateNotClose", "TransferScrewMotorTrip", "WeightExceedLimit" ]
+        var countAlarmType = this.state.countAlarmType
+        countAlarmType = countAlarmType -1
+        this.setState({countAlarmType : countAlarmType})
+        var currentSection = sections[countAlarmType]
+        if(currentSection){
+            this.setState({alarmType : currentSection, pressRightAlarmType : false, pressLeftAlarmType : true})
+        }
     }
 
     toggleAlarmRightArrow(){
@@ -357,8 +391,9 @@ if(this.state.handleRedirectToAdminPage){
             var alarmsData = this.state.liveAlarmData
 
             if(this.state.renderReportPage){
-                var allAlarmData = this.state.liveAllAlarmData
+                var allAlarmData = this.state.allAlarmReport
                 //sort here
+                console.log(allAlarmData)
                 allAlarmData = sortObjectsArray(allAlarmData, 'ID')
                 var starttime = this.state.selectStartDate
                 var endtime = this.state.selectEndDate
@@ -666,17 +701,20 @@ if(this.state.handleRedirectToAdminPage){
             }
 
             for(i=0;i<alarmsData.length;i++){
-                if(alarmsData[i]['sectionArea'] == alarmSection){
+                if(alarmsData[i]['Section'] == alarmSection){
                     alarms.push(alarmsData[i])
                 }
             }
-            //mark
+            // var alarmsTypes = [ "EStop", "FireAlarm", "GateNotClose", "TransferScrewMotorTrip", "WeightExceedLimit" ]
+
+            //mark2
+            //message the data here
             var chunkAlarm = (arr, size) =>
             Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
             arr.slice(i * size, i * size + size)
             );
-            //mark
-            alarms = sortObjectsArray(alarms, 'ts', {order: 'desc'})
+
+            alarms = sortObjectsArray(alarms, 'EquipmentID')
             if(alarms.length < 5){
                 var maxPage = 1
             }else{
@@ -707,15 +745,24 @@ if(this.state.handleRedirectToAdminPage){
                     var paginatedAlarms = chunkAlarm(alarms,5)
                     var renderAlarms = paginatedAlarms[this.state.paginationAlarmDefaultPage -1]
                     var alarmTable = renderAlarms.map(al => (
-                        <tr>
-                            <th>{al.ts}</th>
-                            <th>{al.ID}</th>
-                            <th>{al.Type}</th>
-                            <th>{al.Status}</th>
-                        </tr>
+                            <tr>
+                                <th>{al[this.state.alarmType]['ts']}</th>
+                                <th>{al.EquipmentID}</th>
+                                <th>{this.state.alarmType}</th>
+                                <th>{al[this.state.alarmType]['CurrentStatus']}</th>
+                            </tr>
                     ))
                 }
-            var noOfAlarms = alarms.length
+            var noOfAlarms = 0
+            //find out the name of triggered but not cleared alarm
+            for(var i=0;i<alarms.length;i++){
+                var alarmsTypes = [ "EStop", "FireAlarm", "GateNotClose", "TransferScrewMotorTrip", "WeightExceedLimit" ]
+                for (const item of alarmsTypes) {
+                    if(alarms[i][item]["CurrentStatus"] == "Triggered"){
+                        noOfAlarms++
+                    }
+                }
+            }
         }
         if(this.state.liveCompactorLoaded){
             
@@ -723,13 +770,11 @@ if(this.state.handleRedirectToAdminPage){
             var filteredSectionData = []
             var currentSection = this.state.compactorSection
             for(var i=0;i<compactors.length;i++){
-                console.log(currentSection)
                 if(compactors[i].Section == currentSection){
                     filteredSectionData.push(compactors[i])
                 }
             }
             compactors = filteredSectionData;
-            console.log(compactors)
             var compactorsSort = compactors.reduce((r, a)=> {
                 r[a.EquipmentID] = r[a.EquipmentID] || [];
                 r[a.EquipmentID].push(a);
@@ -776,21 +821,34 @@ if(this.state.handleRedirectToAdminPage){
                 </div>
             }
 
+            var array1 = [1, 2, 3, 4];
+            var reducer = (accumulator, currentValue) => accumulator + currentValue;
+            
+
             let reduceFunc = this.reduceFunc
             var collectionWeights = []
             for(var i=0;i<compactors.length;i++){
-                if(!(isNaN(compactors[i]) && compactors[i].Weight <= 0) ){
-                    collectionWeights.push(compactors[i].Weight)
+                if(!compactors[i]["WeightInformation"]){
+                    var weight = 0
+                }else{
+                    var weight = compactors[i]["WeightInformation"]["WeightValue"]
+                    weight = parseFloat(weight)
+                    weight = Math.round(weight)
                 }
+
+                if(!weight <= 0 || !isNaN(weight)){
+                    collectionWeights.push(weight)
+                }
+
             }
             if(collectionWeights.length <= 0){
                 var totalCollectedWeight = 0;
             }else{
-                var totalCollectedWeight = collectionWeights.reduce(reduceFunc);
-                totalCollectedWeight = Math.round(totalCollectedWeight)
+                var totalCollectedWeight = collectionWeights.reduce(reducer)
             }
+
+            console.log(totalCollectedWeight)
             //mark
-            console.log(compactors)
             var compactorInfo = <tr><th>Loading ......</th></tr>
 
             if(this.state.renderWeightInformation || this.state.renderEquipmentPage || this.state.handleRedirectToMap){
@@ -869,10 +927,16 @@ if(this.state.handleRedirectToAdminPage){
                         var renderCompactors = paginatedCompactors[this.state.paginationDefaultPage -1]
                         compactorInfo = renderCompactors.map(compactor => (
                             <tr>
-                                <th style={{textAlign : 'center'}}>{compactor["WeightInformation"]["ts"]}</th>
+                                <th style={{textAlign : 'center'}}>{!compactor["WeightInformation"]['ts'] ? 'Equipment No Data' : compactor["WeightInformation"]['ts']}</th>
                                 <th style={{textAlign : 'center'}}>{compactor.EquipmentID}</th>
-                                <th style={{textAlign : 'center'}}>{compactor["WeightInformation"]["WeightValue"]}</th>
-                                <th style={{textAlign : 'center'}}>{compactor["WeightInformation"]['FilledLevel']}</th>
+                                <th style={{textAlign : 'center'}}>{
+                                    (!compactor["WeightInformation"] || isNaN(compactor["WeightInformation"]["WeightValue"]) ||  Math.round(compactor["WeightInformation"]["WeightValue"] <= 0) ) ? 0 : 
+                                        Math.round(compactor["WeightInformation"]["WeightValue"])
+                                    }</th>
+                                <th style={{textAlign : 'center'}}>{
+                                    (!compactor["WeightInformation"] || isNaN(compactor["WeightInformation"]["FilledLevel"]) ||  Math.round(compactor["WeightInformation"]["FilledLevel"] <= 0) ) ? 0 : 
+                                        Math.round(compactor["WeightInformation"]["FilledLevel"])
+                                }</th>
                                 <th style={{textAlign : 'center'}}>{Math.round(compactor["WeightInformation"]['FilledLevel']) <= 70 ? 
                                     <span><img
                                     src={require('./greendot.png')}
@@ -904,7 +968,6 @@ if(this.state.handleRedirectToAdminPage){
           }
 
           if(this.state.renderEquipmentPage){
-              console.log(this.state.equipmentSearchResult)
             return(
                 <div className="grid-container-equipment">
                     <div className='grid-item grid-item-01-compactor'>
@@ -1019,6 +1082,16 @@ if(this.state.handleRedirectToAdminPage){
             //mark
             var alarmsSection = 
             <div className="grid-item grid-item-alarmDashboard whiteBG">
+            
+            {/* mark2 */}
+                <Container>
+                    <div>{console.log(this.state.alarmType)}</div>
+                    <Row>
+                        <Col onClick={()=>{this.toggleAlarmTypeLeftArrow()}} style={{textAlign : 'center', cursor:'pointer'}}><FontAwesomeIcon icon={faArrowLeft} /></Col>
+                        <Col style={{textAlign : 'center'}}>{this.state.alarmType}</Col>
+                        <Col onClick={()=>{this.toggleAlarmTypeRightArrow()}} style={{textAlign : 'center', cursor:'pointer'}}><FontAwesomeIcon icon={faArrowRight} /></Col>
+                    </Row>
+                </Container>
                  <Table style={{fontSize: '0.9em'}} striped bordered hover>
                     <thead>
                     <tr>
