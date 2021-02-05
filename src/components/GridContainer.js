@@ -189,7 +189,7 @@ class GridContainer extends Component{
     toggleAlarmTypeRightArrow(){
 
         //mark2
-        var sections = [ "EStop", "FireAlarm", "GateNotClose", "TransferScrewMotorTrip", "WeightExceedLimit" ]
+        var sections = [ "EStop", "FireAlarm", "GateNotClose", "TransferScrewMotorTrip", "WeightExceedLimit", "DischargeScrewMotorTrip", "BinLifterMotorTrip" ]
         var countAlarmType = this.state.countAlarmType
         countAlarmType = countAlarmType +1
         this.setState({countAlarmType : countAlarmType})
@@ -201,7 +201,7 @@ class GridContainer extends Component{
     }
 
     toggleAlarmTypeLeftArrow(){
-        var sections = [ "EStop", "FireAlarm", "GateNotClose", "TransferScrewMotorTrip", "WeightExceedLimit" ]
+        var sections = [ "EStop", "FireAlarm", "GateNotClose", "TransferScrewMotorTrip", "WeightExceedLimit", "DischargeScrewMotorTrip", "BinLifterMotorTrip" ]
         var countAlarmType = this.state.countAlarmType
         countAlarmType = countAlarmType -1
         this.setState({countAlarmType : countAlarmType})
@@ -756,7 +756,7 @@ if(this.state.handleRedirectToAdminPage){
             var noOfAlarms = 0
             //find out the name of triggered but not cleared alarm
             for(var i=0;i<alarms.length;i++){
-                var alarmsTypes = [ "EStop", "FireAlarm", "GateNotClose", "TransferScrewMotorTrip", "WeightExceedLimit" ]
+                var alarmsTypes = [ "EStop", "FireAlarm", "GateNotClose", "TransferScrewMotorTrip", "WeightExceedLimit", "DischargeScrewMotorTrip", "BinLifterMotorTrip"]
                 for (const item of alarmsTypes) {
                     if(alarms[i][item]["CurrentStatus"] == "Triggered"){
                         noOfAlarms++
@@ -1222,12 +1222,12 @@ if(this.state.handleRedirectToAdminPage){
                     {weight}
                     {alarmsSection}
                     <div className="grid-item grid-item-mapDashboard grayBG">
-                    <Container>
+                    {/* <Container>
                         <Row>
                             <Col ><GoogleApiWrapper/></Col>
                         </Row>
-                    </Container>
-                        {/* <Mapping compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} /> */}
+                    </Container> */}
+                        <Mapping compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
                     </div>
                 </div>
             )
