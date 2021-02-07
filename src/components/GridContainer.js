@@ -47,8 +47,6 @@ class GridContainer extends Component{
             'pressLeftArrowWeight' : false,
             'pressRightAlarmArrowWeight' : false,
             'pressLeftAlarmArrowWeight' : false,
-            'pressRightAlarmType': false,
-            'pressLeftAlarmType' : false,
             'handleRedirectToMap' : false,
             'handleRedirectToAdminPage' : false,
             'registeredUser' : false,
@@ -60,8 +58,6 @@ class GridContainer extends Component{
             'password' : ''
         }
         this.renderWeightInformation = this.renderWeightInformation.bind(this)
-        this.toggleAlarmTypeRightArrow = this.toggleAlarmTypeRightArrow.bind(this)
-        this.toggleAlarmTypeLeftArrow = this.toggleAlarmTypeLeftArrow.bind(this)
         this.toggleAlarmLeftArrow = this.toggleAlarmLeftArrow.bind(this)
         this.toggleAlarmRightArrow = this.toggleAlarmRightArrow.bind(this)
         this.toggleRightArrow = this.toggleRightArrow.bind(this)
@@ -86,7 +82,7 @@ class GridContainer extends Component{
         .then((response)=> {
             console.log(response)
             this.setState({
-                liveAlarmData : response.data.alarmCurrentStatus,
+                liveAlarmData : response.data.alarms,
                 liveAlarmsLoaded: true
             })
         })
@@ -98,20 +94,8 @@ class GridContainer extends Component{
         .then((response)=> {
             console.log(response)
             this.setState({
-            livecompactorData : response.data.compactorCurrentStatus,
-            liveCompactorLoaded: true
-            })
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
-
-        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getAllAlarms/live`,config)
-        .then((response)=> {
-            console.log(response)
-            this.setState({
-            allAlarmReport : response.data.alarmInfo,
-            liveAlarmsLoaded: true
+                livecompactorData : response.data.compactorInfo,
+                liveCompactorLoaded: true
             })
         })
         .catch(function (error) {
@@ -184,31 +168,6 @@ class GridContainer extends Component{
         }).catch((err)=>{
             console.log(err)
         })
-    }
-
-    toggleAlarmTypeRightArrow(){
-
-        //mark2
-        var sections = [ "EStop", "FireAlarm", "GateNotClose", "TransferScrewMotorTrip", "WeightExceedLimit", "DischargeScrewMotorTrip", "BinLifterMotorTrip" ]
-        var countAlarmType = this.state.countAlarmType
-        countAlarmType = countAlarmType +1
-        this.setState({countAlarmType : countAlarmType})
-        var currentSection = sections[countAlarmType]
-        console.log(currentSection)
-        if(currentSection){
-            this.setState({alarmType : currentSection, pressRightAlarmType : true, pressLeftAlarmType : false})
-        }
-    }
-
-    toggleAlarmTypeLeftArrow(){
-        var sections = [ "EStop", "FireAlarm", "GateNotClose", "TransferScrewMotorTrip", "WeightExceedLimit", "DischargeScrewMotorTrip", "BinLifterMotorTrip" ]
-        var countAlarmType = this.state.countAlarmType
-        countAlarmType = countAlarmType -1
-        this.setState({countAlarmType : countAlarmType})
-        var currentSection = sections[countAlarmType]
-        if(currentSection){
-            this.setState({alarmType : currentSection, pressRightAlarmType : false, pressLeftAlarmType : true})
-        }
     }
 
     toggleAlarmRightArrow(){
@@ -392,8 +351,6 @@ if(this.state.handleRedirectToAdminPage){
 
             if(this.state.renderReportPage){
                 var allAlarmData = this.state.allAlarmReport
-                //sort here
-                console.log(allAlarmData)
                 allAlarmData = sortObjectsArray(allAlarmData, 'ID')
                 var starttime = this.state.selectStartDate
                 var endtime = this.state.selectEndDate
@@ -471,7 +428,7 @@ if(this.state.handleRedirectToAdminPage){
                     var renderAlarms = paginatedAlarms[this.state.paginationAlarmReportPage -1]
                     allAlarmData = renderAlarms.map(al => (
                         <tr>
-                            <th>{al.ID}</th>
+                            <th>{al.EquipmentID}</th>
                             <th>{al.ts}</th>
                             <th>{al.Type}</th>
                             <th>{al.Status}</th>
@@ -699,22 +656,19 @@ if(this.state.handleRedirectToAdminPage){
             }else{
                 var alarmSection = 'CBM'
             }
-
+            //filter alarms only trigger and belong to section
             for(i=0;i<alarmsData.length;i++){
-                if(alarmsData[i]['Section'] == alarmSection){
+                if(alarmsData[i]['Section'] == alarmSection && alarmsData[i]['CurrentStatus'] == 'Triggered'){
                     alarms.push(alarmsData[i])
                 }
             }
-            // var alarmsTypes = [ "EStop", "FireAlarm", "GateNotClose", "TransferScrewMotorTrip", "WeightExceedLimit" ]
 
-            //mark2
-            //message the data here
             var chunkAlarm = (arr, size) =>
             Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
             arr.slice(i * size, i * size + size)
             );
 
-            alarms = sortObjectsArray(alarms, 'EquipmentID')
+
             if(alarms.length < 5){
                 var maxPage = 1
             }else{
@@ -736,7 +690,6 @@ if(this.state.handleRedirectToAdminPage){
                 <div style={{fontSize: '0.8em'}} className="pagination">
             {alarmPages}
           </div>
-
                 if(alarms.length <= 0){
                     var renderAlarms = 
                     <tr>
@@ -746,23 +699,16 @@ if(this.state.handleRedirectToAdminPage){
                     var renderAlarms = paginatedAlarms[this.state.paginationAlarmDefaultPage -1]
                     var alarmTable = renderAlarms.map(al => (
                             <tr>
-                                <th>{al[this.state.alarmType]['ts']}</th>
+                                <th>{al.ts}</th>
                                 <th>{al.EquipmentID}</th>
-                                <th>{this.state.alarmType}</th>
-                                <th>{al[this.state.alarmType]['CurrentStatus']}</th>
+                                <th>{al.Type}</th>
+                                <th>{al.CurrentStatus}</th>
                             </tr>
                     ))
                 }
             var noOfAlarms = 0
-            //find out the name of triggered but not cleared alarm
-            for(var i=0;i<alarms.length;i++){
-                var alarmsTypes = [ "EStop", "FireAlarm", "GateNotClose", "TransferScrewMotorTrip", "WeightExceedLimit", "DischargeScrewMotorTrip", "BinLifterMotorTrip"]
-                for (const item of alarmsTypes) {
-                    if(alarms[i][item]["CurrentStatus"] == "Triggered"){
-                        noOfAlarms++
-                    }
-                }
-            }
+
+            noOfAlarms = alarms.length
         }
         if(this.state.liveCompactorLoaded){
             
@@ -789,10 +735,10 @@ if(this.state.handleRedirectToAdminPage){
             compactors = compactorData
             var allCompactors = compactors
             if(this.state.handleRedirectToMap){
-                allCompactors = sortObjectsArray(allCompactors, 'ID')
+                allCompactors = sortObjectsArray(allCompactors, 'EquipmentID')
                 var renderlistOfCompactorID = allCompactors.map(compactor => (
                     <Container onClick={()=>{
-                        this.setState({currentCompactorID : compactor.ID})
+                        this.setState({currentCompactorID : compactor.EquipmentID})
                     }} style={{cursor:'pointer'}} className="blueBorder adjustPaddingContent">
                         <Row>
                             <Col>{compactor.EquipmentID}</Col>
@@ -828,13 +774,9 @@ if(this.state.handleRedirectToAdminPage){
             let reduceFunc = this.reduceFunc
             var collectionWeights = []
             for(var i=0;i<compactors.length;i++){
-                if(!compactors[i]["WeightInformation"]){
-                    var weight = 0
-                }else{
-                    var weight = compactors[i]["WeightInformation"]["WeightValue"]
-                    weight = parseFloat(weight)
-                    weight = Math.round(weight)
-                }
+                var weight = compactors[i]["WeightValue"]
+                weight = parseFloat(weight)
+                weight = Math.round(weight)
 
                 if(!weight <= 0 || !isNaN(weight)){
                     collectionWeights.push(weight)
@@ -847,7 +789,7 @@ if(this.state.handleRedirectToAdminPage){
                 var totalCollectedWeight = collectionWeights.reduce(reducer)
             }
 
-            console.log(totalCollectedWeight)
+            console.log(collectionWeights)
             //mark
             var compactorInfo = <tr><th>Loading ......</th></tr>
 
@@ -914,30 +856,15 @@ if(this.state.handleRedirectToAdminPage){
                 if(compactors.length <= 0){
                     compactorInfo = <tr><th></th></tr>
                 }else{
-                    for(var i=0;i<compactors.length;i++){
-                        if(compactors[i]['Weight'] <= 0){
-                            compactors[i]['Weight'] = 0
-                            compactors[i]['FilledLevel-Weight'] = 0
-                        }else{
-                            compactors[i]['Weight'] = Math.round(compactors[i]['Weight'])
-                            compactors[i]['FilledLevel-Weight'] = Math.round(compactors[i]['FilledLevel-Weight'])
-                        }
-                    }
                         var paginatedCompactors = chunky(compactors,maxLength)
                         var renderCompactors = paginatedCompactors[this.state.paginationDefaultPage -1]
                         compactorInfo = renderCompactors.map(compactor => (
                             <tr>
-                                <th style={{textAlign : 'center'}}>{!compactor["WeightInformation"]['ts'] ? 'Equipment No Data' : compactor["WeightInformation"]['ts']}</th>
+                                <th style={{textAlign : 'center'}}>{compactor['ts'] == '' ? 'Equipment No Data' : compactor['ts']}</th>
                                 <th style={{textAlign : 'center'}}>{compactor.EquipmentID}</th>
-                                <th style={{textAlign : 'center'}}>{
-                                    (!compactor["WeightInformation"] || isNaN(compactor["WeightInformation"]["WeightValue"]) ||  Math.round(compactor["WeightInformation"]["WeightValue"] <= 0) ) ? 0 : 
-                                        Math.round(compactor["WeightInformation"]["WeightValue"])
-                                    }</th>
-                                <th style={{textAlign : 'center'}}>{
-                                    (!compactor["WeightInformation"] || isNaN(compactor["WeightInformation"]["FilledLevel"]) ||  Math.round(compactor["WeightInformation"]["FilledLevel"] <= 0) ) ? 0 : 
-                                        Math.round(compactor["WeightInformation"]["FilledLevel"])
-                                }</th>
-                                <th style={{textAlign : 'center'}}>{Math.round(compactor["WeightInformation"]['FilledLevel']) <= 70 ? 
+                                <th style={{textAlign : 'center'}}>{Math.round(compactor.WeightValue)}</th>
+                                <th style={{textAlign : 'center'}}>{Math.round(compactor.FilledLevel)}</th>
+                                <th style={{textAlign : 'center'}}>{Math.round(compactor['FilledLevel']) <= 70 ? 
                                     <span><img
                                     src={require('./greendot.png')}
                                     width="30"
@@ -945,7 +872,7 @@ if(this.state.handleRedirectToAdminPage){
                                     className="d-inline-block align-top"
                                     alt="React Bootstrap logo"
                                     /></span> : 
-                                    Math.round(compactor["WeightInformation"]['FilledLevel']) <= 90 ? 
+                                    Math.round(compactor['FilledLevel']) <= 90 ? 
                                     <span><img
                                     src={require('./yellowdot.png')}
                                     width="30"
@@ -1082,16 +1009,6 @@ if(this.state.handleRedirectToAdminPage){
             //mark
             var alarmsSection = 
             <div className="grid-item grid-item-alarmDashboard whiteBG">
-            
-            {/* mark2 */}
-                <Container>
-                    <div>{console.log(this.state.alarmType)}</div>
-                    <Row>
-                        <Col onClick={()=>{this.toggleAlarmTypeLeftArrow()}} style={{textAlign : 'center', cursor:'pointer'}}><FontAwesomeIcon icon={faArrowLeft} /></Col>
-                        <Col style={{textAlign : 'center'}}>{this.state.alarmType}</Col>
-                        <Col onClick={()=>{this.toggleAlarmTypeRightArrow()}} style={{textAlign : 'center', cursor:'pointer'}}><FontAwesomeIcon icon={faArrowRight} /></Col>
-                    </Row>
-                </Container>
                  <Table style={{fontSize: '0.9em'}} striped bordered hover>
                     <thead>
                     <tr>
@@ -1144,7 +1061,7 @@ if(this.state.handleRedirectToAdminPage){
                     {mapDashboard}
                     <div className="grid-item grid-item-map-map whiteBG">
 
-                        <Mapping handleRedirectToMap={this.state.handleRedirectToMap} currentCompactorID={this.state.currentCompactorID} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />                        
+                        <Mapping handleRedirectToMap={this.state.handleRedirectToMap} currentCompactorID={this.state.currentCompactorID} liveCompactorLoaded={this.state.liveCompactorLoaded} livecompactorData={this.state.livecompactorData} token={this.props.location.state.token} />                        
                     </div>
                     <div className="grid-item grid-item-map-information whiteBG">
                         <div>
@@ -1222,12 +1139,8 @@ if(this.state.handleRedirectToAdminPage){
                     {weight}
                     {alarmsSection}
                     <div className="grid-item grid-item-mapDashboard grayBG">
-                    {/* <Container>
-                        <Row>
-                            <Col ><GoogleApiWrapper/></Col>
-                        </Row>
-                    </Container> */}
-                        <Mapping compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />
+                        {console.log(this.state.currentCompactorID)}
+                        <Mapping handleRedirectToMap={this.state.handleRedirectToMap} liveCompactorLoaded={this.state.liveCompactorLoaded} livecompactorData={this.state.livecompactorData} token={this.props.location.state.token} />
                     </div>
                 </div>
             )
