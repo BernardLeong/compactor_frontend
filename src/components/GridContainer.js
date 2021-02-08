@@ -165,7 +165,6 @@ class GridContainer extends Component{
         }
 
         axios.post('http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/registerUser', body).then((result)=>{
-            console.log(result)
             this.setState({registeredUser: result.data.success, error: result.data.error})
         }).catch((err)=>{
             console.log(err)
@@ -514,10 +513,10 @@ if(this.state.handleRedirectToAdminPage){
                                         <Table striped bordered hover responsive> 
                                             <thead>
                                             <tr>
-                                                <th>Equipment ID</th>
-                                                <th>Alarm Trigger Timestamp</th>
-                                                <th>Alarm Type</th>
-                                                <th>Fault Type</th>
+                                                <th style={{textAlign : 'center'}}>Equipment ID</th>
+                                                <th style={{textAlign : 'center'}}>Alarm Trigger Timestamp</th>
+                                                <th style={{textAlign : 'center'}}>Alarm Type</th>
+                                                <th style={{textAlign : 'center'}}>Fault Type</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -619,10 +618,10 @@ if(this.state.handleRedirectToAdminPage){
                                         <Table striped bordered hover responsive> 
                                             <thead>
                                             <tr>
-                                                <th>Equipment ID</th>
-                                                <th>Alarm Trigger Timestamp</th>
-                                                <th>Alarm Type</th>
-                                                <th>Fault Type</th>
+                                                <th style={{textAlign : 'center'}}>Equipment ID</th>
+                                                <th style={{textAlign : 'center'}}>Alarm Trigger Timestamp</th>
+                                                <th style={{textAlign : 'center'}}>Alarm Type</th>
+                                                <th style={{textAlign : 'center'}}>Fault Type</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -701,10 +700,10 @@ if(this.state.handleRedirectToAdminPage){
                     var renderAlarms = paginatedAlarms[this.state.paginationAlarmDefaultPage -1]
                     var alarmTable = renderAlarms.map(al => (
                             <tr>
-                                <th>{al.ts}</th>
-                                <th>{al.EquipmentID}</th>
-                                <th>{al.Type}</th>
-                                <th>{al.CurrentStatus}</th>
+                                <th style={{textAlign: 'center'}}>{al.ts}</th>
+                                <th style={{textAlign: 'center'}}>{al.EquipmentID}</th>
+                                <th style={{textAlign: 'center'}}>{al.Type}</th>
+                                <th style={{textAlign: 'center'}}>{al.CurrentStatus}</th>
                             </tr>
                     ))
                 }
@@ -740,15 +739,12 @@ if(this.state.handleRedirectToAdminPage){
                 allCompactors = sortObjectsArray(allCompactors, 'EquipmentID')
                 let maxlength = 15
 
-                //mappingMark
                 const chunkyEquipmentIDS = (arr, size) =>
                 Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
                     arr.slice(i * size, i * size + size)
                 );
 
                 var paginatedIDList = chunkyEquipmentIDS(allCompactors, maxlength)
-                console.log(paginatedIDList)
-
                 var allCompactorsData = paginatedIDList[this.state.MapEquimentIndex]
 
                 var renderlistOfCompactorID = allCompactorsData.map(compactor => (
@@ -761,7 +757,6 @@ if(this.state.handleRedirectToAdminPage){
                     </Container>
                ))
 
-               console.log(this.state.MapEquipmentIDLastPage)
                //assume first page
                if(this.state.MapEquimentIndex == 0){
                 renderlistOfCompactorID = 
@@ -1115,12 +1110,13 @@ if(this.state.handleRedirectToAdminPage){
             var alarmsSection = 
             <div className="grid-item grid-item-alarmDashboard whiteBG">
                  <Table style={{fontSize: '0.9em'}} striped bordered hover>
+                 {/* mark tbale */}
                     <thead>
                     <tr>
-                        <th>TimeStamp</th>
-                        <th>Equipment ID</th>
-                        <th>Failure Mode</th>
-                        <th>Alarm Status</th>
+                        <th style={{textAlign : 'center'}}>TimeStamp</th>
+                        <th style={{textAlign : 'center'}}>Equipment ID</th>
+                        <th style={{textAlign : 'center'}}>Fault Type</th>
+                        <th style={{textAlign : 'center'}}>Alarm Status</th>
                     </tr>
                     </thead>
                     <tbody>
