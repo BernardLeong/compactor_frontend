@@ -1150,7 +1150,7 @@ if(this.state.handleRedirectToAdminPage){
                         <Col onClick={()=>{this.toggleAlarmRightArrow()}} style={{textAlign : 'center', cursor:'pointer'}}><FontAwesomeIcon icon={faArrowRight} /></Col>
                     </Row>
                 </Container>
-                <div style={{marginTop: '2.3em'}}></div>
+                <div style={{marginTop: '3.4em'}}></div>
 
                 <button onClick={()=>{
                     this.setState({renderAlarmInformation : true})
