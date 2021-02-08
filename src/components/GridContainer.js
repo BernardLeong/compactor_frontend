@@ -1135,7 +1135,7 @@ if(this.state.handleRedirectToAdminPage){
             <div className="grid-item grid-item-alarmDashboard whiteBG">
                 <Container>
                     <Row>
-                        <Col className='alarmTitle'>Unclear Alarms</Col>
+                        <Col className='alarmTitle'>Uncleared Alarms</Col>
                     </Row>
                 </Container>
                 <Container>
