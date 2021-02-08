@@ -1106,7 +1106,7 @@ if(this.state.handleRedirectToAdminPage){
                         <Col onClick={()=>{this.toggleLeftArrow()}} style={{textAlign : 'center', cursor:'pointer'}}><FontAwesomeIcon icon={faArrowRight} /></Col>
                     </Row>
                 </Container>
-                <div>&nbsp;</div>
+                <div style={{marginTop: '2.1em'}}></div>
                 <button onClick={this.renderWeightInformation}>Collection Weight</button>
             </div>
         }
@@ -1150,7 +1150,8 @@ if(this.state.handleRedirectToAdminPage){
                         <Col onClick={()=>{this.toggleAlarmRightArrow()}} style={{textAlign : 'center', cursor:'pointer'}}><FontAwesomeIcon icon={faArrowRight} /></Col>
                     </Row>
                 </Container>
-                <div>&nbsp;</div>
+                <div style={{marginTop: '2.3em'}}></div>
+
                 <button onClick={()=>{
                     this.setState({renderAlarmInformation : true})
                 }}>Equipment Fault</button>
