@@ -31,6 +31,7 @@ class GridContainer extends Component{
             'liveAlarmData' : [],
             'livecompactorData' : [],
             'allAlarmReport' : [],
+            'MapEquimentIndex' : 0,
             'count' : 0,
             'countAlarm' : 0,
             'countAlarmType' : 0,
@@ -38,6 +39,7 @@ class GridContainer extends Component{
             'saveCurrentCompactorID' : '',
             'selectStartDate' : '',
             'selectEndDate' : '',
+            'MapEquipmentIDLastPage' : false,
             'liveCompactorLoaded' : false,
             'liveAlarmsLoaded' : false,
             'renderWeightInformation' : false,
@@ -736,7 +738,20 @@ if(this.state.handleRedirectToAdminPage){
             var allCompactors = compactors
             if(this.state.handleRedirectToMap){
                 allCompactors = sortObjectsArray(allCompactors, 'EquipmentID')
-                var renderlistOfCompactorID = allCompactors.map(compactor => (
+                let maxlength = 15
+
+                //mappingMark
+                const chunkyEquipmentIDS = (arr, size) =>
+                Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+                    arr.slice(i * size, i * size + size)
+                );
+
+                var paginatedIDList = chunkyEquipmentIDS(allCompactors, maxlength)
+                console.log(paginatedIDList)
+
+                var allCompactorsData = paginatedIDList[this.state.MapEquimentIndex]
+
+                var renderlistOfCompactorID = allCompactorsData.map(compactor => (
                     <Container onClick={()=>{
                         this.setState({currentCompactorID : compactor.EquipmentID})
                     }} style={{cursor:'pointer'}} className="blueBorder adjustPaddingContent">
@@ -745,6 +760,96 @@ if(this.state.handleRedirectToAdminPage){
                         </Row>
                     </Container>
                ))
+
+               console.log(this.state.MapEquipmentIDLastPage)
+               //assume first page
+               if(this.state.MapEquimentIndex == 0){
+                renderlistOfCompactorID = 
+                <span>
+                {renderlistOfCompactorID}
+                <Container style={{cursor:'pointer'}} className="blueBorder adjustPaddingContent">
+                    <Row>
+                        <Col onClick={()=>{
+                            var maxPage = paginatedIDList.length
+                            var currentPage = (this.state.MapEquimentIndex + 1)
+
+                            
+                            if(this.state.MapEquimentIndex < maxPage && this.state.MapEquimentIndex !== maxPage){
+                                var currentPage = currentPage + 1
+                                this.setState({
+                                    MapEquimentIndex : this.state.MapEquimentIndex + 1
+                                })
+                            }
+
+                            if(currentPage == maxPage){
+                                this.setState({
+                                    MapEquipmentIDLastPage : true
+                                })
+                            }
+
+                        }}><i class="arrow down"></i></Col>
+                    </Row>
+                </Container>
+                </span>
+               }else if (this.state.MapEquimentIndex > 0 && !this.state.MapEquipmentIDLastPage){
+                    renderlistOfCompactorID = 
+                        <span>
+                        {renderlistOfCompactorID}
+                        <Container style={{cursor:'pointer'}} className="blueBorder adjustPaddingContent">
+                            <Row>
+                                <Col onClick={()=>{
+                                    var pageNo = this.state.MapEquimentIndex
+                                    if(pageNo !== 0){
+                                        this.setState({
+                                            MapEquimentIndex : pageNo -1
+                                        })
+                                    }
+                                }}><i class="arrow up"></i></Col>
+                            </Row>
+                        </Container>
+                        <Container style={{cursor:'pointer'}} className="blueBorder adjustPaddingContent">
+                            <Row>
+                                <Col onClick={()=>{
+                                    var maxPage = paginatedIDList.length
+                                    var currentPage = (this.state.MapEquimentIndex + 1)
+
+                                    
+                                    if(this.state.MapEquimentIndex < maxPage && this.state.MapEquimentIndex !== maxPage){
+                                        var currentPage = currentPage + 1
+                                        this.setState({
+                                            MapEquimentIndex : this.state.MapEquimentIndex + 1
+                                        })
+                                    }
+
+                                    if(currentPage == maxPage){
+                                        this.setState({
+                                            MapEquipmentIDLastPage : true
+                                        })
+                                    }
+
+                                }}><i class="arrow down"></i></Col>
+                            </Row>
+                        </Container>
+                        </span>
+               }else if(this.state.MapEquipmentIDLastPage){
+                    renderlistOfCompactorID = 
+                    <span>
+                    {renderlistOfCompactorID}
+                    <Container style={{cursor:'pointer'}} className="blueBorder adjustPaddingContent">
+                            <Row>
+                                <Col onClick={()=>{
+                                    var pageNo = this.state.MapEquimentIndex
+                                    if(pageNo !== 0){
+                                        this.setState({
+                                            MapEquimentIndex : pageNo -1
+                                        })
+                                    }
+                                }}><i class="arrow up"></i></Col>
+                            </Row>
+                    </Container>
+                    </span>
+               }
+
                var mapDashboard = 
                 <div className="grid-item-map-sideDashboard whiteBG">
                     <Container className="blueBG adjustPadding">
@@ -1139,7 +1244,6 @@ if(this.state.handleRedirectToAdminPage){
                     {weight}
                     {alarmsSection}
                     <div className="grid-item grid-item-mapDashboard grayBG">
-                        {console.log(this.state.currentCompactorID)}
                         <Mapping handleRedirectToMap={this.state.handleRedirectToMap} liveCompactorLoaded={this.state.liveCompactorLoaded} livecompactorData={this.state.livecompactorData} token={this.props.location.state.token} />
                     </div>
                 </div>
