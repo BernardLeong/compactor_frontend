@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import './../css/compactorInfo.css'
 import 'react-calendar/dist/Calendar.css';
 import Mapping from './Mapping';
+import ReportPage from './ReportPage';
 import GoogleApiWrapper from './GoogleApiWrapper';
 import NavBarContent from './NavBarContent';
 import { Alert, Table, Container, Row, Col, Form, Button, InputGroup, FormControl } from 'react-bootstrap'
@@ -29,6 +30,7 @@ class GridContainer extends Component{
             'filterSection' : '',
             'liveAllAlarmData' : [],
             'liveAlarmData' : [],
+            'liveAlarmReport' : [],
             'livecompactorData' : [],
             'allAlarmReport' : [],
             'MapEquimentIndex' : 0,
@@ -54,7 +56,6 @@ class GridContainer extends Component{
             'registeredUser' : false,
             'paginationDefaultPage' : 1,
             'paginationAlarmDefaultPage' : 1,
-            'paginationAlarmReportPage' : 1,
             'userTypeOption' : '',
             'username' : '',
             'password' : ''
@@ -80,6 +81,17 @@ class GridContainer extends Component{
             headers: { Authorization: `Bearer ${token}` }
         }
 
+        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getAlarmReport/all`,config)
+        .then((response)=> {
+            console.log(response)
+            this.setState({
+                liveAlarmReport : response.data.data,
+                liveAlarmsLoaded: true
+            })
+        })
+        .catch(function (error) {
+        })
+
         axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/alarmCurrentStatus/live`,config)
         .then((response)=> {
             console.log(response)
@@ -89,31 +101,18 @@ class GridContainer extends Component{
             })
         })
         .catch(function (error) {
-            console.log(error);
         })
 
         axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/CompactorCurrentStatus/live`,config)
         .then((response)=> {
-            console.log(response)
             this.setState({
                 livecompactorData : response.data.compactorInfo,
                 liveCompactorLoaded: true
             })
         })
         .catch(function (error) {
-            console.log(error);
         })
 
-        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/allCompactorAddresses/live`,config)
-        .then((response)=> {
-            this.setState({
-                liveCompactorAddresses : response.data.compactorAddresses,
-
-            })
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
     }
 
     reduceFunc(total, num){
@@ -351,303 +350,10 @@ if(this.state.handleRedirectToAdminPage){
             var alarmsData = this.state.liveAlarmData
 
             if(this.state.renderReportPage){
-                var allAlarmData = this.state.allAlarmReport
-                allAlarmData = sortObjectsArray(allAlarmData, 'ID')
-                var starttime = this.state.selectStartDate
-                var endtime = this.state.selectEndDate
-
-                var downloadUrl = false
-                if(starttime && endtime){
-                    var json = {"from" : starttime,"to" : endtime}
-                    var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(json), cryptKey).toString();
-                    ciphertext = encodeURIComponent(ciphertext)
-                    downloadUrl = `http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/generatePDF/${ciphertext}`
-                }
-
-                if(starttime !== '' && endtime !== ''){
-                    var filterAlarmData = []
-                    for(var i=0;i<allAlarmData.length;i++){
-                        if(starttime !== endtime){
-                            var todaydate = moment(allAlarmData[i]['ts']).format()
-                            todaydate = new Date(todaydate).getTime()
-                            var startTime = new Date(starttime).getTime()
-                            var endTime = new Date(endtime).getTime()
-                            if(startTime <= todaydate && endTime >= todaydate){
-                                filterAlarmData.push(allAlarmData[i])
-                            }
-                        }
-                        else{
-                            var todaydate = moment(allAlarmData[i]['ts']).format()
-                            todaydate = new Date(todaydate).getTime()
-                            var startTime = new Date(starttime).getTime()
-                            var endTime = new Date(endtime).getTime()
-                            if(startTime <= todaydate){
-                                filterAlarmData.push(allAlarmData[i])
-                            }
-                        }
-                    }
-
-                    allAlarmData = filterAlarmData
-                    filterAlarmData = []
-                }
-
-                //paginate here
-                const chunkyReportAlarm = (arr, size) =>
-                Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
-                    arr.slice(i * size, i * size + size)
-                );
-
-                var maxLength = 11
-
-                if(allAlarmData.length < maxLength){
-                    var maxPage = 1
-                }else{
-                    var maxPage = Math.ceil((allAlarmData.length / maxLength))
-                }
-                var range = []
-                for(i=1;i<=maxPage;i++){
-                    range.push(i)
-                }
-
-                var alarmReportPaginate = range.map(page => <a onClick={()=>{this.setState(
-                    {
-                        paginationAlarmReportPage : page
-                    }
-                    )}} style={{cursor:'pointer'}}>{page}</a>)
-                    
-                    var paginationAlarmPages = 
-                    <div style={{fontSize: '0.8em'}} className="pagination">
-                        {alarmReportPaginate}
-                    </div>
-
-                if(allAlarmData.length <= 0){
-                    var renderAlarms = 
-                    <tr>
-                    </tr>
-                }else{
-                    var paginatedAlarms = chunkyReportAlarm(allAlarmData,maxLength)
-                    var renderAlarms = paginatedAlarms[this.state.paginationAlarmReportPage -1]
-                    allAlarmData = renderAlarms.map(al => (
-                        <tr>
-                            <th>{al.EquipmentID}</th>
-                            <th>{al.ts}</th>
-                            <th>{al.Type}</th>
-                            <th>{al.Status}</th>
-                        </tr>
-                    ))
-                }
-
-                if(downloadUrl){
-                    return(
-                        <div className="grid-container-report">
-                              <div className='grid-item grid-item-01-compactor'>
-                               <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
-                              </div>
-                            <div className="grid-item grid-item-report-sideDashboard whiteBG">
-                          <Container className="blueBG adjustPadding">
-                              <Row>
-                                  <Col style={{textAlign : 'center'}}>Report</Col>
-                              </Row>
-                              </Container>
-                              <Container className="blueBorder adjustPaddingContent">
-                              <Row>
-                                  <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
-                                      this.setState({renderReportPage : false})
-                                  }}>Dashboard</Col>
-                              </Row>
-                              </Container>
-                          </div>
-                          <div className="grid-item grid-item-report-calender whiteBG">
-      
-                              <div>&nbsp;</div>
-                              <Container>
-                                  <Row>
-                                      <Col> 
-                                          Start Date : 
-                                      </Col>
-                                      <Col> 
-                                      </Col>
-                                      <Col>
-                                          End Date :
-                                      </Col>
-                                  </Row>
-                              </Container>
-                              <Container>
-                                  <Row>
-                                      <Col >
-                                          <Calendar style={{ textAlign: 'center' }}
-                                              onChange={(value, event)=>{
-                                                var events = moment(value).format();
-                                                this.setState({
-                                                    selectStartDate: events
-                                                })
-                                              }}
-                                          />
-                                      </Col>
-                                      <Col></Col>
-                                      <Col>
-                                          <Calendar
-                                              onChange={(value, event)=>{
-                                                var events = moment(value).endOf('day').format();
-                                                this.setState({
-                                                    selectEndDate: events
-                                                })
-                                              }}
-                                          />
-                                      </Col>
-                                  </Row>
-                              </Container> 
-                          </div>
-                          <div className="grid-item grid-item-report-table whiteBG">
-                                <Container>
-                                    <Row>
-                                        <Col style={{textAlign : 'center', fontSize: '1.6em'}}> 
-                                            Alarm Report 
-                                        </Col>
-                                    </Row>
-                                </Container>
-                                        <div>&nbsp;</div>
-                                <Container>
-                                    <Row> 
-                                        <Col> 
-                                        <Table striped bordered hover responsive> 
-                                            <thead>
-                                            <tr>
-                                                <th style={{textAlign : 'center'}}>Equipment ID</th>
-                                                <th style={{textAlign : 'center'}}>Alarm Trigger Timestamp</th>
-                                                <th style={{textAlign : 'center'}}>Alarm Type</th>
-                                                <th style={{textAlign : 'center'}}>Fault Type</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {allAlarmData}
-                                            </tbody>
-                                        </Table>
-                                        {paginationAlarmPages}
-                                        </Col>
-                                    </Row> 
-                                </Container>
-                                <div>&nbsp;</div>
-                                <Container>
-                                    <Row> 
-                                        <Col>
-                                        <a style={{ textAlign: 'left', backgroundColor : '#1f4e78', borderRadius: '5px', color: 'white', padding : '3px'}} href={downloadUrl}>Generate</a>
-                                            {/* <button style={{ textAlign: 'left', backgroundColor : '#1f4e78', borderRadius: '5px', color: 'white', padding : '3px'}}>Generate</button> */}
-                                        </Col> 
-                                        <Col></Col> 
-                                        <Col></Col> 
-                                    </Row> 
-                                </Container>
-                          </div>
-                          
-                        </div>
-                    )
-                }else{
-                    return(
-                        <div className="grid-container-report">
-                              <div className='grid-item grid-item-01-compactor'>
-                               <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
-                              </div>
-                            <div className="grid-item grid-item-report-sideDashboard whiteBG">
-                          <Container className="blueBG adjustPadding">
-                              <Row>
-                                  <Col style={{textAlign : 'center'}}>Report</Col>
-                              </Row>
-                              </Container>
-                              <Container className="blueBorder adjustPaddingContent">
-                              <Row>
-                                  <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
-                                      this.setState({renderReportPage : false})
-                                  }}>Dashboard</Col>
-                              </Row>
-                              </Container>
-                          </div>
-                          <div className="grid-item grid-item-report-calender whiteBG">
-      
-                              <div>&nbsp;</div>
-                              <Container>
-                                  <Row>
-                                      <Col> 
-                                          Start Date : 
-                                      </Col>
-                                      <Col> 
-                                      </Col>
-                                      <Col>
-                                          End Date :
-                                      </Col>
-                                  </Row>
-                              </Container>
-                              <Container>
-                                  <Row>
-                                      <Col >
-                                          <Calendar style={{ textAlign: 'center' }}
-                                              onChange={(value, event)=>{
-                                                var events = moment(value).format();
-                                                this.setState({
-                                                    selectStartDate: events
-                                                })
-                                              }}
-                                          />
-                                      </Col>
-                                      <Col></Col>
-                                      <Col>
-                                          <Calendar
-                                              onChange={(value, event)=>{
-                                                var events = moment(value).endOf('day').format();
-                                                this.setState({
-                                                    selectEndDate: events
-                                                })
-                                              }}
-                                          />
-                                      </Col>
-                                  </Row>
-                              </Container> 
-                          </div>
-                          <div className="grid-item grid-item-report-table whiteBG">
-                                <Container>
-                                    <Row>
-                                        <Col style={{textAlign : 'center', fontSize: '1.6em'}}> 
-                                            Alarm Report 
-                                        </Col>
-                                    </Row>
-                                </Container>
-                                        <div>&nbsp;</div>
-                                <Container>
-                                    <Row> 
-                                        <Col> 
-                                        <Table striped bordered hover responsive> 
-                                            <thead>
-                                            <tr>
-                                                <th style={{textAlign : 'center'}}>Equipment ID</th>
-                                                <th style={{textAlign : 'center'}}>Alarm Trigger Timestamp</th>
-                                                <th style={{textAlign : 'center'}}>Alarm Type</th>
-                                                <th style={{textAlign : 'center'}}>Fault Type</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {allAlarmData}
-                                            </tbody>
-                                        </Table>
-                                        {paginationAlarmPages}
-                                        </Col>
-                                    </Row> 
-                                </Container>
-                                <div>&nbsp;</div>
-                                <Container>
-                                    <Row> 
-                                        <Col>
-                                        <a style={{ textAlign: 'left', backgroundColor : 'gray', borderRadius: '5px', color: 'black', padding : '3px'}} disabled="disabled">Generate</a>
-                                            {/* <button style={{ textAlign: 'left', backgroundColor : '#1f4e78', borderRadius: '5px', color: 'white', padding : '3px'}}>Generate</button> */}
-                                        </Col> 
-                                        <Col></Col> 
-                                        <Col></Col> 
-                                    </Row> 
-                                </Container>
-                          </div>
-                          
-                        </div>
-                    )
-                }
+                //markReport
+                return(
+                    <ReportPage liveAlarmReport={this.state.liveAlarmReport} userType={this.props.location.state.userType} allAlarmReport={this.state.allAlarmReport} token={this.props.location.state.token} />
+                )
             }
 
             var alarms = []
@@ -1106,11 +812,9 @@ if(this.state.handleRedirectToAdminPage){
             </div>
         }
         if(this.state.renderAlarmInformation){
-            //mark
             var alarmsSection = 
             <div className="grid-item grid-item-alarmDashboard whiteBG">
                  <Table style={{fontSize: '0.9em'}} striped bordered hover>
-                 {/* mark tbale */}
                     <thead>
                     <tr>
                         <th style={{textAlign : 'center'}}>TimeStamp</th>
