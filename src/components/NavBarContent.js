@@ -45,6 +45,8 @@ class NavBarContent extends Component {
         this.setState({
           currentUser : response.data.username,
         })
+
+        this.props.saveCurrentUser(response.data.username)
       })
       .catch(function (error) {
         console.log(error);

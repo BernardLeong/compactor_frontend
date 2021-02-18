@@ -58,7 +58,8 @@ class GridContainer extends Component{
             'paginationAlarmDefaultPage' : 1,
             'userTypeOption' : '',
             'username' : '',
-            'password' : ''
+            'password' : '',
+            'currentUser': ''
         }
         this.renderWeightInformation = this.renderWeightInformation.bind(this)
         this.toggleAlarmLeftArrow = this.toggleAlarmLeftArrow.bind(this)
@@ -73,6 +74,7 @@ class GridContainer extends Component{
         this.handleRegisterCreditials = this.handleRegisterCreditials.bind(this)
         this.handleRegisterUser = this.handleRegisterUser.bind(this)
         this.handleEquipmentSearch = this.handleEquipmentSearch.bind(this)
+        this.saveCurrentUser = this.saveCurrentUser.bind(this)
     }
 
     componentDidMount(){
@@ -117,6 +119,12 @@ class GridContainer extends Component{
 
     reduceFunc(total, num){
         return total + num
+    }
+
+    saveCurrentUser(currentUser){
+        this.setState({
+            currentUser : currentUser
+        })
     }
 
     handleRedirectToMap(){
@@ -284,7 +292,7 @@ if(this.state.handleRedirectToAdminPage){
     return(
         <div className="grid-container-adminPage">
             <div className='grid-item grid-item-01-compactor whiteBG'>
-                <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+                <NavBarContent saveCurrentUser={this.saveCurrentUser} userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
             </div>
             <div className="grid-item grid-container-adminPage-dashBoard whiteBG">
 
@@ -412,6 +420,25 @@ if(this.state.handleRedirectToAdminPage){
                                 <th style={{textAlign: 'center'}}>{al.EquipmentID}</th>
                                 <th style={{textAlign: 'center'}}>{al.Type}</th>
                                 <th style={{textAlign: 'center'}}>{al.CurrentStatus}</th>
+                                <th style={{textAlign: 'center'}}><button onClick={()=>{
+                                    //markbutton
+                                    var token = this.props.location.state.token
+                                    var config = {
+                                        headers: { Authorization: `Bearer ${token}`, apikey: 'jnjirej9reinvuiriuerhuinui' }
+                                    }
+                                    var body = {
+                                        "ID" : al.EquipmentID, 
+                                        "ts": al.ts, 
+                                        "type" : al.Type, 
+                                        "username" : this.state.currentUser
+                                    }
+                                    axios.post(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/publishMQTT`, body , config)
+                                    .then((response)=> {
+                                        console.log(response)
+                                    })
+                                    .catch(function (error) {
+                                    })
+                                }} >publish mqtt</button></th>
                             </tr>
                     ))
                 }
@@ -706,7 +733,7 @@ if(this.state.handleRedirectToAdminPage){
             return(
                 <div className="grid-container-equipment">
                     <div className='grid-item grid-item-01-compactor'>
-                        <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+                        <NavBarContent saveCurrentUser={this.saveCurrentUser} userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
                     </div>
                     <div className="grid-item-equipment-dashboard whiteBG">
                         <Container className="blueBG adjustPadding">
@@ -864,7 +891,7 @@ if(this.state.handleRedirectToAdminPage){
             return(
                 <div className='grid-container-map'>
                      <div className='grid-item grid-item-01-compactor'>
-                         <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+                         <NavBarContent saveCurrentUser={this.saveCurrentUser} userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
                     </div>
                     {mapDashboard}
                     <div className="grid-item grid-item-map-map whiteBG">
@@ -941,7 +968,7 @@ if(this.state.handleRedirectToAdminPage){
             return(
                 <div className='grid-container-compactor'>
                      <div className='grid-item grid-item-01-compactor'>
-                         <NavBarContent userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+                         <NavBarContent saveCurrentUser={this.saveCurrentUser} userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
                     </div>
                     {dashboard} 
                     {weight}
