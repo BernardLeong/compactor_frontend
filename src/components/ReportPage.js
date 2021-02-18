@@ -71,7 +71,7 @@ class ReportPage extends Component {
             arr.slice(i * size, i * size + size)
         );
 
-        var maxLength = 11
+        var maxLength = 7
 
         if(allAlarmData.length < maxLength){
             var maxPage = 1
@@ -99,14 +99,24 @@ class ReportPage extends Component {
             <tr>
             </tr>
         }else{
+            for(var i=0; i<allAlarmData.length;i++){
+                var alarm = allAlarmData[i]
+                var ts = alarm.ts
+                ts = ts.split(' ')
+                alarm['timestampday']= ts[0]
+                alarm['timestamptime']= ts[1]
+                var clearts = alarm.ClearedTS
+                clearts = clearts.split(' ')
+                alarm['timeclearstampday']= clearts[0]
+                alarm['timeclearstamptime']= clearts[1]
+            }
             var paginatedAlarms = chunkyReportAlarm(allAlarmData,maxLength)
-            console.log(this.state.paginationAlarmReportPage)
             var renderAlarms = paginatedAlarms[this.state.paginationAlarmReportPage -1]
             allAlarmData = renderAlarms.map(al => (
                 <tr>
                     <th style={{textAlign: 'center'}} >{al.EquipmentID}</th>
-                    <th style={{textAlign: 'center'}}>{al.ts}</th>
-                    <th style={{textAlign: 'center'}}>{al.ClearedTS}</th>
+                    <th style={{textAlign: 'center'}}><div>{al.timestampday}</div><div>{al.timestamptime}</div></th>
+                    <th style={{textAlign: 'center'}}><div>{al.timeclearstampday}</div><div>{al.timeclearstamptime}</div></th>
                     <th style={{textAlign: 'center'}}>{al.timeDifference}</th>
                     <th style={{textAlign: 'center'}}>{al.Type}</th>
                     <th style={{textAlign: 'center'}}>{al.Status}</th>

@@ -8,7 +8,7 @@ import GoogleApiWrapper from './GoogleApiWrapper';
 import NavBarContent from './NavBarContent';
 import { Alert, Table, Container, Row, Col, Form, Button, InputGroup, FormControl } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faArrowRight, faStopwatch } from '@fortawesome/free-solid-svg-icons'
 import Calendar from 'react-calendar';
 const sortObjectsArray = require('sort-objects-array');
 const uniq = require("uniq")
@@ -412,15 +412,23 @@ if(this.state.handleRedirectToAdminPage){
                     <tr>
                     </tr>
                 }else{
+                    for(i=0;i<alarms.length;i++){
+                        var alarm = alarms[i]
+                        var ts = alarm.ts
+                        ts = ts.split(' ')
+                        alarm['timestampday']= ts[0]
+                        alarm['timestamptime']= ts[1]
+                        // alarm['timestamp']['time'] =  ts[1]
+                    }
                     var paginatedAlarms = chunkAlarm(alarms,5)
                     var renderAlarms = paginatedAlarms[this.state.paginationAlarmDefaultPage -1]
                     var alarmTable = renderAlarms.map(al => (
                             <tr>
-                                <th style={{textAlign: 'center'}}>{al.ts}</th>
+                                <th style={{textAlign: 'center'}}><div>{al['timestampday']}</div><div>{al['timestamptime']}</div></th>
                                 <th style={{textAlign: 'center'}}>{al.EquipmentID}</th>
                                 <th style={{textAlign: 'center'}}>{al.Type}</th>
                                 <th style={{textAlign: 'center'}}>{al.CurrentStatus}</th>
-                                <th style={{textAlign: 'center'}}><button onClick={()=>{
+                                <th style={{textAlign: 'center'}}><FontAwesomeIcon style={{cursor:'pointer'}} icon={faStopwatch} onClick={()=>{
                                     //markbutton
                                     var token = this.props.location.state.token
                                     var config = {
@@ -438,7 +446,7 @@ if(this.state.handleRedirectToAdminPage){
                                     })
                                     .catch(function (error) {
                                     })
-                                }} >publish mqtt</button></th>
+                                }} /></th>
                             </tr>
                     ))
                 }
@@ -602,11 +610,7 @@ if(this.state.handleRedirectToAdminPage){
                 </div>
             }
 
-            var array1 = [1, 2, 3, 4];
             var reducer = (accumulator, currentValue) => accumulator + currentValue;
-            
-
-            let reduceFunc = this.reduceFunc
             var collectionWeights = []
             for(var i=0;i<compactors.length;i++){
                 var weight = compactors[i]["WeightValue"]
@@ -623,8 +627,6 @@ if(this.state.handleRedirectToAdminPage){
             }else{
                 var totalCollectedWeight = collectionWeights.reduce(reducer)
             }
-
-            console.log(collectionWeights)
             //mark
             var compactorInfo = <tr><th>Loading ......</th></tr>
 
@@ -691,11 +693,24 @@ if(this.state.handleRedirectToAdminPage){
                 if(compactors.length <= 0){
                     compactorInfo = <tr><th></th></tr>
                 }else{
+                        for(var i=0; i<compactors.length;i++){
+                            var compactor = compactors[i]
+                            var ts = compactor['ts']
+                            if(ts == ''){
+                                compactor['timestampday'] = 'Equipment No Data'
+                                compactor['timestamptime'] = ''
+                            }else{
+                                ts = ts.split(' ')
+                                compactor['timestampday'] = ts[0]
+                                compactor['timestamptime'] = ts[1]
+                            }
+                        }
                         var paginatedCompactors = chunky(compactors,maxLength)
                         var renderCompactors = paginatedCompactors[this.state.paginationDefaultPage -1]
                         compactorInfo = renderCompactors.map(compactor => (
                             <tr>
-                                <th style={{textAlign : 'center'}}>{compactor['ts'] == '' ? 'Equipment No Data' : compactor['ts']}</th>
+                                {/* <th style={{textAlign : 'center'}}>{compactor['ts'] == '' ? 'Equipment No Data' : compactor['ts']}</th> */}
+                                <th style={{textAlign : 'center'}}><div>{compactor.timestampday}</div><div>{compactor.timestamptime}</div></th>
                                 <th style={{textAlign : 'center'}}>{compactor.EquipmentID}</th>
                                 <th style={{textAlign : 'center'}}>{Math.round(compactor.WeightValue)}</th>
                                 <th style={{textAlign : 'center'}}>{Math.round(compactor.FilledLevel)}</th>
@@ -850,12 +865,13 @@ if(this.state.handleRedirectToAdminPage){
                         <th style={{textAlign : 'center'}}>Equipment ID</th>
                         <th style={{textAlign : 'center'}}>Fault Type</th>
                         <th style={{textAlign : 'center'}}>Alarm Status</th>
+                        <th style={{textAlign : 'center'}}>Clear Alarm</th>
                     </tr>
                     </thead>
                     <tbody>
                       {alarmTable}
                     </tbody>
-                    {paginationAlarmPages}
+                    <span style={{textAlign: 'center'}}>{paginationAlarmPages}</span>
                 </Table>
                 <button onClick={()=>{this.setState({renderAlarmInformation : false})}}>Back</button>
             </div>
