@@ -60,7 +60,7 @@ class ReportPage extends Component {
         }
 
         if(starttime && endtime){
-            var json = {data: allAlarmData}
+            var json = {"from" : starttime,"to" : endtime}
             var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(json), cryptKey).toString();
             ciphertext = encodeURIComponent(ciphertext)
             console.log(ciphertext)
