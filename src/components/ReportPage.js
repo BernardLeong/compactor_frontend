@@ -148,7 +148,7 @@ class ReportPage extends Component {
                       <Container className="blueBorder adjustPaddingContent">
                       <Row>
                           <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
-                              this.setState({renderReportPage : false})
+                              this.props.renderReportPage(false)
                           }}>Dashboard</Col>
                       </Row>
                       </Container>
@@ -255,7 +255,7 @@ class ReportPage extends Component {
                       <Container className="blueBorder adjustPaddingContent">
                       <Row>
                           <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
-                              this.setState({renderReportPage : false})
+                              this.props.renderReportPage(false)
                           }}>Dashboard</Col>
                       </Row>
                       </Container>

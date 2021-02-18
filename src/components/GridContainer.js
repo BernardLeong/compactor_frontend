@@ -222,13 +222,15 @@ class GridContainer extends Component{
         )
     }
 
-    renderReportPage(){
+    renderReportPage(returnPage=false){
         this.setState(
             {
-                renderReportPage : true
+                renderReportPage : returnPage
             }
         )
     }
+
+
 
     renderEquipmentPage(){
         this.setState(
@@ -352,7 +354,7 @@ if(this.state.handleRedirectToAdminPage){
             if(this.state.renderReportPage){
                 //markReport
                 return(
-                    <ReportPage liveAlarmReport={this.state.liveAlarmReport} userType={this.props.location.state.userType} allAlarmReport={this.state.allAlarmReport} token={this.props.location.state.token} />
+                    <ReportPage renderReportPage={this.renderReportPage} liveAlarmReport={this.state.liveAlarmReport} userType={this.props.location.state.userType} allAlarmReport={this.state.allAlarmReport} token={this.props.location.state.token} />
                 )
             }
 
