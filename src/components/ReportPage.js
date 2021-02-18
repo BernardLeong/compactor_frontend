@@ -124,6 +124,34 @@ class ReportPage extends Component {
             ))
         }
 
+        if(this.props.userType == 'Admin'){
+            if(downloadUrl){
+                var generate = 
+                <Container>
+                                <Row> 
+                                    <Col>
+                                    <a style={{ textAlign: 'left', backgroundColor : '#1f4e78', borderRadius: '5px', color: 'white', padding : '3px'}} href={downloadUrl}>Generate</a>
+                                    </Col> 
+                                    <Col></Col> 
+                                    <Col></Col> 
+                                </Row> 
+                </Container>
+            }else{
+                var generate = 
+                <Container>
+                            <Row> 
+                                <Col>
+                                <a style={{ textAlign: 'left', backgroundColor : 'gray', borderRadius: '5px', color: 'black', padding : '3px'}} disabled="disabled">Generate</a>
+                                </Col> 
+                                <Col></Col> 
+                                <Col></Col> 
+                            </Row> 
+                </Container>
+            }
+           
+        }else{
+            var generate = false
+        }
         if(downloadUrl){
             return(
                 <div className="grid-container-report">
@@ -217,16 +245,7 @@ class ReportPage extends Component {
                             </Row> 
                         </Container>
                         <div>&nbsp;</div>
-                        <Container>
-                            <Row> 
-                                <Col>
-                                <a style={{ textAlign: 'left', backgroundColor : '#1f4e78', borderRadius: '5px', color: 'white', padding : '3px'}} href={downloadUrl}>Generate</a>
-                                    {/* <button style={{ textAlign: 'left', backgroundColor : '#1f4e78', borderRadius: '5px', color: 'white', padding : '3px'}}>Generate</button> */}
-                                </Col> 
-                                <Col></Col> 
-                                <Col></Col> 
-                            </Row> 
-                        </Container>
+                        {generate}
                   </div>
                   
                 </div>
@@ -324,16 +343,7 @@ class ReportPage extends Component {
                             </Row> 
                         </Container>
                         <div>&nbsp;</div>
-                        <Container>
-                            <Row> 
-                                <Col>
-                                <a style={{ textAlign: 'left', backgroundColor : 'gray', borderRadius: '5px', color: 'black', padding : '3px'}} disabled="disabled">Generate</a>
-                                    {/* <button style={{ textAlign: 'left', backgroundColor : '#1f4e78', borderRadius: '5px', color: 'white', padding : '3px'}}>Generate</button> */}
-                                </Col> 
-                                <Col></Col> 
-                                <Col></Col> 
-                            </Row> 
-                        </Container>
+                        {generate}
                   </div>
                   
                 </div>

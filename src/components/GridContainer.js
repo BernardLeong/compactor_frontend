@@ -249,36 +249,87 @@ class GridContainer extends Component{
     }
 
     render(){   
-        var dashboard = 
-        <div className="grid-item grid-item-sideDashboard whiteBG">
-        <Container className="blueBG adjustPadding">
-            <Row>
-                <Col></Col>
-                <Col style={{cursor : 'pointer'}}>Dashboard</Col>
-                <Col></Col>
-            </Row>
-        </Container>
-        <Container className="blueBorder adjustPaddingContent">
-            <Row>
-                <Col style={{cursor:'pointer'}} onClick={this.handleRedirectToMap}>Map</Col>
-            </Row>
-        </Container>
-        <Container className="blueBorder adjustPaddingContent">
-            <Row>
-                <Col style={{cursor:'pointer'}} onClick={this.renderEquipmentPage}>Equipment</Col>
-            </Row>
-        </Container>
-        <Container className="blueBorder adjustPaddingContent">
-            <Row>
-                <Col style={{cursor:'pointer'}} onClick={this.renderReportPage}>Report</Col>
-            </Row>
-        </Container>
-        <Container className="blueBorder adjustPaddingContent">
-            <Row>
-                <Col style={{cursor:'pointer'}} onClick={this.handleRedirectToAdminPage} >Admin</Col>
-            </Row>
-        </Container>
-</div>
+        //markb
+        var usertype = this.props.location.state.userType
+        if(usertype == 'Admin'){
+            var dashboard = 
+            <div className="grid-item grid-item-sideDashboard whiteBG">
+                <Container className="blueBG adjustPadding">
+                    <Row>
+                        <Col></Col>
+                        <Col style={{cursor : 'pointer'}}>Dashboard</Col>
+                        <Col></Col>
+                    </Row>
+                </Container>
+                <Container className="blueBorder adjustPaddingContent">
+                    <Row>
+                        <Col style={{cursor:'pointer'}} onClick={this.handleRedirectToMap}>Map</Col>
+                    </Row>
+                </Container>
+                <Container className="blueBorder adjustPaddingContent">
+                    <Row>
+                        <Col style={{cursor:'pointer'}} onClick={this.renderEquipmentPage}>Equipment</Col>
+                    </Row>
+                </Container>
+                <Container className="blueBorder adjustPaddingContent">
+                    <Row>
+                        <Col style={{cursor:'pointer'}} onClick={this.renderReportPage}>Report</Col>
+                    </Row>
+                </Container>
+                <Container className="blueBorder adjustPaddingContent">
+                    <Row>
+                        <Col style={{cursor:'pointer'}} onClick={this.handleRedirectToAdminPage} >Admin</Col>
+                    </Row>
+                </Container>
+            </div>
+        }else if(usertype == 'Enginner'){
+            var dashboard = 
+            <div className="grid-item grid-item-sideDashboard whiteBG">
+                <Container className="blueBG adjustPadding">
+                    <Row>
+                        <Col></Col>
+                        <Col style={{cursor : 'pointer'}}>Dashboard</Col>
+                        <Col></Col>
+                    </Row>
+                </Container>
+                <Container className="blueBorder adjustPaddingContent">
+                    <Row>
+                        <Col style={{cursor:'pointer'}} onClick={this.handleRedirectToMap}>Map</Col>
+                    </Row>
+                </Container>
+                <Container className="blueBorder adjustPaddingContent">
+                    <Row>
+                        <Col style={{cursor:'pointer'}} onClick={this.renderEquipmentPage}>Equipment</Col>
+                    </Row>
+                </Container>
+                <Container className="blueBorder adjustPaddingContent">
+                    <Row>
+                        <Col style={{cursor:'pointer'}} onClick={this.renderReportPage}>Report</Col>
+                    </Row>
+                </Container>
+            </div>
+        }else{
+            var dashboard = 
+            <div className="grid-item grid-item-sideDashboard whiteBG">
+                <Container className="blueBG adjustPadding">
+                    <Row>
+                        <Col></Col>
+                        <Col style={{cursor : 'pointer'}}>Dashboard</Col>
+                        <Col></Col>
+                    </Row>
+                </Container>
+                <Container className="blueBorder adjustPaddingContent">
+                    <Row>
+                        <Col style={{cursor:'pointer'}} onClick={this.handleRedirectToMap}>Map</Col>
+                    </Row>
+                </Container>
+                <Container className="blueBorder adjustPaddingContent">
+                    <Row>
+                        <Col style={{cursor:'pointer'}} onClick={this.renderEquipmentPage}>Equipment</Col>
+                    </Row>
+                </Container>
+            </div>
+        }
 
 if(this.state.handleRedirectToAdminPage){
     if(this.state.registeredUser){
@@ -362,7 +413,7 @@ if(this.state.handleRedirectToAdminPage){
             if(this.state.renderReportPage){
                 //markReport
                 return(
-                    <ReportPage renderReportPage={this.renderReportPage} liveAlarmReport={this.state.liveAlarmReport} userType={this.props.location.state.userType} allAlarmReport={this.state.allAlarmReport} token={this.props.location.state.token} />
+                    <ReportPage userType={this.props.location.state.userType} renderReportPage={this.renderReportPage} liveAlarmReport={this.state.liveAlarmReport} userType={this.props.location.state.userType} allAlarmReport={this.state.allAlarmReport} token={this.props.location.state.token} />
                 )
             }
 
@@ -418,11 +469,12 @@ if(this.state.handleRedirectToAdminPage){
                         ts = ts.split(' ')
                         alarm['timestampday']= ts[0]
                         alarm['timestamptime']= ts[1]
-                        // alarm['timestamp']['time'] =  ts[1]
                     }
                     var paginatedAlarms = chunkAlarm(alarms,5)
                     var renderAlarms = paginatedAlarms[this.state.paginationAlarmDefaultPage -1]
-                    var alarmTable = renderAlarms.map(al => (
+                    var usertype = this.props.location.state.userType
+                    if(usertype == 'Admin' || usertype == 'Enginner' ){
+                        var alarmTable = renderAlarms.map(al => (
                             <tr>
                                 <th style={{textAlign: 'center'}}><div>{al['timestampday']}</div><div>{al['timestamptime']}</div></th>
                                 <th style={{textAlign: 'center'}}>{al.EquipmentID}</th>
@@ -448,7 +500,18 @@ if(this.state.handleRedirectToAdminPage){
                                     })
                                 }} /></th>
                             </tr>
-                    ))
+                        ))
+                    }else{
+                        var alarmTable = renderAlarms.map(al => (
+                            <tr>
+                                <th style={{textAlign: 'center'}}><div>{al['timestampday']}</div><div>{al['timestamptime']}</div></th>
+                                <th style={{textAlign: 'center'}}>{al.EquipmentID}</th>
+                                <th style={{textAlign: 'center'}}>{al.Type}</th>
+                                <th style={{textAlign: 'center'}}>{al.CurrentStatus}</th>
+                            </tr>
+                        ))
+                    }
+                    
                 }
             var noOfAlarms = 0
 
@@ -856,25 +919,49 @@ if(this.state.handleRedirectToAdminPage){
             </div>
         }
         if(this.state.renderAlarmInformation){
-            var alarmsSection = 
-            <div className="grid-item grid-item-alarmDashboard whiteBG">
-                 <Table style={{fontSize: '0.9em'}} striped bordered hover>
-                    <thead>
-                    <tr>
-                        <th style={{textAlign : 'center'}}>TimeStamp</th>
-                        <th style={{textAlign : 'center'}}>Equipment ID</th>
-                        <th style={{textAlign : 'center'}}>Fault Type</th>
-                        <th style={{textAlign : 'center'}}>Alarm Status</th>
-                        <th style={{textAlign : 'center'}}>Clear Alarm</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                      {alarmTable}
-                    </tbody>
-                    <span style={{textAlign: 'center'}}>{paginationAlarmPages}</span>
-                </Table>
-                <button onClick={()=>{this.setState({renderAlarmInformation : false})}}>Back</button>
-            </div>
+            //markb
+            var usertype = this.props.location.state.userType
+
+            if(usertype == 'Admin' || usertype == 'Enginner'){
+                var alarmsSection = 
+                <div className="grid-item grid-item-alarmDashboard whiteBG">
+                    <Table style={{fontSize: '0.9em'}} striped bordered hover>
+                        <thead>
+                        <tr>
+                            <th style={{textAlign : 'center'}}>TimeStamp</th>
+                            <th style={{textAlign : 'center'}}>Equipment ID</th>
+                            <th style={{textAlign : 'center'}}>Fault Type</th>
+                            <th style={{textAlign : 'center'}}>Alarm Status</th>
+                            <th style={{textAlign : 'center'}}>Clear Alarm</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {alarmTable}
+                        </tbody>
+                        <span style={{textAlign: 'center'}}>{paginationAlarmPages}</span>
+                    </Table>
+                    <button onClick={()=>{this.setState({renderAlarmInformation : false})}}>Back</button>
+                </div>
+            }else{
+                var alarmsSection = 
+                <div className="grid-item grid-item-alarmDashboard whiteBG">
+                    <Table style={{fontSize: '0.9em'}} striped bordered hover>
+                        <thead>
+                        <tr>
+                            <th style={{textAlign : 'center'}}>TimeStamp</th>
+                            <th style={{textAlign : 'center'}}>Equipment ID</th>
+                            <th style={{textAlign : 'center'}}>Fault Type</th>
+                            <th style={{textAlign : 'center'}}>Alarm Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {alarmTable}
+                        </tbody>
+                        <span style={{textAlign: 'center'}}>{paginationAlarmPages}</span>
+                    </Table>
+                    <button onClick={()=>{this.setState({renderAlarmInformation : false})}}>Back</button>
+                </div>
+            }
     }else{
         var alarmsSection = 
             <div className="grid-item grid-item-alarmDashboard whiteBG">
