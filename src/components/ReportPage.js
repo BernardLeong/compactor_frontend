@@ -18,7 +18,9 @@ class ReportPage extends Component {
         this.state = 
         {
             'paginationAlarmReportPage' : 1,
-            'liveAlarmReport' : false
+            'liveAlarmReport' : false,
+            'selectStartDate' : '',
+            'selectEndDate' : ''
         }
     }
 
@@ -28,61 +30,40 @@ class ReportPage extends Component {
         allAlarmData = sortObjectsArray(allAlarmData, 'ts', {order: 'desc'})
         var starttime = this.state.selectStartDate
         var endtime = this.state.selectEndDate
-        console.log(allAlarmData)
-
         var downloadUrl = false
-        var filterUrl = false
         if(starttime && endtime){
             var json = {"from" : starttime,"to" : endtime}
             var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(json), cryptKey).toString();
             ciphertext = encodeURIComponent(ciphertext)
-            downloadUrl = `http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/generatePDF/${ciphertext}`
-            filterUrl = `http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getAlarmReport/${ciphertext}`
-            var token = this.props.token
-            var config = {
-                headers: { Authorization: `Bearer ${token}` }
+            downloadUrl = `http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/generatePDF/${ciphertext}`  
+        }
+
+        if(starttime !== '' && endtime !== ''){
+            var filterAlarmData = []
+            for(var i=0;i<allAlarmData.length;i++){
+                if(starttime !== endtime){
+                    var todaydate = moment(allAlarmData[i]['ts']).format()
+                    todaydate = new Date(todaydate).getTime()
+                    var startTime = new Date(starttime).getTime()
+                    var endTime = new Date(endtime).getTime()
+                    if(startTime <= todaydate && endTime >= todaydate){
+                        filterAlarmData.push(allAlarmData[i])
+                    }
+                }
+                else{
+                    var todaydate = moment(allAlarmData[i]['ts']).format()
+                    todaydate = new Date(todaydate).getTime()
+                    var startTime = new Date(starttime).getTime()
+                    var endTime = new Date(endtime).getTime()
+                    if(startTime <= todaydate){
+                        filterAlarmData.push(allAlarmData[i])
+                    }
+                }
             }
-            var rawAlarmData = axios.get(filterUrl ,config)
-            .then((response)=> {
-                console.log(response)
-                this.setState({
-                    liveAlarmReport : response.data.data
-                })
-            })
-            .catch(function (error) {
-            })    
+
+            allAlarmData = filterAlarmData
+            filterAlarmData = []
         }
-
-        if(this.state.liveAlarmReport){
-            allAlarmData = this.state.liveAlarmReport
-        }
-
-        // if(starttime !== '' && endtime !== ''){
-        //     var filterAlarmData = []
-        //     for(var i=0;i<allAlarmData.length;i++){
-        //         if(starttime !== endtime){
-        //             var todaydate = moment(allAlarmData[i]['ts']).format()
-        //             todaydate = new Date(todaydate).getTime()
-        //             var startTime = new Date(starttime).getTime()
-        //             var endTime = new Date(endtime).getTime()
-        //             if(startTime <= todaydate && endTime >= todaydate){
-        //                 filterAlarmData.push(allAlarmData[i])
-        //             }
-        //         }
-        //         else{
-        //             var todaydate = moment(allAlarmData[i]['ts']).format()
-        //             todaydate = new Date(todaydate).getTime()
-        //             var startTime = new Date(starttime).getTime()
-        //             var endTime = new Date(endtime).getTime()
-        //             if(startTime <= todaydate){
-        //                 filterAlarmData.push(allAlarmData[i])
-        //             }
-        //         }
-        //     }
-
-        //     allAlarmData = filterAlarmData
-        //     filterAlarmData = []
-        // }
 
         //paginate here
         const chunkyReportAlarm = (arr, size) =>
