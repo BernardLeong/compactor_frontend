@@ -31,12 +31,6 @@ class ReportPage extends Component {
         var starttime = this.state.selectStartDate
         var endtime = this.state.selectEndDate
         var downloadUrl = false
-        if(starttime && endtime){
-            var json = {"from" : starttime,"to" : endtime}
-            var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(json), cryptKey).toString();
-            ciphertext = encodeURIComponent(ciphertext)
-            downloadUrl = `http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/generatePDF/${ciphertext}`  
-        }
 
         if(starttime !== '' && endtime !== ''){
             var filterAlarmData = []
@@ -64,6 +58,15 @@ class ReportPage extends Component {
             allAlarmData = filterAlarmData
             filterAlarmData = []
         }
+
+        if(starttime && endtime){
+            var json = {data: allAlarmData}
+            var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(json), cryptKey).toString();
+            ciphertext = encodeURIComponent(ciphertext)
+            console.log(ciphertext)
+            downloadUrl = `http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/generatePDF/${ciphertext}`  
+        }
+
 
         //paginate here
         const chunkyReportAlarm = (arr, size) =>
