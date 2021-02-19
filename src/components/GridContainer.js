@@ -709,12 +709,13 @@ if(this.state.handleRedirectToAdminPage){
                 //mark
                 compactors = sortObjectsArray(compactors, 'ts', {order: 'desc'})
 
+                console.log(compactors)
                 if(this.state.equipmentSearchResult !== ''){
                     //filter using search bar result
                     //filter only ID and ts
                     var filterSearch = []
                     for(var i=0;i<compactors.length;i++){
-                        var compactorID = compactors[i].ID
+                        var compactorID = compactors[i].EquipmentID
                         var timestamp = compactors[i].ts
                         if(compactorID.includes(this.state.equipmentSearchResult) || timestamp.includes(this.state.equipmentSearchResult)){
                             filterSearch.push(compactors[i])
