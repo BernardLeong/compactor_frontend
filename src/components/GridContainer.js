@@ -249,7 +249,6 @@ class GridContainer extends Component{
     }
 
     render(){   
-        //markb
         var usertype = this.props.location.state.userType
         if(usertype == 'Admin'){
             var dashboard = 
@@ -481,7 +480,6 @@ if(this.state.handleRedirectToAdminPage){
                                 <th style={{textAlign: 'center'}}>{al.Type}</th>
                                 <th style={{textAlign: 'center'}}>{al.CurrentStatus}</th>
                                 <th style={{textAlign: 'center'}}><FontAwesomeIcon style={{cursor:'pointer'}} icon={faStopwatch} onClick={()=>{
-                                    //markbutton
                                     var token = this.props.location.state.token
                                     var config = {
                                         headers: { Authorization: `Bearer ${token}`, apikey: 'jnjirej9reinvuiriuerhuinui' }
@@ -709,7 +707,6 @@ if(this.state.handleRedirectToAdminPage){
                 //mark
                 compactors = sortObjectsArray(compactors, 'ts', {order: 'desc'})
 
-                console.log(compactors)
                 if(this.state.equipmentSearchResult !== ''){
                     //filter using search bar result
                     //filter only ID and ts
@@ -920,7 +917,6 @@ if(this.state.handleRedirectToAdminPage){
             </div>
         }
         if(this.state.renderAlarmInformation){
-            //markb
             var usertype = this.props.location.state.userType
 
             if(usertype == 'Admin' || usertype == 'Enginner'){
@@ -992,6 +988,8 @@ if(this.state.handleRedirectToAdminPage){
     }
 
         if(this.state.handleRedirectToMap){
+            var compactorsData = compactors
+            var alarmData = alarms
             return(
                 <div className='grid-container-map'>
                      <div className='grid-item grid-item-01-compactor'>
@@ -999,32 +997,14 @@ if(this.state.handleRedirectToAdminPage){
                     </div>
                     {mapDashboard}
                     <div className="grid-item grid-item-map-map whiteBG">
-
-                        <Mapping handleRedirectToMap={this.state.handleRedirectToMap} currentCompactorID={this.state.currentCompactorID} liveCompactorLoaded={this.state.liveCompactorLoaded} livecompactorData={this.state.livecompactorData} token={this.props.location.state.token} />                        
+                        <Container>
+                            <Row>
+                                <Col>
+                                    <div><GoogleApiWrapper handleRedirectToMap={this.state.handleRedirectToMap} livealarmData={alarmData} liveAlarmsLoaded={this.state.liveAlarmsLoaded} liveCompactorLoaded={this.state.liveCompactorLoaded} compactorsData={compactorsData} /></div>
+                                </Col>
+                            </Row>
+                        </Container>
                     </div>
-                    <div className="grid-item grid-item-map-information whiteBG">
-                        <div>
-                            <Table style={{fontSize : '0.7em', padding: '0.3px'}} striped bordered hover responsive size="sm"> 
-                                <thead>
-                                <tr>
-                                    <th>Equipment ID</th>
-                                    <th>TimeStamp</th>
-                                    <th>Collection Weight</th>
-                                    <th>Weight Percentage</th>
-                                    <th>Level</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {compactorInfo}
-                                </tbody>
-                            </Table>
-                            {paginationPages}
-                        </div>
-                    </div>
-                    {/* <div className="grid-item grid-item-map-map whiteBG">
-                Map
-                        <Mapping handleRedirectToMap={this.state.handleRedirectToMap} currentCompactorID={this.state.currentCompactorID} compactorFilledLevel={this.state.compactorFilledLevel} token={this.props.location.state.token} />                        
-                    </div> */}
                     <div className="grid-item-map-legend whiteBG">
                     <Container>
                         <Row>
@@ -1069,16 +1049,29 @@ if(this.state.handleRedirectToAdminPage){
                 </div>
             )
         }else{
+            //markb
+            var compactorsData = compactors
+            var alarmData = alarms
+
             return(
                 <div className='grid-container-compactor'>
                      <div className='grid-item grid-item-01-compactor'>
+                         
                          <NavBarContent saveCurrentUser={this.saveCurrentUser} userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
                     </div>
                     {dashboard} 
                     {weight}
                     {alarmsSection}
                     <div className="grid-item grid-item-mapDashboard grayBG">
-                        <Mapping handleRedirectToMap={this.state.handleRedirectToMap} liveCompactorLoaded={this.state.liveCompactorLoaded} livecompactorData={this.state.livecompactorData} token={this.props.location.state.token} />
+                    {/* <div style={{backgroundColor: 'yellow', zIndex: '99'}}>hiiii</div> */}
+                        {/* <Mapping handleRedirectToMap={this.state.handleRedirectToMap} liveCompactorLoaded={this.state.liveCompactorLoaded} livecompactorData={this.state.livecompactorData} token={this.props.location.state.token} /> */}
+                        <Container>
+                            <Row>
+                                <Col>
+                                    <div><GoogleApiWrapper handleRedirectToMap={this.state.handleRedirectToMap} livealarmData={alarmData} liveAlarmsLoaded={this.state.liveAlarmsLoaded} liveCompactorLoaded={this.state.liveCompactorLoaded} compactorsData={compactorsData} /></div>
+                                </Col>
+                            </Row>
+                        </Container>
                     </div>
                 </div>
             )

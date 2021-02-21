@@ -24,6 +24,7 @@ body{
     border: 1px solid #4CAF50;
 }
 
+
 .pagination a:hover:not(.active) {background-color: #ddd;}
 
 .grid-container-login {
