@@ -256,29 +256,27 @@ class GridContainer extends Component{
             <div className="grid-item grid-item-sideDashboard whiteBG">
                 <Container className="blueBG adjustPadding">
                     <Row>
-                        <Col></Col>
-                        <Col style={{cursor : 'pointer'}}>Dashboard</Col>
-                        <Col></Col>
+                        <Col style={{ textAlign: 'center', cursor : 'pointer'}}>Dashboard</Col>
                     </Row>
                 </Container>
                 <Container className="blueBorder adjustPaddingContent">
                     <Row>
-                        <Col style={{cursor:'pointer'}} onClick={this.handleRedirectToMap}>Map</Col>
+                        <Col style={{ textAlign: 'center', cursor:'pointer'}} onClick={this.handleRedirectToMap}>Map</Col>
                     </Row>
                 </Container>
                 <Container className="blueBorder adjustPaddingContent">
                     <Row>
-                        <Col style={{cursor:'pointer'}} onClick={this.renderEquipmentPage}>Equipment</Col>
+                        <Col style={{textAlign: 'center', cursor:'pointer'}} onClick={this.renderEquipmentPage}>Equipment</Col>
                     </Row>
                 </Container>
                 <Container className="blueBorder adjustPaddingContent">
                     <Row>
-                        <Col style={{cursor:'pointer'}} onClick={this.renderReportPage}>Report</Col>
+                        <Col style={{ textAlign: 'center', cursor:'pointer'}} onClick={this.renderReportPage}>Report</Col>
                     </Row>
                 </Container>
                 <Container className="blueBorder adjustPaddingContent">
                     <Row>
-                        <Col style={{cursor:'pointer'}} onClick={this.handleRedirectToAdminPage} >Admin</Col>
+                        <Col style={{ textAlign: 'center', cursor:'pointer'}} onClick={this.handleRedirectToAdminPage} >Admin</Col>
                     </Row>
                 </Container>
             </div>
@@ -287,24 +285,22 @@ class GridContainer extends Component{
             <div className="grid-item grid-item-sideDashboard whiteBG">
                 <Container className="blueBG adjustPadding">
                     <Row>
-                        <Col></Col>
-                        <Col style={{cursor : 'pointer'}}>Dashboard</Col>
-                        <Col></Col>
+                        <Col style={{ textAlign: 'center', cursor : 'pointer'}}>Dashboard</Col>
                     </Row>
                 </Container>
                 <Container className="blueBorder adjustPaddingContent">
                     <Row>
-                        <Col style={{cursor:'pointer'}} onClick={this.handleRedirectToMap}>Map</Col>
+                        <Col style={{ textAlign: 'center', cursor:'pointer'}} onClick={this.handleRedirectToMap}>Map</Col>
                     </Row>
                 </Container>
                 <Container className="blueBorder adjustPaddingContent">
                     <Row>
-                        <Col style={{cursor:'pointer'}} onClick={this.renderEquipmentPage}>Equipment</Col>
+                        <Col style={{ textAlign: 'center', cursor:'pointer'}} onClick={this.renderEquipmentPage}>Equipment</Col>
                     </Row>
                 </Container>
                 <Container className="blueBorder adjustPaddingContent">
                     <Row>
-                        <Col style={{cursor:'pointer'}} onClick={this.renderReportPage}>Report</Col>
+                        <Col style={{ textAlign: 'center', cursor:'pointer'}} onClick={this.renderReportPage}>Report</Col>
                     </Row>
                 </Container>
             </div>
@@ -313,19 +309,17 @@ class GridContainer extends Component{
             <div className="grid-item grid-item-sideDashboard whiteBG">
                 <Container className="blueBG adjustPadding">
                     <Row>
-                        <Col></Col>
-                        <Col style={{cursor : 'pointer'}}>Dashboard</Col>
-                        <Col></Col>
+                        <Col style={{ textAlign: 'center', cursor : 'pointer'}}>Dashboard</Col>
                     </Row>
                 </Container>
                 <Container className="blueBorder adjustPaddingContent">
                     <Row>
-                        <Col style={{cursor:'pointer'}} onClick={this.handleRedirectToMap}>Map</Col>
+                        <Col style={{ textAlign: 'center', cursor:'pointer'}} onClick={this.handleRedirectToMap}>Map</Col>
                     </Row>
                 </Container>
                 <Container className="blueBorder adjustPaddingContent">
                     <Row>
-                        <Col style={{cursor:'pointer'}} onClick={this.renderEquipmentPage}>Equipment</Col>
+                        <Col style={{ textAlign: 'center', cursor:'pointer'}} onClick={this.renderEquipmentPage}>Equipment</Col>
                     </Row>
                 </Container>
             </div>
@@ -654,7 +648,7 @@ if(this.state.handleRedirectToAdminPage){
                 <div className="grid-item-map-sideDashboard whiteBG">
                     <Container className="blueBG adjustPadding">
                     <Row>
-                        <Col style={{textAlign : 'center'}}>Map</Col>
+                        <Col style={{textAlign : 'center', cursor:'pointer'}}>Map</Col>
                     </Row>
                     </Container>
                     <Container className="blueBorder adjustPaddingContent">
@@ -665,7 +659,7 @@ if(this.state.handleRedirectToAdminPage){
                                         handleRedirectToMap : false
                                     }
                                 )
-                            }} style={{cursor:'pointer'}}>Dashboard</Col>
+                            }} style={{ textAlign : 'center', cursor:'pointer'}}>Dashboard</Col>
                         </Row>
                     </Container>
                     {/* {renderlistOfCompactorID} */}
@@ -826,7 +820,7 @@ if(this.state.handleRedirectToAdminPage){
                                             renderEquipmentPage : false
                                         }
                                     )
-                                }} style={{cursor:'pointer'}}>Dashboard</Col>
+                                }} style={{ textAlign: 'center', cursor:'pointer'}}>Dashboard</Col>
                             </Row>
                         </Container>
                     </div>
