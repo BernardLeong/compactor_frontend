@@ -25,7 +25,8 @@ class GridContainer extends Component{
             'alarmSection' : 'CBM',
             'compactorSection' : 'CBM', 
             'alarmType' : 'EStop',
-            'currentCompactorID' : '',
+            'currentCompactorID' : false,
+            'currentCompactorCoordinates' : false,
             'equipmentSearchResult' : '',
             'filterSection' : '',
             'liveAllAlarmData' : [],
@@ -550,10 +551,10 @@ if(this.state.handleRedirectToAdminPage){
 
                 var paginatedIDList = chunkyEquipmentIDS(allCompactors, maxlength)
                 var allCompactorsData = paginatedIDList[this.state.MapEquimentIndex]
-
+//markC
                 var renderlistOfCompactorID = allCompactorsData.map(compactor => (
                     <Container onClick={()=>{
-                        this.setState({currentCompactorID : compactor.EquipmentID})
+                        this.setState({currentCompactorCoordinates: compactor.coordinates, currentCompactorID : compactor.EquipmentID})
                     }} style={{cursor:'pointer'}} className="blueBorder adjustPaddingContent">
                         <Row>
                             <Col>{compactor.EquipmentID}</Col>
@@ -988,6 +989,7 @@ if(this.state.handleRedirectToAdminPage){
     }
 
         if(this.state.handleRedirectToMap){
+            //markC
             var compactorsData = compactors
             var alarmData = alarms
             return(
@@ -1000,7 +1002,7 @@ if(this.state.handleRedirectToAdminPage){
                         <Container>
                             <Row>
                                 <Col>
-                                    <div><GoogleApiWrapper handleRedirectToMap={this.state.handleRedirectToMap} livealarmData={alarmData} liveAlarmsLoaded={this.state.liveAlarmsLoaded} liveCompactorLoaded={this.state.liveCompactorLoaded} compactorsData={compactorsData} /></div>
+                                    <div><GoogleApiWrapper currentCompactorCoordinates={this.state.currentCompactorCoordinates} currentCompactorID={this.state.currentCompactorID} handleRedirectToMap={this.state.handleRedirectToMap} livealarmData={alarmData} liveAlarmsLoaded={this.state.liveAlarmsLoaded} liveCompactorLoaded={this.state.liveCompactorLoaded} compactorsData={compactorsData} /></div>
                                 </Col>
                             </Row>
                         </Container>
@@ -1068,7 +1070,7 @@ if(this.state.handleRedirectToAdminPage){
                         <Container>
                             <Row>
                                 <Col>
-                                    <div><GoogleApiWrapper handleRedirectToMap={this.state.handleRedirectToMap} livealarmData={alarmData} liveAlarmsLoaded={this.state.liveAlarmsLoaded} liveCompactorLoaded={this.state.liveCompactorLoaded} compactorsData={compactorsData} /></div>
+                                    <div><GoogleApiWrapper currentCompactorCoordinates={this.state.currentCompactorCoordinates} currentCompactorID={this.state.currentCompactorID} handleRedirectToMap={this.state.handleRedirectToMap} livealarmData={alarmData} liveAlarmsLoaded={this.state.liveAlarmsLoaded} liveCompactorLoaded={this.state.liveCompactorLoaded} compactorsData={compactorsData} /></div>
                                 </Col>
                             </Row>
                         </Container>

@@ -46,11 +46,17 @@ class MapTest extends Component {
   render() {
 
     if(this.props.handleRedirectToMap){
-      var mapStyle = { width: '62.2em', height: '46em'}
+      var mapStyle = { width: '68em', height: '46em'}
     }else{
-      var mapStyle = { width: '22.6em', height: '67.5em'}
+      var mapStyle = { width: '30em', height: '67.5em'}
     }
     var alarmArr = []
+    var currentCompactorID = false
+
+    if(this.props.currentCompactorID){
+      currentCompactorID = this.props.currentCompactorID
+    }
+
     if(this.props.liveCompactorLoaded && this.props.liveAlarmsLoaded){
       var compactorsData = this.props.compactorsData
       var alarmsData = this.props.livealarmData
@@ -109,7 +115,6 @@ class MapTest extends Component {
       }
 
       var markerColor = this.state.markerColor
-      console.log(compactorsData)
       var markers = compactorsData.map(al => (
         <Marker
                   name={al}
@@ -122,63 +127,75 @@ class MapTest extends Component {
                   }}
         />
       ))
+      console.log(this.props.currentCompactorCoordinates)
+      console.log(this.state.center)
+      var center = {lat: 1.3552, lng: 103.7972}
+      if(this.props.currentCompactorCoordinates){
+        var center = this.props.currentCompactorCoordinates
+        var obj = {}
+        obj["lat"] = parseFloat(center["lat"])
+        obj['lng'] = parseFloat(center["long"])
+        center = obj
+      }else{
+        center = this.state.center
+      }
       return(
-          <Map google={window.google}
-              style={mapStyle}
-              initialCenter={this.state.center}
-              zoom={11}>
-          {markers}
-          <InfoWindow
-            marker={this.state.activeMarker}
-            visible={this.state.showingInfoWindow}
-            >
-              <div>
-                <Table striped bordered hover>
-                  <tbody>
-                    <tr>
-                      <td>EquipmentID</td>
-                      <td>{this.state.currentObject.EquipmentID}</td>
-                    </tr>
-                    <tr>
-                      <td>Location</td>
-                      <td>{this.state.currentObject.address}</td>
-                    </tr>
-                    <tr>
-                      <td>Weight/Volume Fill</td>
-                      <td>{this.state.currentObject.FilledLevel}</td>
-                    </tr>
-                    <tr>
-                      <td>Fill Status</td>
-                      <td>{
-                      this.state.currentObject.FilledLevel < 70 ? "Normal" : 
-                      this.state.currentObject.FilledLevel <= 90 ? "Strained" : 
-                      'ExceedWeight'
-                      }</td>
-                    </tr>
-                    <tr>
-                      <td>Fault Status</td>
-                      <td>{this.state.currentObject.CurrentStatus ? this.state.currentObject.CurrentStatus : 'No Fault'}</td>
-                    </tr>
-                    <tr>
-                      <td>Fault Type</td>
-                      <td>{this.state.currentObject.Type ? this.state.currentObject.Type : 'No Fault'}</td>
-                    </tr>
-                    <tr>
-                      <td>Fault Time/Date</td>
-                      <td>{this.state.currentObject.Alarmts ? this.state.currentObject.Alarmts : 'No Fault'}</td>
-                    </tr>
-                  </tbody>
-                </Table>
-              </div>
-          </InfoWindow>
-          </Map>
-      )
+        <Map google={window.google}
+            style={mapStyle}
+            initialCenter={this.state.center}
+            zoom={11.5}>
+        {markers}
+        <InfoWindow
+          marker={this.state.activeMarker}
+          visible={this.state.showingInfoWindow}
+          >
+            <div>
+              <Table striped bordered hover>
+                <tbody>
+                  <tr>
+                    <td>EquipmentID</td>
+                    <td>{this.state.currentObject.EquipmentID}</td>
+                  </tr>
+                  <tr>
+                    <td>Location</td>
+                    <td>{this.state.currentObject.address}</td>
+                  </tr>
+                  <tr>
+                    <td>Weight/Volume Fill</td>
+                    <td>{this.state.currentObject.FilledLevel}</td>
+                  </tr>
+                  <tr>
+                    <td>Fill Status</td>
+                    <td>{
+                    this.state.currentObject.FilledLevel < 70 ? "Normal" : 
+                    this.state.currentObject.FilledLevel <= 90 ? "Strained" : 
+                    'ExceedWeight'
+                    }</td>
+                  </tr>
+                  <tr>
+                    <td>Fault Status</td>
+                    <td>{this.state.currentObject.CurrentStatus ? this.state.currentObject.CurrentStatus : 'No Fault'}</td>
+                  </tr>
+                  <tr>
+                    <td>Fault Type</td>
+                    <td>{this.state.currentObject.Type ? this.state.currentObject.Type : 'No Fault'}</td>
+                  </tr>
+                  <tr>
+                    <td>Fault Time/Date</td>
+                    <td>{this.state.currentObject.Alarmts ? this.state.currentObject.Alarmts : 'No Fault'}</td>
+                  </tr>
+                </tbody>
+              </Table>
+            </div>
+        </InfoWindow>
+        </Map>
+    )
     }else{
       return(
         <Map google={window.google}
             style={mapStyle}
             initialCenter={{lat: 1.3552, lng: 103.7972}}
-            zoom={11}>
+            zoom={14}>
         </Map>
     )
     }
