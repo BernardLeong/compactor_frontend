@@ -36,7 +36,7 @@ class MapTest extends Component {
 
     this.setState({
       currentObject : props.name,
-      center : props.position,
+      // center : props.position,
       selectedPlace: props,
       activeMarker: marker,
       showingInfoWindow: true
@@ -127,23 +127,24 @@ class MapTest extends Component {
                   }}
         />
       ))
-      console.log(this.props.currentCompactorCoordinates)
-      console.log(this.state.center)
-      var center = this.state.center
-      if(this.props.currentCompactorCoordinates){
-        var center = this.props.currentCompactorCoordinates
-        var obj = {}
-        obj["lat"] = parseFloat(center["lat"])
-        obj['lng'] = parseFloat(center["long"])
-        center = obj
-      }else{
-        center = this.state.center
-      }
+      // console.log(this.props.currentCompactorCoordinates)
+      // console.log(this.state.center)
+      // var center = {lat: 1.3552, lng: 103.7972}
+      // if(this.props.currentCompactorCoordinates){
+      //   var currentCompactorCoordinates = this.props.currentCompactorCoordinates
+      //   var obj = {}
+      //   obj["lat"] = currentCompactorCoordinates["lat"]
+      //   obj['lng'] = currentCompactorCoordinates["long"]
+      //   // var center = {lat: 1.3552, lng: 105.7972}
+      //   center = obj
+      // }
+      // console.log(center)
       return(
         <Map google={window.google}
             style={mapStyle}
-            initialCenter={this.state.center}
-            zoom={11.5}>
+            initialCenter={this.state.center }
+            zoom={12}
+            >
         {markers}
         <InfoWindow
           marker={this.state.activeMarker}
@@ -161,8 +162,8 @@ class MapTest extends Component {
                     <td>{this.state.currentObject.address}</td>
                   </tr>
                   <tr>
-                    <td>Weight/Volume Fill</td>
-                    <td>{this.state.currentObject.FilledLevel}</td>
+                    <td>Weight(%)</td>
+                    <td>{Math.round(this.state.currentObject.FilledLevel)}</td>
                   </tr>
                   <tr>
                     <td>Fill Status</td>

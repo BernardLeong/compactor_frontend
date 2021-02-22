@@ -478,6 +478,7 @@ if(this.state.handleRedirectToAdminPage){
                             <tr>
                                 <th style={{textAlign: 'center'}}><div>{al['timestampday']}</div><div>{al['timestamptime']}</div></th>
                                 <th style={{textAlign: 'center'}}>{al.EquipmentID}</th>
+                                <th style={{textAlign: 'center'}}>{al.shortAddress}</th>
                                 <th style={{textAlign: 'center'}}>{al.Type}</th>
                                 <th style={{textAlign: 'center'}}>{al.CurrentStatus}</th>
                                 <th style={{textAlign: 'center'}}><FontAwesomeIcon style={{cursor:'pointer'}} icon={faStopwatch} onClick={()=>{
@@ -551,7 +552,6 @@ if(this.state.handleRedirectToAdminPage){
 
                 var paginatedIDList = chunkyEquipmentIDS(allCompactors, maxlength)
                 var allCompactorsData = paginatedIDList[this.state.MapEquimentIndex]
-//markC
                 var renderlistOfCompactorID = allCompactorsData.map(compactor => (
                     <Container onClick={()=>{
                         this.setState({currentCompactorCoordinates: compactor.coordinates, currentCompactorID : compactor.EquipmentID})
@@ -566,7 +566,7 @@ if(this.state.handleRedirectToAdminPage){
                if(this.state.MapEquimentIndex == 0){
                 renderlistOfCompactorID = 
                 <span>
-                {renderlistOfCompactorID}
+                {/* {renderlistOfCompactorID} */}
                 <Container style={{cursor:'pointer'}} className="blueBorder adjustPaddingContent">
                     <Row>
                         <Col onClick={()=>{
@@ -587,14 +587,14 @@ if(this.state.handleRedirectToAdminPage){
                                 })
                             }
 
-                        }}><i class="arrow down"></i></Col>
+                        }}></Col>
                     </Row>
                 </Container>
                 </span>
                }else if (this.state.MapEquimentIndex > 0 && !this.state.MapEquipmentIDLastPage){
                     renderlistOfCompactorID = 
                         <span>
-                        {renderlistOfCompactorID}
+                        {/* {renderlistOfCompactorID} */}
                         <Container style={{cursor:'pointer'}} className="blueBorder adjustPaddingContent">
                             <Row>
                                 <Col onClick={()=>{
@@ -627,14 +627,14 @@ if(this.state.handleRedirectToAdminPage){
                                         })
                                     }
 
-                                }}><i class="arrow down"></i></Col>
+                                }}></Col>
                             </Row>
                         </Container>
                         </span>
                }else if(this.state.MapEquipmentIDLastPage){
                     renderlistOfCompactorID = 
                     <span>
-                    {renderlistOfCompactorID}
+                    {/* {renderlistOfCompactorID} */}
                     <Container style={{cursor:'pointer'}} className="blueBorder adjustPaddingContent">
                             <Row>
                                 <Col onClick={()=>{
@@ -644,7 +644,7 @@ if(this.state.handleRedirectToAdminPage){
                                             MapEquimentIndex : pageNo -1
                                         })
                                     }
-                                }}><i class="arrow up"></i></Col>
+                                }}></Col>
                             </Row>
                     </Container>
                     </span>
@@ -668,7 +668,7 @@ if(this.state.handleRedirectToAdminPage){
                             }} style={{cursor:'pointer'}}>Dashboard</Col>
                         </Row>
                     </Container>
-                    {renderlistOfCompactorID}
+                    {/* {renderlistOfCompactorID} */}
                 </div>
             }
 
@@ -928,6 +928,7 @@ if(this.state.handleRedirectToAdminPage){
                         <tr>
                             <th style={{textAlign : 'center'}}>TimeStamp</th>
                             <th style={{textAlign : 'center'}}>Equipment ID</th>
+                            <th style={{textAlign : 'center'}}>Address</th>
                             <th style={{textAlign : 'center'}}>Fault Type</th>
                             <th style={{textAlign : 'center'}}>Alarm Status</th>
                             <th style={{textAlign : 'center'}}>Clear Alarm</th>
