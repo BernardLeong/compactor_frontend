@@ -1037,6 +1037,13 @@ if(this.state.handleRedirectToAdminPage){
                             className="d-inline-block align-top"
                             alt="React Bootstrap logo"
                             /></Col>
+                            <Col style={{textAlign: 'center'}}><img
+                            src={require('./reddot.png')}
+                            width="30"
+                            height="30"
+                            className="d-inline-block align-top"
+                            alt="React Bootstrap logo"
+                            /></Col>
                         </Row>
                     </Container>
                     <div>&nbsp;</div>
@@ -1045,6 +1052,7 @@ if(this.state.handleRedirectToAdminPage){
                             <Col style={{textAlign: 'center'}}>Less than 70%</Col>
                             <Col style={{textAlign: 'center'}}>70 – 90%</Col>
                             <Col style={{textAlign: 'center'}}>More than 90%</Col>
+                            <Col style={{textAlign: 'center'}}>Alarm Triggered</Col>
                         </Row>
                     </Container>
                     </div>

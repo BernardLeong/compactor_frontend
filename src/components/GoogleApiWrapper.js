@@ -129,7 +129,7 @@ class MapTest extends Component {
       ))
       console.log(this.props.currentCompactorCoordinates)
       console.log(this.state.center)
-      var center = {lat: 1.3552, lng: 103.7972}
+      var center = this.state.center
       if(this.props.currentCompactorCoordinates){
         var center = this.props.currentCompactorCoordinates
         var obj = {}
