@@ -234,8 +234,8 @@ class ReportPage extends Component {
                                         <th style={{textAlign : 'center'}}>Equipment ID</th>
                                         <th style={{textAlign : 'center'}}>Alarm Trigger Timestamp</th>
                                         <th style={{textAlign : 'center'}}>Alarm Clear Timestamp</th>
-                                        <th style={{textAlign : 'center'}}>Time Difference</th>
-                                        <th style={{textAlign : 'center'}}>Alarm Type</th>
+                                        <th style={{textAlign : 'center'}}>Duration for Alarm Deactivation</th>
+                                        <th style={{textAlign : 'center'}}><div>Alarm</div><div>Type</div></th>
                                         <th style={{textAlign : 'center'}}>Alarm Status</th>
                                     </tr>
                                     </thead>
@@ -332,8 +332,8 @@ class ReportPage extends Component {
                                         <th style={{textAlign : 'center'}}>Equipment ID</th>
                                         <th style={{textAlign : 'center'}}>Alarm Trigger Timestamp</th>
                                         <th style={{textAlign : 'center'}}>Alarm Clear Timestamp</th>
-                                        <th style={{textAlign : 'center'}}>Time Difference</th>
-                                        <th style={{textAlign : 'center'}}>Alarm Type</th>
+                                        <th style={{textAlign : 'center'}}>Duration for Alarm Deactivation</th>
+                                        <th style={{textAlign : 'center'}}><div>Alarm</div><div>Type</div></th>
                                         <th style={{textAlign : 'center'}}>Alarm Status</th>
                                     </tr>
                                     </thead>

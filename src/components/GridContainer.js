@@ -768,6 +768,7 @@ if(this.state.handleRedirectToAdminPage){
                                 {/* <th style={{textAlign : 'center'}}>{compactor['ts'] == '' ? 'Equipment No Data' : compactor['ts']}</th> */}
                                 <th style={{textAlign : 'center'}}><div>{compactor.timestampday}</div><div>{compactor.timestamptime}</div></th>
                                 <th style={{textAlign : 'center'}}>{compactor.EquipmentID}</th>
+                                <th style={{textAlign : 'center'}}>{compactor.shortAddress}</th>
                                 <th style={{textAlign : 'center'}}>{Math.round(compactor.WeightValue)}</th>
                                 <th style={{textAlign : 'center'}}>{Math.round(compactor.FilledLevel)}</th>
                                 <th style={{textAlign : 'center'}}>{Math.round(compactor['FilledLevel']) <= 70 ? 
@@ -848,6 +849,7 @@ if(this.state.handleRedirectToAdminPage){
                         <tr>
                             <th style={{textAlign:'center'}}>TimeStamp</th>
                             <th style={{textAlign:'center'}}>Equipment ID</th>
+                            <th style={{textAlign:'center'}}>Address</th>
                             <th style={{textAlign:'center'}}>Collected weight (KG)</th>
                             <th style={{textAlign:'center'}}>Collected weight (%)</th>
                             <th style={{textAlign:'center'}}>Level</th>
@@ -871,6 +873,7 @@ if(this.state.handleRedirectToAdminPage){
                     <tr>
                         <th style={{textAlign : 'center'}}>TimeStamp</th>
                         <th style={{textAlign : 'center'}}>Equipment ID</th>
+                        <th style={{textAlign:'center'}}>Address</th>
                         <th style={{textAlign : 'center'}}>Collected weight (KG)</th>
                         <th style={{textAlign : 'center'}}>Collected weight (%)</th>
                         <th style={{textAlign : 'center'}}>Level</th>
