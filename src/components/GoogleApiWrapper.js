@@ -48,7 +48,7 @@ class MapTest extends Component {
     if(this.props.handleRedirectToMap){
       var mapStyle = { width: '68em', height: '46em'}
     }else{
-      var mapStyle = { width: '35em', height: '67.5em'}
+      var mapStyle = { width: '30em', height: '67.5em'}
     }
     var alarmArr = []
     var currentCompactorID = false
