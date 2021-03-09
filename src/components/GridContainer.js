@@ -34,6 +34,7 @@ class GridContainer extends Component{
             'liveAlarmReport' : [],
             'livecompactorData' : [],
             'allAlarmReport' : [],
+            'weightCollectionData' : [],
             'MapEquimentIndex' : 0,
             'count' : 0,
             'countAlarm' : 0,
@@ -48,6 +49,7 @@ class GridContainer extends Component{
             'renderWeightInformation' : false,
             'renderAlarmInformation' : false,
             'renderReportPage' : false,
+            'renderWeightReportPage' : false,
             'renderEquipmentPage' : false,
             'pressLeftArrowWeight' : false,
             'pressRightAlarmArrowWeight' : false,
@@ -76,6 +78,7 @@ class GridContainer extends Component{
         this.handleRegisterUser = this.handleRegisterUser.bind(this)
         this.handleEquipmentSearch = this.handleEquipmentSearch.bind(this)
         this.saveCurrentUser = this.saveCurrentUser.bind(this)
+        this.renderWeightReportPage = this.renderWeightReportPage.bind(this)
     }
 
     componentDidMount(){
@@ -116,6 +119,15 @@ class GridContainer extends Component{
         .catch(function (error) {
         })
 
+        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getEquipmentWeightCollection/live`,config)
+        .then((response)=> {
+            this.setState({
+                weightCollectionData : response.data.weightCollection,
+                liveCompactorLoaded: true
+            })
+        })
+        .catch(function (error) {
+        })
     }
 
     reduceFunc(total, num){
@@ -239,7 +251,13 @@ class GridContainer extends Component{
         )
     }
 
-
+    renderWeightReportPage(weightPage=true){
+        this.setState(
+            {
+                renderWeightReportPage : weightPage
+            }
+        )
+    }
 
     renderEquipmentPage(){
         this.setState(
@@ -403,14 +421,12 @@ if(this.state.handleRedirectToAdminPage){
         if(this.state.liveAlarmsLoaded){
 
             var alarmsData = this.state.liveAlarmData
-
             if(this.state.renderReportPage){
                 //markReport
                 return(
-                    <ReportPage userType={this.props.location.state.userType} renderReportPage={this.renderReportPage} liveAlarmReport={this.state.liveAlarmReport} userType={this.props.location.state.userType} allAlarmReport={this.state.allAlarmReport} token={this.props.location.state.token} />
+                    <ReportPage weightCollectionData={this.state.weightCollectionData} WeightReportPage={this.renderWeightReportPage} renderWeightReportPage={this.state.renderWeightReportPage} weightCollectionData={this.state.weightCollectionData} userType={this.props.location.state.userType} renderReportPage={this.renderReportPage} liveAlarmReport={this.state.liveAlarmReport} userType={this.props.location.state.userType} allAlarmReport={this.state.allAlarmReport} token={this.props.location.state.token} />
                 )
             }
-
             var alarms = []
 
             if(this.state.pressLeftAlarmArrowWeight || this.state.pressRightAlarmArrowWeight){
@@ -521,6 +537,7 @@ if(this.state.handleRedirectToAdminPage){
                     filteredSectionData.push(compactors[i])
                 }
             }
+
             compactors = filteredSectionData;
             var compactorsSort = compactors.reduce((r, a)=> {
                 r[a.EquipmentID] = r[a.EquipmentID] || [];
@@ -533,6 +550,7 @@ if(this.state.handleRedirectToAdminPage){
                 compactorData.push(compactorsSort[key][( (compactorsSort[key].length) -1)])
             }
 
+            
             compactors = compactorData
             var allCompactors = compactors
             if(this.state.handleRedirectToMap){

@@ -25,37 +25,103 @@ class ReportPage extends Component {
     }
 
     render(){
-        var allAlarmData = this.props.liveAlarmReport
+        if(this.props.renderWeightReportPage){
+            var dashboardArea = <div className="grid-item grid-item-report-sideDashboard whiteBG">
+            <Container className="blueBG adjustPadding">
+              <Row>
+                  <Col style={{textAlign : 'center'}}>Weight Report</Col>
+              </Row>
+            </Container>
+            <Container className="blueBorder adjustPaddingContent">
+              <Row>
+                  <Col style={{textAlign : 'center'}}
+                   onClick={()=>{
+                        this.props.WeightReportPage(false)
+                    }}
+                  >Alarm Report</Col>
 
-        allAlarmData = sortObjectsArray(allAlarmData, 'ts', {order: 'desc'})
+              </Row>
+            </Container>
+              <Container className="blueBorder adjustPaddingContent">
+              <Row>
+                  <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
+                      this.props.renderReportPage(false)
+                  }}>Dashboard</Col>
+              </Row>
+              </Container>
+          </div>
+            var title = <Container>
+                            <Row>
+                                <Col style={{textAlign : 'center', fontSize: '1.6em'}}> 
+                                    Weight Report 
+                                </Col>
+                            </Row>
+                        </Container>
+            var allData = this.props.weightCollectionData
+        }else{
+            var dashboardArea = <div className="grid-item grid-item-report-sideDashboard whiteBG">
+            <Container className="blueBG adjustPadding">
+              <Row>
+                  <Col style={{textAlign : 'center'}}>Alarm Report</Col>
+              </Row>
+            </Container>
+            <Container className="blueBorder adjustPaddingContent">
+              <Row>
+                  <Col style={{textAlign : 'center'}}
+                  onClick={()=>{
+                    this.props.WeightReportPage()
+                }}>Weight Report</Col>
+
+              </Row>
+            </Container>
+              <Container className="blueBorder adjustPaddingContent">
+              <Row>
+                  <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
+                      this.props.renderReportPage(false)
+                  }}>Dashboard</Col>
+              </Row>
+              </Container>
+          </div>
+            var title = <Container>
+                            <Row>
+                                <Col style={{textAlign : 'center', fontSize: '1.6em'}}> 
+                                    Alarm Report
+                                </Col>
+                            </Row>
+                        </Container>
+
+            var allData = this.props.liveAlarmReport
+        }
+
+        allData = sortObjectsArray(allData, 'ts', {order: 'desc'})
         var starttime = this.state.selectStartDate
         var endtime = this.state.selectEndDate
         var downloadUrl = false
 
         if(starttime !== '' && endtime !== ''){
             var filterAlarmData = []
-            for(var i=0;i<allAlarmData.length;i++){
+            for(var i=0;i<allData.length;i++){
                 if(starttime !== endtime){
-                    var todaydate = moment(allAlarmData[i]['ts']).format()
+                    var todaydate = moment(allData[i]['ts']).format()
                     todaydate = new Date(todaydate).getTime()
                     var startTime = new Date(starttime).getTime()
                     var endTime = new Date(endtime).getTime()
                     if(startTime <= todaydate && endTime >= todaydate){
-                        filterAlarmData.push(allAlarmData[i])
+                        filterAlarmData.push(allData[i])
                     }
                 }
                 else{
-                    var todaydate = moment(allAlarmData[i]['ts']).format()
+                    var todaydate = moment(allData[i]['ts']).format()
                     todaydate = new Date(todaydate).getTime()
                     var startTime = new Date(starttime).getTime()
                     var endTime = new Date(endtime).getTime()
                     if(startTime <= todaydate){
-                        filterAlarmData.push(allAlarmData[i])
+                        filterAlarmData.push(allData[i])
                     }
                 }
             }
 
-            allAlarmData = filterAlarmData
+            allData = filterAlarmData
             filterAlarmData = []
         }
 
@@ -76,10 +142,10 @@ class ReportPage extends Component {
 
         var maxLength = 7
 
-        if(allAlarmData.length < maxLength){
+        if(allData.length < maxLength){
             var maxPage = 1
         }else{
-            var maxPage = Math.ceil((allAlarmData.length / maxLength))
+            var maxPage = Math.ceil((allData.length / maxLength))
         }
         var range = []
         for(var i=1;i<=maxPage;i++){
@@ -97,34 +163,73 @@ class ReportPage extends Component {
                 {alarmReportPaginate}
             </div>
 
-        if(allAlarmData.length <= 0){
+        if(allData.length <= 0){
             var renderAlarms = 
             <tr>
             </tr>
         }else{
-            for(var i=0; i<allAlarmData.length;i++){
-                var alarm = allAlarmData[i]
-                var ts = alarm.ts
-                ts = ts.split(' ')
-                alarm['timestampday']= ts[0]
-                alarm['timestamptime']= ts[1]
-                var clearts = alarm.ClearedTS
-                clearts = clearts.split(' ')
-                alarm['timeclearstampday']= clearts[0]
-                alarm['timeclearstamptime']= clearts[1]
+            if(!this.props.renderWeightReportPage){
+                for(var i=0; i<allData.length;i++){
+                    var alarm = allData[i]
+                    var ts = alarm.ts
+                    ts = ts.split(' ')
+                    alarm['timestampday']= ts[0]
+                    alarm['timestamptime']= ts[1]
+                    var clearts = alarm.ClearedTS
+                    clearts = clearts.split(' ')
+                    alarm['timeclearstampday']= clearts[0]
+                    alarm['timeclearstamptime']= clearts[1]
+                }
             }
-            var paginatedAlarms = chunkyReportAlarm(allAlarmData,maxLength)
+            var paginatedAlarms = chunkyReportAlarm(allData,maxLength)
             var renderAlarms = paginatedAlarms[this.state.paginationAlarmReportPage -1]
-            allAlarmData = renderAlarms.map(al => (
-                <tr>
-                    <th style={{textAlign: 'center'}} >{al.EquipmentID}</th>
-                    <th style={{textAlign: 'center'}}><div>{al.timestampday}</div><div>{al.timestamptime}</div></th>
-                    <th style={{textAlign: 'center'}}><div>{al.timeclearstampday}</div><div>{al.timeclearstamptime}</div></th>
-                    <th style={{textAlign: 'center'}}>{al.timeDifference}</th>
-                    <th style={{textAlign: 'center'}}>{al.Type}</th>
-                    <th style={{textAlign: 'center'}}>{al.Status}</th>
-                </tr>
-            ))
+
+            if(this.props.renderWeightReportPage){
+                allData = renderAlarms.map(al => (
+                    <tr>
+                        <th style={{textAlign: 'center'}} >{al.EquipmentID}</th>
+                        <th style={{textAlign: 'center'}}>{al.shortAddress}</th>
+                        <th style={{textAlign: 'center'}}>{al.collectTS}</th>
+                        <th style={{textAlign: 'center'}}><div>{al.collectedWeight}</div></th>
+                        <th style={{textAlign: 'center'}}><div>{al.currentWeight}</div></th>
+                    </tr>
+                ))
+            }else{
+                allData = renderAlarms.map(al => (
+                    <tr>
+                        <th style={{textAlign: 'center'}} >{al.EquipmentID}</th>
+                        <th style={{textAlign: 'center'}}><div>{al.timestampday}</div><div>{al.timestamptime}</div></th>
+                        <th style={{textAlign: 'center'}}><div>{al.timeclearstampday}</div><div>{al.timeclearstamptime}</div></th>
+                        <th style={{textAlign: 'center'}}>{al.timeDifference}</th>
+                        <th style={{textAlign: 'center'}}>{al.Type}</th>
+                        <th style={{textAlign: 'center'}}>{al.Status}</th>
+                    </tr>
+                ))
+            }
+            
+        }
+
+        if(this.props.renderWeightReportPage){
+            var table = <thead>
+            <tr>
+                <th style={{textAlign : 'center'}}>Equipment ID</th>
+                <th style={{textAlign : 'center'}}>Short Address</th>
+                <th style={{textAlign : 'center'}}>Weight Collection Time</th>
+                <th style={{textAlign : 'center'}}>Amount Collected</th>
+                <th style={{textAlign : 'center'}}>Equipment Remaining Weight</th>
+            </tr>
+            </thead>
+        }else{
+            var table = <thead>
+            <tr>
+                <th style={{textAlign : 'center'}}>Equipment ID</th>
+                <th style={{textAlign : 'center'}}>Alarm Trigger Timestamp</th>
+                <th style={{textAlign : 'center'}}>Alarm Clear Timestamp</th>
+                <th style={{textAlign : 'center'}}>Duration for Alarm Deactivation</th>
+                <th style={{textAlign : 'center'}}><div>Alarm</div><div>Type</div></th>
+                <th style={{textAlign : 'center'}}>Alarm Status</th>
+            </tr>
+            </thead>
         }
 
         if(this.props.userType == 'Admin'){
@@ -217,30 +322,15 @@ class ReportPage extends Component {
                       </Container> 
                   </div>
                   <div className="grid-item grid-item-report-table whiteBG">
-                        <Container>
-                            <Row>
-                                <Col style={{textAlign : 'center', fontSize: '1.6em'}}> 
-                                    Alarm Report 
-                                </Col>
-                            </Row>
-                        </Container>
+                        {title}
                                 <div>&nbsp;</div>
                         <Container>
                             <Row> 
                                 <Col> 
                                 <Table striped bordered hover responsive> 
-                                    <thead>
-                                    <tr>
-                                        <th style={{textAlign : 'center'}}>Equipment ID</th>
-                                        <th style={{textAlign : 'center'}}>Alarm Trigger Timestamp</th>
-                                        <th style={{textAlign : 'center'}}>Alarm Clear Timestamp</th>
-                                        <th style={{textAlign : 'center'}}>Duration for Alarm Deactivation</th>
-                                        <th style={{textAlign : 'center'}}><div>Alarm</div><div>Type</div></th>
-                                        <th style={{textAlign : 'center'}}>Alarm Status</th>
-                                    </tr>
-                                    </thead>
+                                    {table}
                                     <tbody>
-                                    {allAlarmData}
+                                    {allData}
                                     </tbody>
                                 </Table>
                                 {paginationAlarmPages}
@@ -259,20 +349,7 @@ class ReportPage extends Component {
                       <div className='grid-item grid-item-01-compactor'>
                        <NavBarContent userType={this.props.userType} token={this.props.token}/>
                       </div>
-                    <div className="grid-item grid-item-report-sideDashboard whiteBG">
-                  <Container className="blueBG adjustPadding">
-                      <Row>
-                          <Col style={{textAlign : 'center'}}>Report</Col>
-                      </Row>
-                      </Container>
-                      <Container className="blueBorder adjustPaddingContent">
-                      <Row>
-                          <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
-                              this.props.renderReportPage(false)
-                          }}>Dashboard</Col>
-                      </Row>
-                      </Container>
-                  </div>
+                      {dashboardArea}
                   <div className="grid-item grid-item-report-calender whiteBG">
 
                       <div>&nbsp;</div>
@@ -315,30 +392,15 @@ class ReportPage extends Component {
                       </Container> 
                   </div>
                   <div className="grid-item grid-item-report-table whiteBG">
-                        <Container>
-                            <Row>
-                                <Col style={{textAlign : 'center', fontSize: '1.6em'}}> 
-                                    Alarm Report 
-                                </Col>
-                            </Row>
-                        </Container>
+                        {title}
                                 <div>&nbsp;</div>
                         <Container>
                             <Row> 
                                 <Col> 
                                 <Table striped bordered hover responsive> 
-                                    <thead>
-                                    <tr>
-                                        <th style={{textAlign : 'center'}}>Equipment ID</th>
-                                        <th style={{textAlign : 'center'}}>Alarm Trigger Timestamp</th>
-                                        <th style={{textAlign : 'center'}}>Alarm Clear Timestamp</th>
-                                        <th style={{textAlign : 'center'}}>Duration for Alarm Deactivation</th>
-                                        <th style={{textAlign : 'center'}}><div>Alarm</div><div>Type</div></th>
-                                        <th style={{textAlign : 'center'}}>Alarm Status</th>
-                                    </tr>
-                                    </thead>
+                                    {table}
                                     <tbody>
-                                    {allAlarmData}
+                                    {allData}
                                     </tbody>
                                 </Table>
                                 {paginationAlarmPages}
