@@ -342,7 +342,6 @@ class GridContainer extends Component{
                 </Container>
             </div>
         }
-
 if(this.state.handleRedirectToAdminPage){
     if(this.state.registeredUser){
         var message = 
@@ -422,7 +421,6 @@ if(this.state.handleRedirectToAdminPage){
 
             var alarmsData = this.state.liveAlarmData
             if(this.state.renderReportPage){
-                //markReport
                 return(
                     <ReportPage weightCollectionData={this.state.weightCollectionData} WeightReportPage={this.renderWeightReportPage} renderWeightReportPage={this.state.renderWeightReportPage} weightCollectionData={this.state.weightCollectionData} userType={this.props.location.state.userType} renderReportPage={this.renderReportPage} liveAlarmReport={this.state.liveAlarmReport} userType={this.props.location.state.userType} allAlarmReport={this.state.allAlarmReport} token={this.props.location.state.token} />
                 )
@@ -928,16 +926,26 @@ if(this.state.handleRedirectToAdminPage){
                         <Col onClick={()=>{this.toggleLeftArrow()}} style={{textAlign : 'center', cursor:'pointer'}}><FontAwesomeIcon icon={faArrowRight} /></Col>
                     </Row>
                 </Container>
-                <div style={{marginTop: '2.1em'}}></div>
-                <button onClick={this.renderWeightInformation}>Collection Weight</button>
+                <div style={{marginTop: '2.9em'}}></div>
+                <button onClick={()=>{
+                    //mark
+                    this.setState(
+                        {
+                            renderEquipmentPage : true
+                        }
+                    )
+                }}>Collection Weight</button>
             </div>
         }
         if(this.state.renderAlarmInformation){
             var usertype = this.props.location.state.userType
-
+//mark
+            var alarmsSection = <div className="grid-item grid-item-alarmPage grayBG">
+                hi
+            </div>
             if(usertype == 'Admin' || usertype == 'Enginner'){
                 var alarmsSection = 
-                <div className="grid-item grid-item-alarmDashboard whiteBG">
+                <div className="grid-item grid-item-alarmPage whiteBG">
                     <Table style={{fontSize: '0.9em'}} striped bordered hover>
                         <thead>
                         <tr>
@@ -958,7 +966,7 @@ if(this.state.handleRedirectToAdminPage){
                 </div>
             }else{
                 var alarmsSection = 
-                <div className="grid-item grid-item-alarmDashboard whiteBG">
+                <div className="grid-item grid-item-alarmPage whiteBG">
                     <Table style={{fontSize: '0.9em'}} striped bordered hover>
                         <thead>
                         <tr>
@@ -996,9 +1004,9 @@ if(this.state.handleRedirectToAdminPage){
                         <Col onClick={()=>{this.toggleAlarmRightArrow()}} style={{textAlign : 'center', cursor:'pointer'}}><FontAwesomeIcon icon={faArrowRight} /></Col>
                     </Row>
                 </Container>
-                <div style={{marginTop: '3.4em'}}></div>
 
-                <button onClick={()=>{
+
+                <button style={{marginTop: '2.9em'}} onClick={()=>{
                     this.setState({renderAlarmInformation : true})
                 }}>Equipment Fault</button>
             </div>
@@ -1074,33 +1082,48 @@ if(this.state.handleRedirectToAdminPage){
                     </div>
                 </div>
             )
-        }else{
-            //markb
+        }
+    
+        else{
             var compactorsData = compactors
             var alarmData = alarms
-
-            return(
-                <div className='grid-container-compactor'>
-                     <div className='grid-item grid-item-01-compactor'>
-                         
-                         <NavBarContent saveCurrentUser={this.saveCurrentUser} userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+            if(this.state.renderAlarmInformation){
+                return(
+                    //mark
+                    <div className='grid-container-compactor'>
+                         <div className='grid-item grid-item-01-compactor'>
+                             
+                             <NavBarContent saveCurrentUser={this.saveCurrentUser} userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+                        </div>
+                        {dashboard} 
+                        {alarmsSection}
                     </div>
-                    {dashboard} 
-                    {weight}
-                    {alarmsSection}
-                    <div className="grid-item grid-item-mapDashboard grayBG">
-                    {/* <div style={{backgroundColor: 'yellow', zIndex: '99'}}>hiiii</div> */}
-                        {/* <Mapping handleRedirectToMap={this.state.handleRedirectToMap} liveCompactorLoaded={this.state.liveCompactorLoaded} livecompactorData={this.state.livecompactorData} token={this.props.location.state.token} /> */}
-                        <Container>
-                            <Row>
-                                <Col>
-                                    <div><GoogleApiWrapper currentCompactorCoordinates={this.state.currentCompactorCoordinates} currentCompactorID={this.state.currentCompactorID} handleRedirectToMap={this.state.handleRedirectToMap} livealarmData={alarmData} liveAlarmsLoaded={this.state.liveAlarmsLoaded} liveCompactorLoaded={this.state.liveCompactorLoaded} compactorsData={compactorsData} /></div>
-                                </Col>
-                            </Row>
-                        </Container>
+                )
+            }else{
+                return(
+                    //mark
+                    <div className='grid-container-compactor'>
+                         <div className='grid-item grid-item-01-compactor'>
+                             
+                             <NavBarContent saveCurrentUser={this.saveCurrentUser} userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+                        </div>
+                        {dashboard} 
+                        {weight}
+                        
+                        {alarmsSection}
+                        <div className="grid-item grid-item-mapDashboard grayBG">
+                            <Container>
+                                <Row>
+                                    <Col>
+                                        <div><GoogleApiWrapper currentCompactorCoordinates={this.state.currentCompactorCoordinates} currentCompactorID={this.state.currentCompactorID} handleRedirectToMap={this.state.handleRedirectToMap} livealarmData={alarmData} liveAlarmsLoaded={this.state.liveAlarmsLoaded} liveCompactorLoaded={this.state.liveCompactorLoaded} compactorsData={compactorsData} /></div>
+                                    </Col>
+                                </Row>
+                            </Container>
+                        </div>
                     </div>
-                </div>
-            )
+                )
+            }
+            
         }
     }
 }

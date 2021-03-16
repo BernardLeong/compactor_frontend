@@ -1,16 +1,26 @@
 
 import React, { Component } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCoffee } from '@fortawesome/free-solid-svg-icons'
+import { faEye } from '@fortawesome/free-solid-svg-icons'
+import DayPicker from "react-day-picker";
+import DayPickerInput from 'react-day-picker/DayPickerInput';
+import { DateUtils } from 'react-day-picker';
+import 'react-day-picker/lib/style.css';
+import dateFnsFormat from 'date-fns/format';
+import dateFnsParse from 'date-fns/parse';
+
 import NavBarContent from './NavBarContent';
+import 'react-day-picker/lib/style.css';
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
 import { Alert, Table, Container, Row, Col, Form, Button, InputGroup, FormControl } from 'react-bootstrap'
-import Calendar from 'react-calendar';
+// import Calendar from "react-calendar";
+// import Calendar from 'react-calendar';
 const axios = require('axios');
 const moment = require("moment")
 const CryptoJS = require("crypto-js");
 const sortObjectsArray = require('sort-objects-array');
 const cryptKey = "someKey"
-
 
 class ReportPage extends Component {
     constructor(props){
@@ -20,127 +30,102 @@ class ReportPage extends Component {
             'paginationAlarmReportPage' : 1,
             'liveAlarmReport' : false,
             'selectStartDate' : '',
-            'selectEndDate' : ''
+            'selectEndDate' : '',
+            'renderStartCalender' : false,
+            'renderMenu' : false,
+            'arrayofSelectedIDS' : [],
+            'startDate' : '',
+            'endDate' : '',
         }
     }
 
-    render(){
-        if(this.props.renderWeightReportPage){
-            var dashboardArea = <div className="grid-item grid-item-report-sideDashboard whiteBG">
-            <Container className="blueBG adjustPadding">
-              <Row>
-                  <Col style={{textAlign : 'center'}}>Weight Report</Col>
-              </Row>
-            </Container>
-            <Container className="blueBorder adjustPaddingContent">
-              <Row>
-                  <Col style={{textAlign : 'center'}}
-                   onClick={()=>{
-                        this.props.WeightReportPage(false)
-                    }}
-                  >Alarm Report</Col>
-
-              </Row>
-            </Container>
-              <Container className="blueBorder adjustPaddingContent">
-              <Row>
-                  <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
-                      this.props.renderReportPage(false)
-                  }}>Dashboard</Col>
-              </Row>
-              </Container>
-          </div>
-            var title = <Container>
-                            <Row>
-                                <Col style={{textAlign : 'center', fontSize: '1.6em'}}> 
-                                    Weight Report 
-                                </Col>
-                            </Row>
-                        </Container>
-            var allData = this.props.weightCollectionData
-        }else{
-            var dashboardArea = <div className="grid-item grid-item-report-sideDashboard whiteBG">
-            <Container className="blueBG adjustPadding">
-              <Row>
-                  <Col style={{textAlign : 'center'}}>Alarm Report</Col>
-              </Row>
-            </Container>
-            <Container className="blueBorder adjustPaddingContent">
-              <Row>
-                  <Col style={{textAlign : 'center'}}
-                  onClick={()=>{
-                    this.props.WeightReportPage()
-                }}>Weight Report</Col>
-
-              </Row>
-            </Container>
-              <Container className="blueBorder adjustPaddingContent">
-              <Row>
-                  <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
-                      this.props.renderReportPage(false)
-                  }}>Dashboard</Col>
-              </Row>
-              </Container>
-          </div>
-            var title = <Container>
-                            <Row>
-                                <Col style={{textAlign : 'center', fontSize: '1.6em'}}> 
-                                    Alarm Report
-                                </Col>
-                            </Row>
-                        </Container>
-
-            var allData = this.props.liveAlarmReport
+    parseDate(str, format, locale) {
+        const parsed = dateFnsParse(str, format, new Date(), { locale });
+        if (DateUtils.isDate(parsed)) {
+            console.log(parsed)
+            return parsed;
         }
+        return undefined; 
+    }
+
+    formatDate(date, format, locale) {
+        return dateFnsFormat(date, format, { locale });
+    }
+
+
+    render(){
+        var allData = this.props.liveAlarmReport
 
         allData = sortObjectsArray(allData, 'ts', {order: 'desc'})
-        var starttime = this.state.selectStartDate
-        var endtime = this.state.selectEndDate
-        var downloadUrl = false
-
-        if(starttime !== '' && endtime !== ''){
-            var filterAlarmData = []
-            for(var i=0;i<allData.length;i++){
-                if(starttime !== endtime){
-                    var todaydate = moment(allData[i]['ts']).format()
-                    todaydate = new Date(todaydate).getTime()
-                    var startTime = new Date(starttime).getTime()
-                    var endTime = new Date(endtime).getTime()
-                    if(startTime <= todaydate && endTime >= todaydate){
-                        filterAlarmData.push(allData[i])
+        //get all the EquipmentID
+        var equipmentIDs = allData.map((alarm=>{
+            return alarm.EquipmentID
+        }))
+        equipmentIDs = [...new Set(equipmentIDs)];
+        var renderButtons = equipmentIDs.map((button=> 
+            <span><button  onClick={()=>{
+                var selectedIDs = this.state.arrayofSelectedIDS.slice(0)
+                selectedIDs.push(button)
+                this.setState(
+                    {
+                        arrayofSelectedIDS : selectedIDs
                     }
-                }
-                else{
-                    var todaydate = moment(allData[i]['ts']).format()
-                    todaydate = new Date(todaydate).getTime()
-                    var startTime = new Date(starttime).getTime()
-                    var endTime = new Date(endtime).getTime()
-                    if(startTime <= todaydate){
-                        filterAlarmData.push(allData[i])
+                )
+            }} style={{backgroundColor: '#1f4e78', color: 'white', padding: '8px', borderRadius: '8px'}}>{button}</button></span>
+        ))
+        var breakCol = 6;
+
+        var tempArray = []
+        var tempArr = []
+
+        var idSelected = this.state.arrayofSelectedIDS.length > 0
+        var startDate = this.state.startDate
+        var endDate = this.state.endDate
+        var dateRangeSelected = (startDate !== '' || endDate !== '') && (startDate < endDate)
+
+        if(idSelected){
+            var selectedArr = this.state.arrayofSelectedIDS
+            selectedArr = [...new Set(selectedArr)];
+            for(var i=0;i<selectedArr.length;i++){
+                var id = selectedArr[i]
+                for(var index=0;index<allData.length;index++){
+                    var alarm = allData[index]
+                    if(alarm.EquipmentID == id){
+                        tempArr.push(allData[index])
                     }
                 }
             }
-
-            allData = filterAlarmData
-            filterAlarmData = []
+            tempArr = sortObjectsArray(tempArr, 'ts', {order: 'desc'})
+            allData = tempArr
         }
 
-        if(starttime && endtime){
-            var json = {"from" : starttime,"to" : endtime}
-            var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(json), cryptKey).toString();
-            ciphertext = encodeURIComponent(ciphertext)
-            console.log(ciphertext)
-            downloadUrl = `http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/generatePDF/${ciphertext}`  
+        if(dateRangeSelected){
+            for(var i=0;i<allData.length;i++){
+                var startDate = this.state.startDate
+                var endDate = this.state.endDate
+                var data = allData[i]
+                if(startDate !== '' || endDate !== ''){
+                    if(startDate <= endDate){
+                        if(data.ts >= startDate && data.ts <= endDate){
+                            tempArray.push(allData[i])
+                        }
+                    }
+                }
+            }
         }
 
 
-        //paginate here
-        const chunkyReportAlarm = (arr, size) =>
+        var breakArr = []
+        for(var i=1;i<=breakCol;i++){
+            breakArr.push(i)
+        }
+
+        var columns = (arr, size) =>
         Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
-            arr.slice(i * size, i * size + size)
+        arr.slice(i * size, i * size + size)
         );
 
-        var maxLength = 7
+        var maxLength = 22
 
         if(allData.length < maxLength){
             var maxPage = 1
@@ -153,267 +138,240 @@ class ReportPage extends Component {
         }
 
         var alarmReportPaginate = range.map(page => <a onClick={()=>{this.setState(
-            {
-                paginationAlarmReportPage : page
-            }
-            )}} style={{cursor:'pointer'}}>{page}</a>)
-            
-            var paginationAlarmPages = 
-            <div style={{fontSize: '0.8em'}} className="pagination">
-                {alarmReportPaginate}
-            </div>
+        {
+            paginationAlarmReportPage : page
+        }
+        )}} style={{cursor:'pointer'}}>{page}</a>)
+        
+        var paginationAlarmPages = 
+        <div style={{fontSize: '0.8em'}} className="pagination">
+            {alarmReportPaginate}
+        </div>
 
         if(allData.length <= 0){
-            var renderAlarms = 
-            <tr>
-            </tr>
+            var renderAlarms = []
         }else{
-            if(!this.props.renderWeightReportPage){
-                for(var i=0; i<allData.length;i++){
-                    var alarm = allData[i]
-                    var ts = alarm.ts
-                    ts = ts.split(' ')
-                    alarm['timestampday']= ts[0]
-                    alarm['timestamptime']= ts[1]
-                    var clearts = alarm.ClearedTS
-                    clearts = clearts.split(' ')
-                    alarm['timeclearstampday']= clearts[0]
-                    alarm['timeclearstamptime']= clearts[1]
-                }
-            }
-            var paginatedAlarms = chunkyReportAlarm(allData,maxLength)
+            var paginatedAlarms = columns(allData,maxLength)
+            console.log(paginatedAlarms)
+            console.log(this.state.paginationAlarmReportPage -1)
             var renderAlarms = paginatedAlarms[this.state.paginationAlarmReportPage -1]
+        }
+        // console.log(renderAlarms)
 
-            if(this.props.renderWeightReportPage){
-                allData = renderAlarms.map(al => (
-                    <tr>
-                        <th style={{textAlign: 'center'}} >{al.EquipmentID}</th>
-                        <th style={{textAlign: 'center'}}>{al.shortAddress}</th>
-                        <th style={{textAlign: 'center'}}>{al.collectTS}</th>
-                        <th style={{textAlign: 'center'}}><div>{al.collectedWeight}</div></th>
-                        <th style={{textAlign: 'center'}}><div>{al.currentWeight}</div></th>
-                    </tr>
-                ))
-            }else{
-                allData = renderAlarms.map(al => (
-                    <tr>
-                        <th style={{textAlign: 'center'}} >{al.EquipmentID}</th>
-                        <th style={{textAlign: 'center'}}><div>{al.timestampday}</div><div>{al.timestamptime}</div></th>
-                        <th style={{textAlign: 'center'}}><div>{al.timeclearstampday}</div><div>{al.timeclearstamptime}</div></th>
-                        <th style={{textAlign: 'center'}}>{al.timeDifference}</th>
-                        <th style={{textAlign: 'center'}}>{al.Type}</th>
-                        <th style={{textAlign: 'center'}}>{al.Status}</th>
-                    </tr>
-                ))
-            }
+        allData = renderAlarms.map(al => (
+            <tr>
+                <th style={{textAlign: 'center',fontWeight: 'normal'}} >{al.EquipmentID}</th>
+                <th style={{textAlign: 'center',fontWeight: 'normal'}} >{al.ts}</th>
+                <th style={{textAlign: 'center',fontWeight: 'normal'}} >{al.ClearedTS}</th>
+                <th style={{textAlign: 'center',fontWeight: 'normal'}}>{al.timeDifference}</th>
+                <th style={{textAlign: 'center',fontWeight: 'normal'}}>{al.Type}</th>
+                <th style={{textAlign: 'center',fontWeight: 'normal'}}>{al.Status}</th>
+            </tr>
+        ))
+        const FORMAT = 'DD/MM/YYYY';
+        var tableHeaders = 
+        <tr>
+        <th style={{textAlign: 'center'}}>Equipment ID</th>
+        <th style={{textAlign: 'center'}}>Alarm Trigger Timestamp</th>
+        <th style={{textAlign: 'center'}}>Alarm Clear Timestamp</th>
+        <th style={{textAlign: 'center'}}>Duration for Alarm Deactivation</th>
+        <th style={{textAlign: 'center'}}>Alarm Type</th>
+        <th style={{textAlign: 'center'}}>Alarm Status</th>
+      </tr>
+      var today = new Date();
+        var renderedTable = 
+        <Container>
+            <Row> 
+                <Col> 
+                <Table striped bordered hover responsive> 
+                    {tableHeaders}
+                    <tbody>
+                    {allData}
+                    </tbody>
+                </Table>
+                {paginationAlarmPages}
+                </Col>
+            </Row> 
+        </Container>
+
+        if(this.state.renderMenu){
+            var renderMenu = <div style={{zIndex:'1'}} className="grid-item grid-item-report-searchMenu markBGCompactor">
+            <div style={{marginTop: '0.8em'}}></div>
+            <Container>
+            <Row>
+                <Col></Col>
+                <Col style={{textAlign : 'center', fontSize: '1.4em'}}><strong>Search</strong>
+                </Col>
+                <Col style={{textAlign : 'right', cursor:'pointer'}} onClick={()=>{
+                    this.setState(
+                        {
+                            renderMenu : false
+                        }
+                    )
+                } 
+                }>X</Col>
+            </Row>
+            </Container>
+            <Container>
+            <Row>
+                <Col style={{textAlign : 'left', cursor: 'pointer'}} onClick={()=>{
+                    this.props.renderReportPage(false)
+                }}><strong>Date range: </strong>
+                </Col>
+            </Row>
             
-        }
+            </Container>
+            <Container>
+            <Row>
+                <Col style={{textAlign : 'left', cursor: 'pointer'}}>
+                <div style={{marginTop: '1em'}}></div>
+                <div>
+                    Start Date :  <DayPickerInput
+                    formatDate={this.formatDate}
+                    format={FORMAT}
+                    parseDate={this.parseDate}
+                    dayPickerProps={{
+                        modifiers: {
+                          disabled: [
+                            {
+                              after: new Date()
+                            }
+                          ]
+                        }
+                      }}
+                    placeholder={'DD-MM--YYYY'}
+                    onDayChange={(event)=>{
+                        if(event){
 
-        if(this.props.renderWeightReportPage){
-            var table = <thead>
-            <tr>
-                <th style={{textAlign : 'center'}}>Equipment ID</th>
-                <th style={{textAlign : 'center'}}>Short Address</th>
-                <th style={{textAlign : 'center'}}>Weight Collection Time</th>
-                <th style={{textAlign : 'center'}}>Amount Collected</th>
-                <th style={{textAlign : 'center'}}>Equipment Remaining Weight</th>
-            </tr>
-            </thead>
-        }else{
-            var table = <thead>
-            <tr>
-                <th style={{textAlign : 'center'}}>Equipment ID</th>
-                <th style={{textAlign : 'center'}}>Alarm Trigger Timestamp</th>
-                <th style={{textAlign : 'center'}}>Alarm Clear Timestamp</th>
-                <th style={{textAlign : 'center'}}>Duration for Alarm Deactivation</th>
-                <th style={{textAlign : 'center'}}><div>Alarm</div><div>Type</div></th>
-                <th style={{textAlign : 'center'}}>Alarm Status</th>
-            </tr>
-            </thead>
-        }
+                            var date = event.toISOString();
+                            date = date.split('T')
+                            date = date[0]
+                            this.setState(
+                                {
+                                    startDate: date
+                                }
+                            )
+                        }
+                    }} />
+                </div>  
+                <div>&nbsp;</div>
+                <div>
+                    End Date : <DayPickerInput
+                    formatDate={this.formatDate}
+                    format={FORMAT}
+                    parseDate={this.parseDate}
+                    dayPickerProps={{
+                        modifiers: {
+                          disabled: [
+                            {
+                              after: new Date()
+                            }
+                          ]
+                        }
+                      }}
+                    placeholder={'DD-MM--YYYY'}
+                    onDayChange={(event)=>{
+                        if(event){
 
-        if(this.props.userType == 'Admin'){
-            if(downloadUrl){
-                var generate = 
-                <Container>
-                                <Row> 
-                                    <Col>
-                                    <a style={{ textAlign: 'left', backgroundColor : '#1f4e78', borderRadius: '5px', color: 'white', padding : '3px'}} href={downloadUrl}>Generate</a>
-                                    </Col> 
-                                    <Col></Col> 
-                                    <Col></Col> 
-                                </Row> 
-                </Container>
-            }else{
-                var generate = 
-                <Container>
-                            <Row> 
-                                <Col>
-                                <a style={{ textAlign: 'left', backgroundColor : 'gray', borderRadius: '5px', color: 'black', padding : '3px'}} disabled="disabled">Generate</a>
-                                </Col> 
-                                <Col></Col> 
-                                <Col></Col> 
-                            </Row> 
-                </Container>
-            }
-           
-        }else{
-            var generate = false
-        }
-        if(downloadUrl){
-            return(
-                <div className="grid-container-report">
-                      <div className='grid-item grid-item-01-compactor'>
-                       <NavBarContent userType={this.props.userType} token={this.props.token} />
-                      </div>
-                    <div className="grid-item grid-item-report-sideDashboard whiteBG">
-                  <Container className="blueBG adjustPadding">
-                      <Row>
-                          <Col style={{textAlign : 'center'}}>Report</Col>
-                      </Row>
-                      </Container>
-                      <Container className="blueBorder adjustPaddingContent">
-                      <Row>
-                          <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
-                              this.props.renderReportPage(false)
-                          }}>Dashboard</Col>
-                      </Row>
-                      </Container>
-                  </div>
-                  <div className="grid-item grid-item-report-calender whiteBG">
-
-                      <div>&nbsp;</div>
-                      <Container>
-                          <Row>
-                              <Col> 
-                                  Start Date : 
-                              </Col>
-                              <Col> 
-                              </Col>
-                              <Col>
-                                  End Date :
-                              </Col>
-                          </Row>
-                      </Container>
-                      <Container>
-                          <Row>
-                              <Col >
-                                  <Calendar style={{ textAlign: 'center' }}
-                                      onChange={(value, event)=>{
-                                        var events = moment(value).format();
-                                        this.setState({
-                                            selectStartDate: events
-                                        })
-                                      }}
-                                  />
-                              </Col>
-                              <Col></Col>
-                              <Col>
-                                  <Calendar
-                                      onChange={(value, event)=>{
-                                        var events = moment(value).endOf('day').format();
-                                        this.setState({
-                                            selectEndDate: events
-                                        })
-                                      }}
-                                  />
-                              </Col>
-                          </Row>
-                      </Container> 
-                  </div>
-                  <div className="grid-item grid-item-report-table whiteBG">
-                        {title}
-                                <div>&nbsp;</div>
-                        <Container>
-                            <Row> 
-                                <Col> 
-                                <Table striped bordered hover responsive> 
-                                    {table}
-                                    <tbody>
-                                    {allData}
-                                    </tbody>
-                                </Table>
-                                {paginationAlarmPages}
-                                </Col>
-                            </Row> 
-                        </Container>
-                        <div>&nbsp;</div>
-                        {generate}
-                  </div>
-                  
+                            var date = event.toISOString();
+                            date = date.split('T')
+                            date = date[0]
+                            this.setState(
+                                {
+                                    endDate: date
+                                }
+                            )
+                        }
+                    }} />
                 </div>
-            )
-        }else{
-            return(
-                <div className="grid-container-report">
-                      <div className='grid-item grid-item-01-compactor'>
-                       <NavBarContent userType={this.props.userType} token={this.props.token}/>
-                      </div>
-                      {dashboardArea}
-                  <div className="grid-item grid-item-report-calender whiteBG">
-
-                      <div>&nbsp;</div>
-                      <Container>
-                          <Row>
-                              <Col> 
-                                  Start Date : 
-                              </Col>
-                              <Col> 
-                              </Col>
-                              <Col>
-                                  End Date :
-                              </Col>
-                          </Row>
-                      </Container>
-                      <Container>
-                          <Row>
-                              <Col >
-                                  <Calendar style={{ textAlign: 'center' }}
-                                      onChange={(value, event)=>{
-                                        var events = moment(value).format();
-                                        this.setState({
-                                            selectStartDate: events
-                                        })
-                                      }}
-                                  />
-                              </Col>
-                              <Col></Col>
-                              <Col>
-                                  <Calendar
-                                      onChange={(value, event)=>{
-                                        var events = moment(value).endOf('day').format();
-                                        this.setState({
-                                            selectEndDate: events
-                                        })
-                                      }}
-                                  />
-                              </Col>
-                          </Row>
-                      </Container> 
-                  </div>
-                  <div className="grid-item grid-item-report-table whiteBG">
-                        {title}
-                                <div>&nbsp;</div>
-                        <Container>
-                            <Row> 
-                                <Col> 
-                                <Table striped bordered hover responsive> 
-                                    {table}
-                                    <tbody>
-                                    {allData}
-                                    </tbody>
-                                </Table>
-                                {paginationAlarmPages}
-                                </Col>
-                            </Row> 
-                        </Container>
-                        <div>&nbsp;</div>
-                        {generate}
-                  </div>
-                  
+                </Col>
+            </Row>
+            
+            </Container>
+    
+            <Container>
+            <div>&nbsp;</div>
+    
+            <Row>
+                <Col>
+                    Search By ID: 
+                <div className="searchBorder" style={{position: 'relative', width: '700px', height: '300px', 
+                }}>
+                {renderButtons}
                 </div>
-            )
+                </Col>
+            </Row>
+            
+            </Container>
+        </div>
+    
+        }else{
+            var renderMenu = <span></span>
         }
+        var dashboardArea = 
+        <div className="grid-item grid-item-report-sideDashboard whiteBG">
+            <Container className="blueBG adjustPadding">
+              <Row>
+                  <Col style={{textAlign : 'center'}}>Alarm Report</Col>
+              </Row>
+            </Container>
+            <Container className="blueBorder adjustPaddingContent">
+              <Row>
+                  <Col style={{textAlign : 'center'}}
+                  >Weight Report</Col>
+
+              </Row>
+            </Container>
+              <Container className="blueBorder adjustPaddingContent">
+              <Row>
+                  <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
+                      this.props.renderReportPage(false)
+                  }}>Dashboard</Col>
+              </Row>
+              </Container>
+        </div>
+
+
+        return(
+            <div className="grid-container-report">
+                <div className='grid-item grid-item-01-compactor'>
+                <NavBarContent userType={this.props.userType} token={this.props.token}/>
+                </div>
+                <div className='grid-item grid-item-report-table whiteBG'>
+                <FontAwesomeIcon icon={faEye} onClick={()=>{
+                        this.setState(
+                            {
+                                renderMenu : true
+                            }
+                        )
+                    }}/>
+                    <Container>
+                        <Row>
+                            <Col style={{textAlign: 'center' ,fontSize: '1.5em'}}>
+                                Alarm Report
+                            </Col>
+                        </Row>
+                    </Container>
+                    <div>&nbsp;</div>
+                    <Container>
+                        <Row>
+                            <Col>
+                                
+<table style={{fontFamily: "arial, sans-serif", borderCollapse: 'collapse', width: '100%'}}>
+  {tableHeaders}
+  {allData}
+</table>
+{paginationAlarmPages}
+                            </Col>
+                        </Row>
+                    </Container>
+                </div>
+            {dashboardArea}
+            {renderMenu}
+            
+            </div>
+            
+        )
     }
 }
 export default ReportPage
