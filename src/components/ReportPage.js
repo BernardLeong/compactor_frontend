@@ -7,14 +7,11 @@ import { DateUtils } from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
-
 import NavBarContent from './NavBarContent';
 import 'react-day-picker/lib/style.css';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import { Alert, Table, Container, Row, Col, Form, Button, InputGroup, FormControl } from 'react-bootstrap'
-// import Calendar from "react-calendar";
-// import Calendar from 'react-calendar';
 const axios = require('axios');
 const moment = require("moment")
 const CryptoJS = require("crypto-js");
@@ -61,6 +58,8 @@ class ReportPage extends Component {
             return alarm.EquipmentID
         }))
         equipmentIDs = [...new Set(equipmentIDs)];
+
+
         var renderButtons = equipmentIDs.map((button=> 
             <span><button  onClick={()=>{
                 var selectedIDs = this.state.arrayofSelectedIDS.slice(0)
@@ -82,9 +81,9 @@ class ReportPage extends Component {
         var endDate = this.state.endDate
         var dateRangeSelected = (startDate !== '' || endDate !== '') && (startDate < endDate)
 
+        var selectedArr = this.state.arrayofSelectedIDS
+        selectedArr = [...new Set(selectedArr)];
         if(idSelected){
-            var selectedArr = this.state.arrayofSelectedIDS
-            selectedArr = [...new Set(selectedArr)];
             for(var i=0;i<selectedArr.length;i++){
                 var id = selectedArr[i]
                 for(var index=0;index<allData.length;index++){
@@ -111,8 +110,43 @@ class ReportPage extends Component {
                     }
                 }
             }
+
+            allData = tempArray
         }
 
+        if(idSelected && dateRangeSelected){
+            for(var i=0;i<selectedArr.length;i++){
+                var id = selectedArr[i]
+                for(var index=0;index<allData.length;index++){
+                    var alarm = allData[index]
+                    if(alarm.EquipmentID == id){
+                        tempArr.push(allData[index])
+                    }
+                }
+            }
+
+            for(var i=0;i<tempArr.length;i++){
+                var startDate = this.state.startDate
+                var endDate = this.state.endDate
+                var data = tempArr[i]
+                if(startDate !== '' || endDate !== ''){
+                    if(startDate <= endDate){
+                        if(data.ts >= startDate && data.ts <= endDate){
+                            tempArray.push(allData[i])
+                        }
+                    }
+                }
+            }
+
+            if(tempArray > 0){
+                tempArray = sortObjectsArray(tempArray, 'ts', {order: 'desc'})
+            }
+            allData = tempArray
+        }
+
+        if(idSelected || dateRangeSelected){
+            allData = allData.filter(Boolean)
+        }
 
         var breakArr = []
         for(var i=1;i<=breakCol;i++){
@@ -145,14 +179,44 @@ class ReportPage extends Component {
         var paginationAlarmPages = 
         <div style={{fontSize: '0.8em'}} className="pagination">
             {alarmReportPaginate}
+            <div>
+                <a style={{ textAlign: 'left', backgroundColor : '#1f4e78', borderRadius: '5px', color: 'white', padding : '3px'}} href={this.state.downloadUrl}
+                onClick={()=>{
+                    //marking
+                    var data = {}
+                    data['selectType'] = 'all'
+                    if(idSelected){
+                        data["selectedID"] = this.state.arrayofSelectedIDS
+                        data['selectType'] = 'filter'
+                    }
+
+                    if(dateRangeSelected){
+                        var object = {}
+                        object['starttime'] = this.state.startDate
+                        object['endtime'] = this.state.endDate
+                        data["dateRange"] = object
+                        data['selectType'] = 'filter'
+                    }
+                    var cryptKey = "somekey"
+
+                    data = JSON.stringify(data)
+                    var ciphertext = CryptoJS.AES.encrypt(data, cryptKey).toString();
+                    ciphertext = encodeURIComponent(ciphertext)
+                    var downloadUrl = `http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/generatexlxs/alarmreport/${ciphertext}` 
+                    this.setState(
+                        {
+                            downloadUrl : downloadUrl
+                        }
+                    )
+
+                }} >Generate</a>
+            </div>
         </div>
 
         if(allData.length <= 0){
             var renderAlarms = []
         }else{
             var paginatedAlarms = columns(allData,maxLength)
-            console.log(paginatedAlarms)
-            console.log(this.state.paginationAlarmReportPage -1)
             var renderAlarms = paginatedAlarms[this.state.paginationAlarmReportPage -1]
         }
         // console.log(renderAlarms)
@@ -285,9 +349,7 @@ class ReportPage extends Component {
                 </div>
                 </Col>
             </Row>
-            
             </Container>
-    
             <Container>
             <div>&nbsp;</div>
     
@@ -318,7 +380,6 @@ class ReportPage extends Component {
               <Row>
                   <Col style={{textAlign : 'center'}}
                   >Weight Report</Col>
-
               </Row>
             </Container>
               <Container className="blueBorder adjustPaddingContent">
@@ -330,20 +391,27 @@ class ReportPage extends Component {
               </Container>
         </div>
 
-
         return(
             <div className="grid-container-report">
                 <div className='grid-item grid-item-01-compactor'>
                 <NavBarContent userType={this.props.userType} token={this.props.token}/>
                 </div>
                 <div className='grid-item grid-item-report-table whiteBG'>
-                <FontAwesomeIcon icon={faEye} onClick={()=>{
+                    <div>&nbsp;</div>
+                <div style={{cursor: 'pointer'}}  onClick={()=>{
                         this.setState(
                             {
                                 renderMenu : true
                             }
                         )
-                    }}/>
+                    }}><img
+                            src={require('./searchIcon.png')}
+                            width="35"
+                            height="30"
+                            className="d-inline-block align-top"
+                            alt="React Bootstrap logo"
+                />
+                </div>
                     <Container>
                         <Row>
                             <Col style={{textAlign: 'center' ,fontSize: '1.5em'}}>
@@ -360,16 +428,14 @@ class ReportPage extends Component {
   {tableHeaders}
   {allData}
 </table>
-{paginationAlarmPages}
+            {paginationAlarmPages}
                             </Col>
                         </Row>
                     </Container>
                 </div>
             {dashboardArea}
             {renderMenu}
-            
             </div>
-            
         )
     }
 }

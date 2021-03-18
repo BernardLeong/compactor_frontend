@@ -63,7 +63,7 @@ body{
     display: grid;
     grid-auto-rows: auto;
     grid-gap: 1px;
-    grid-template-rows: 4.8em 35em 12em ;
+    grid-template-rows: 4.8em 37em 12em ;
     grid-template-columns: 14em 1.5fr 1fr auto;
 }
 
