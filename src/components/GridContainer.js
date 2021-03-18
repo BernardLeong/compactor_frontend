@@ -422,7 +422,7 @@ if(this.state.handleRedirectToAdminPage){
             var alarmsData = this.state.liveAlarmData
             if(this.state.renderReportPage){
                 return(
-                    <ReportPage weightCollectionData={this.state.weightCollectionData} WeightReportPage={this.renderWeightReportPage} renderWeightReportPage={this.state.renderWeightReportPage} weightCollectionData={this.state.weightCollectionData} userType={this.props.location.state.userType} renderReportPage={this.renderReportPage} liveAlarmReport={this.state.liveAlarmReport} userType={this.props.location.state.userType} allAlarmReport={this.state.allAlarmReport} token={this.props.location.state.token} />
+                    <ReportPage livecompactorData={this.state.livecompactorData} weightCollectionData={this.state.weightCollectionData} WeightReportPage={this.renderWeightReportPage} renderWeightReportPage={this.state.renderWeightReportPage} weightCollectionData={this.state.weightCollectionData} userType={this.props.location.state.userType} renderReportPage={this.renderReportPage} liveAlarmReport={this.state.liveAlarmReport} userType={this.props.location.state.userType} allAlarmReport={this.state.allAlarmReport} token={this.props.location.state.token} />
                 )
             }
             var alarms = []

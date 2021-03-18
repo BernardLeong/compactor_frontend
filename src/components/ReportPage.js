@@ -52,37 +52,180 @@ class ReportPage extends Component {
     render(){
         var allData = this.props.liveAlarmReport
 
-        allData = sortObjectsArray(allData, 'ts', {order: 'desc'})
-        //get all the EquipmentID
-        var equipmentIDs = allData.map((alarm=>{
+        var dashboardArea = 
+        <div className="grid-item grid-item-report-sideDashboard whiteBG">
+            <Container className="blueBG adjustPadding">
+              <Row>
+                  <Col style={{textAlign : 'center'}}>Alarm Report</Col>
+              </Row>
+            </Container>
+            <Container className="blueBorder adjustPaddingContent">
+              <Row>
+                  <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={this.props.WeightReportPage}
+                  >Weight Report</Col>
+              </Row>
+            </Container>
+              <Container className="blueBorder adjustPaddingContent">
+              <Row>
+                  <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
+                      this.props.renderReportPage(false)
+                  }}>Dashboard</Col>
+              </Row>
+              </Container>
+        </div>
+
+        var tableHeaders = 
+        <tr>
+        <th style={{textAlign: 'center'}}>Equipment ID</th>
+        <th style={{textAlign: 'center'}}>Alarm Trigger Timestamp</th>
+        <th style={{textAlign: 'center'}}>Alarm Clear Timestamp</th>
+        <th style={{textAlign: 'center'}}>Duration for Alarm Deactivation</th>
+        <th style={{textAlign: 'center'}}>Alarm Type</th>
+        <th style={{textAlign: 'center'}}>Alarm Status</th>
+      </tr>
+        var title = 
+        <Container>
+            <Row>
+                <Col style={{textAlign: 'center' ,fontSize: '1.5em'}}>
+                    Alarm Report
+                </Col>
+            </Row>
+        </Container>
+        if(this.props.renderWeightReportPage){
+            //
+            allData = this.props.weightCollectionData
+        var tableHeaders = 
+        <tr>
+            <th style={{textAlign : 'center'}}>Equipment ID</th>
+            <th style={{textAlign : 'center'}}>Short Address</th>
+            <th style={{textAlign : 'center'}}>Weight Collection Time</th>
+            <th style={{textAlign : 'center'}}>Amount Collected</th>
+            <th style={{textAlign : 'center'}}>Equipment Remaining Weight</th>
+        </tr>
+        var title = 
+        <Container>
+            <Row>
+                <Col style={{textAlign: 'center' ,fontSize: '1.5em'}}>
+                    Weight Report
+                </Col>
+            </Row>
+        </Container>
+
+        dashboardArea = 
+        <div className="grid-item grid-item-report-sideDashboard whiteBG">
+            <Container className="blueBG adjustPadding">
+            <Row>
+                <Col style={{textAlign : 'center'}}
+                >Weight Report</Col>
+            </Row>
+            </Container>
+            <Container className="blueBorder adjustPaddingContent">
+            <Row>
+                <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
+                    this.props.WeightReportPage(false)
+                }}>Alarm Report</Col>
+            </Row>
+            </Container>
+            <Container className="blueBorder adjustPaddingContent">
+            <Row>
+                <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
+                    this.props.renderReportPage(false)
+                }}>Dashboard</Col>
+            </Row>
+            </Container>
+        </div>
+
+        }
+
+        console.log(allData)
+
+        var equipments = this.props.livecompactorData
+
+        var equipmentIDs = equipments.map((alarm=>{
             return alarm.EquipmentID
         }))
-        equipmentIDs = [...new Set(equipmentIDs)];
+
+        allData = sortObjectsArray(allData, 'ts', {order: 'desc'})
 
 
-        var renderButtons = equipmentIDs.map((button=> 
-            <span><button  onClick={()=>{
-                var selectedIDs = this.state.arrayofSelectedIDS.slice(0)
-                selectedIDs.push(button)
-                this.setState(
-                    {
-                        arrayofSelectedIDS : selectedIDs
+        var buttontext = {}
+        var buttoncolor = {}
+        for(var i=0;i<equipmentIDs.length;i++){
+            var equipmentID = equipmentIDs[i]
+            buttontext[equipmentID] = equipmentID
+            buttoncolor[equipmentID] = ''
+        }
+
+        var selectedArr = this.state.arrayofSelectedIDS
+        //if selectTwice remove the id
+        
+        // selectedArr = [...new Set(selectedArr)];
+
+        selectedArr = selectedArr.sort();
+    
+        var duplicate = []
+        selectedArr.forEach(function (value, index, arr){
+    
+            let first_index = arr.indexOf(value);
+            let last_index = arr.lastIndexOf(value);
+            if(first_index !== last_index){
+                duplicate.push(value)
+            }
+        });
+
+        duplicate = [...new Set(duplicate)];
+
+        selectedArr = selectedArr.filter(item => !duplicate.includes(item))
+
+
+        var renderButtons = equipmentIDs.map((button=> {
+            var idSelected = selectedArr.length > 0
+
+            if(idSelected){
+                for(var i=0;i<selectedArr.length;i++){
+
+                    var selectedID = selectedArr[i]
+                    if(selectedID === button){
+                        buttontext[selectedID] = selectedID + ' ✓'
                     }
-                )
-            }} style={{backgroundColor: '#1f4e78', color: 'white', padding: '8px', borderRadius: '8px'}}>{button}</button></span>
-        ))
+                }
+            }
+//cater for selected again
+
+            if(buttontext[button].includes('✓')){
+                return <span><button  onClick={()=>{
+                    var selectedIDs = selectedArr.slice(0)
+                    selectedIDs.push(button)
+                    this.setState(
+                        {
+                            arrayofSelectedIDS : selectedIDs
+                        }
+                    )
+                }} style={{backgroundColor: 'white', color: '#1f4e78', padding: '8px', borderRadius: '8px'}}>{buttontext[button]}</button></span>     
+            }else{
+                return <span><button  onClick={()=>{
+                    var selectedIDs = selectedArr.slice(0)
+                    selectedIDs.push(button)
+                    this.setState(
+                        {
+                            arrayofSelectedIDS : selectedIDs
+                        }
+                    )
+                }} style={{backgroundColor: '#1f4e78', color: 'white', padding: '8px', borderRadius: '8px'}}>{buttontext[button]}</button></span>
+            }
+        }))
+        
         var breakCol = 6;
 
         var tempArray = []
         var tempArr = []
 
-        var idSelected = this.state.arrayofSelectedIDS.length > 0
+        
         var startDate = this.state.startDate
         var endDate = this.state.endDate
         var dateRangeSelected = (startDate !== '' || endDate !== '') && (startDate < endDate)
 
-        var selectedArr = this.state.arrayofSelectedIDS
-        selectedArr = [...new Set(selectedArr)];
+        var idSelected = selectedArr.length > 0
         if(idSelected){
             for(var i=0;i<selectedArr.length;i++){
                 var id = selectedArr[i]
@@ -203,6 +346,9 @@ class ReportPage extends Component {
                     var ciphertext = CryptoJS.AES.encrypt(data, cryptKey).toString();
                     ciphertext = encodeURIComponent(ciphertext)
                     var downloadUrl = `http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/generatexlxs/alarmreport/${ciphertext}` 
+                    if(this.props.renderWeightReportPage){
+                        downloadUrl = `http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/generatexlxs/weightreport/${ciphertext}` 
+                    }
                     this.setState(
                         {
                             downloadUrl : downloadUrl
@@ -220,7 +366,7 @@ class ReportPage extends Component {
             var renderAlarms = paginatedAlarms[this.state.paginationAlarmReportPage -1]
         }
         // console.log(renderAlarms)
-
+        
         allData = renderAlarms.map(al => (
             <tr>
                 <th style={{textAlign: 'center',fontWeight: 'normal'}} >{al.EquipmentID}</th>
@@ -231,16 +377,19 @@ class ReportPage extends Component {
                 <th style={{textAlign: 'center',fontWeight: 'normal'}}>{al.Status}</th>
             </tr>
         ))
+
+        if(this.props.renderWeightReportPage){
+            allData = renderAlarms.map(al => (
+                <tr>
+                    <th style={{textAlign: 'center',fontWeight: 'normal'}} >{al.EquipmentID}</th>
+                    <th style={{textAlign: 'center',fontWeight: 'normal'}}>{al.shortAddress}</th>
+                    <th style={{textAlign: 'center',fontWeight: 'normal'}}>{al.collectTS}</th>
+                    <th style={{textAlign: 'center',fontWeight: 'normal'}}><div>{al.collectedWeight}</div></th>
+                    <th style={{textAlign: 'center',fontWeight: 'normal'}}><div>{al.currentWeight}</div></th>
+                </tr>
+            ))
+        }
         const FORMAT = 'DD/MM/YYYY';
-        var tableHeaders = 
-        <tr>
-        <th style={{textAlign: 'center'}}>Equipment ID</th>
-        <th style={{textAlign: 'center'}}>Alarm Trigger Timestamp</th>
-        <th style={{textAlign: 'center'}}>Alarm Clear Timestamp</th>
-        <th style={{textAlign: 'center'}}>Duration for Alarm Deactivation</th>
-        <th style={{textAlign: 'center'}}>Alarm Type</th>
-        <th style={{textAlign: 'center'}}>Alarm Status</th>
-      </tr>
       var today = new Date();
         var renderedTable = 
         <Container>
@@ -369,27 +518,6 @@ class ReportPage extends Component {
         }else{
             var renderMenu = <span></span>
         }
-        var dashboardArea = 
-        <div className="grid-item grid-item-report-sideDashboard whiteBG">
-            <Container className="blueBG adjustPadding">
-              <Row>
-                  <Col style={{textAlign : 'center'}}>Alarm Report</Col>
-              </Row>
-            </Container>
-            <Container className="blueBorder adjustPaddingContent">
-              <Row>
-                  <Col style={{textAlign : 'center'}}
-                  >Weight Report</Col>
-              </Row>
-            </Container>
-              <Container className="blueBorder adjustPaddingContent">
-              <Row>
-                  <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
-                      this.props.renderReportPage(false)
-                  }}>Dashboard</Col>
-              </Row>
-              </Container>
-        </div>
 
         return(
             <div className="grid-container-report">
@@ -412,29 +540,23 @@ class ReportPage extends Component {
                             alt="React Bootstrap logo"
                 />
                 </div>
-                    <Container>
-                        <Row>
-                            <Col style={{textAlign: 'center' ,fontSize: '1.5em'}}>
-                                Alarm Report
-                            </Col>
-                        </Row>
-                    </Container>
+                    {title}
                     <div>&nbsp;</div>
                     <Container>
                         <Row>
                             <Col>
                                 
-<table style={{fontFamily: "arial, sans-serif", borderCollapse: 'collapse', width: '100%'}}>
-  {tableHeaders}
-  {allData}
-</table>
-            {paginationAlarmPages}
-                            </Col>
-                        </Row>
-                    </Container>
-                </div>
-            {dashboardArea}
-            {renderMenu}
+                    <table style={{fontFamily: "arial, sans-serif", borderCollapse: 'collapse', width: '100%'}}>
+                        {tableHeaders}
+                        {allData}
+                    </table>
+                    {paginationAlarmPages}
+                                    </Col>
+                                </Row>
+                            </Container>
+                        </div>
+                    {dashboardArea}
+                    {renderMenu}
             </div>
         )
     }
