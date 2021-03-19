@@ -91,21 +91,24 @@ class ReportPage extends Component {
                 </Col>
             </Row>
         </Container>
+        var timestampfield = 'ts'
+
         if(this.props.renderWeightReportPage){
             allData = this.props.weightCollectionData
+            timestampfield = 'collectTS'
         var tableHeaders = 
         <tr>
             <th style={{textAlign : 'center'}}>Equipment ID</th>
             <th style={{textAlign : 'center'}}>Address</th>
-            <th style={{textAlign : 'center'}}>Weight Collection Time</th>
-            <th style={{textAlign : 'center'}}>Amount Collected</th>
-            <th style={{textAlign : 'center'}}>Equipment Remaining Weight</th>
+            <th style={{textAlign : 'center'}}>Collection Time</th>
+            <th style={{textAlign : 'center'}}>Amount Collected(kg)</th>
+            <th style={{textAlign : 'center'}}>Equipment Remaining Weight(kg)</th>
         </tr>
         var title = 
         <Container>
             <Row>
                 <Col style={{textAlign: 'center' ,fontSize: '1.5em'}}>
-                    Weight Report
+                    Weight Collection Report
                 </Col>
             </Row>
         </Container>
@@ -135,8 +138,6 @@ class ReportPage extends Component {
         </div>
 
         }
-
-        console.log(allData)
 
         var equipments = this.props.livecompactorData
 
@@ -238,15 +239,18 @@ class ReportPage extends Component {
             tempArr = sortObjectsArray(tempArr, 'ts', {order: 'desc'})
             allData = tempArr
         }
-
+       
         if(dateRangeSelected){
+            console.log(allData)
             for(var i=0;i<allData.length;i++){
                 var startDate = this.state.startDate
                 var endDate = this.state.endDate
                 var data = allData[i]
+                console.log(timestampfield)
+                console.log(data[timestampfield])
                 if(startDate !== '' || endDate !== ''){
                     if(startDate <= endDate){
-                        if(data.ts >= startDate && data.ts <= endDate){
+                        if(data[timestampfield] >= startDate && data[timestampfield] <= endDate){
                             tempArray.push(allData[i])
                         }
                     }
@@ -273,7 +277,7 @@ class ReportPage extends Component {
                 var data = tempArr[i]
                 if(startDate !== '' || endDate !== ''){
                     if(startDate <= endDate){
-                        if(data.ts >= startDate && data.ts <= endDate){
+                        if(data[timestampfield] >= startDate && data[timestampfield] <= endDate){
                             tempArray.push(allData[i])
                         }
                     }
@@ -281,7 +285,7 @@ class ReportPage extends Component {
             }
 
             if(tempArray > 0){
-                tempArray = sortObjectsArray(tempArray, 'ts', {order: 'desc'})
+                tempArray = sortObjectsArray(tempArray, timestampfield, {order: 'desc'})
             }
             allData = tempArray
         }
