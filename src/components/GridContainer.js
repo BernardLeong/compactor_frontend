@@ -782,7 +782,7 @@ if(this.state.handleRedirectToAdminPage){
                         compactorInfo = renderCompactors.map(compactor => (
                             <tr>
                                 {/* <th style={{textAlign : 'center'}}>{compactor['ts'] == '' ? 'Equipment No Data' : compactor['ts']}</th> */}
-                                <th style={{textAlign : 'center',fontWeight: 'normal'}}><div>{compactor.timestampday}</div><div>{compactor.timestamptime}</div></th>
+                                <th style={{textAlign : 'center',fontWeight: 'normal'}}><div>{compactor.ts}</div></th>
                                 <th style={{textAlign : 'center',fontWeight: 'normal'}}>{compactor.EquipmentID}</th>
                                 <th style={{textAlign : 'center',fontWeight: 'normal'}}>{compactor.shortAddress}</th>
                                 <th style={{textAlign : 'center',fontWeight: 'normal'}}>{Math.round(compactor.WeightValue)}</th>
