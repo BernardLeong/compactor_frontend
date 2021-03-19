@@ -236,7 +236,7 @@ class ReportPage extends Component {
                     }
                 }
             }
-            tempArr = sortObjectsArray(tempArr, 'ts', {order: 'desc'})
+            tempArr = sortObjectsArray(tempArr, timestampfield, {order: 'desc'})
             allData = tempArr
         }
        
@@ -284,14 +284,16 @@ class ReportPage extends Component {
                 }
             }
 
-            if(tempArray > 0){
-                tempArray = sortObjectsArray(tempArray, timestampfield, {order: 'desc'})
-            }
             allData = tempArray
         }
 
+
         if(idSelected || dateRangeSelected){
             allData = allData.filter(Boolean)
+        }
+
+        if(allData.length > 0){
+            allData = sortObjectsArray(allData, timestampfield, {order: 'desc'})
         }
 
         var breakArr = []
