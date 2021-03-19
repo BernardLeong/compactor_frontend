@@ -708,12 +708,9 @@ if(this.state.handleRedirectToAdminPage){
                     arr.slice(i * size, i * size + size)
                 );
 
+                var maxLength = 24
                 if(this.state.handleRedirectToMap){
-                    var maxLength = 3
-                }else if(this.state.renderEquipmentPage){
-                    var maxLength = 8
-                }else{
-                    var maxLength = 5
+                    maxLength = 3
                 }
                 //mark
                 compactors = sortObjectsArray(compactors, 'ts', {order: 'desc'})
