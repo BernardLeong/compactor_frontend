@@ -484,12 +484,12 @@ if(this.state.handleRedirectToAdminPage){
                     if(usertype == 'Admin' || usertype == 'Enginner' ){
                         var alarmTable = renderAlarms.map(al => (
                             <tr>
-                                <th style={{textAlign: 'center'}}><div>{al['timestampday']}</div><div>{al['timestamptime']}</div></th>
-                                <th style={{textAlign: 'center'}}>{al.EquipmentID}</th>
-                                <th style={{textAlign: 'center'}}>{al.shortAddress}</th>
-                                <th style={{textAlign: 'center'}}>{al.Type}</th>
-                                <th style={{textAlign: 'center'}}>{al.CurrentStatus}</th>
-                                <th style={{textAlign: 'center'}}><FontAwesomeIcon style={{cursor:'pointer'}} icon={faStopwatch} onClick={()=>{
+                                <th style={{textAlign: 'center',fontWeight: 'normal'}}><div>{al['ts']}</div></th>
+                                <th style={{textAlign: 'center',fontWeight: 'normal'}}>{al.EquipmentID}</th>
+                                <th style={{textAlign: 'center',fontWeight: 'normal'}}>{al.shortAddress}</th>
+                                <th style={{textAlign: 'center',fontWeight: 'normal'}}>{al.Type}</th>
+                                <th style={{textAlign: 'center',fontWeight: 'normal'}}>{al.CurrentStatus}</th>
+                                <th style={{textAlign: 'center',fontWeight: 'normal'}}><FontAwesomeIcon style={{cursor:'pointer'}} icon={faStopwatch} onClick={()=>{
                                     var token = this.props.location.state.token
                                     var config = {
                                         headers: { Authorization: `Bearer ${token}`, apikey: 'jnjirej9reinvuiriuerhuinui' }
@@ -782,12 +782,12 @@ if(this.state.handleRedirectToAdminPage){
                         compactorInfo = renderCompactors.map(compactor => (
                             <tr>
                                 {/* <th style={{textAlign : 'center'}}>{compactor['ts'] == '' ? 'Equipment No Data' : compactor['ts']}</th> */}
-                                <th style={{textAlign : 'center'}}><div>{compactor.timestampday}</div><div>{compactor.timestamptime}</div></th>
-                                <th style={{textAlign : 'center'}}>{compactor.EquipmentID}</th>
-                                <th style={{textAlign : 'center'}}>{compactor.shortAddress}</th>
-                                <th style={{textAlign : 'center'}}>{Math.round(compactor.WeightValue)}</th>
-                                <th style={{textAlign : 'center'}}>{Math.round(compactor.FilledLevel)}</th>
-                                <th style={{textAlign : 'center'}}>{Math.round(compactor['FilledLevel']) <= 70 ? 
+                                <th style={{textAlign : 'center',fontWeight: 'normal'}}><div>{compactor.timestampday}</div><div>{compactor.timestamptime}</div></th>
+                                <th style={{textAlign : 'center',fontWeight: 'normal'}}>{compactor.EquipmentID}</th>
+                                <th style={{textAlign : 'center',fontWeight: 'normal'}}>{compactor.shortAddress}</th>
+                                <th style={{textAlign : 'center',fontWeight: 'normal'}}>{Math.round(compactor.WeightValue)}</th>
+                                <th style={{textAlign : 'center',fontWeight: 'normal'}}>{Math.round(compactor.FilledLevel)}</th>
+                                <th style={{textAlign : 'center',fontWeight: 'normal'}}>{Math.round(compactor['FilledLevel']) <= 70 ? 
                                     <span><img
                                     src={require('./greendot.png')}
                                     width="30"
@@ -860,22 +860,24 @@ if(this.state.handleRedirectToAdminPage){
                             </Col>
                         </Row>
                     </Container>
-                    <Table striped bordered hover responsive> 
-                        <thead>
-                        <tr>
-                            <th style={{textAlign:'center'}}>TimeStamp</th>
-                            <th style={{textAlign:'center'}}>Equipment ID</th>
-                            <th style={{textAlign:'center'}}>Address</th>
-                            <th style={{textAlign:'center'}}>Collected weight (KG)</th>
-                            <th style={{textAlign:'center'}}>Collected weight (%)</th>
-                            <th style={{textAlign:'center'}}>Level</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {compactorInfo}
-                        </tbody>
-                    </Table>
-                    {paginationPages}
+                    <Container>
+                        <Row>
+                            <Col>
+                                <table style={{fontFamily: "arial, sans-serif", borderCollapse: 'collapse', width: '100%'}}>
+                                <tr>
+                                    <th style={{textAlign:'center'}}>TimeStamp</th>
+                                    <th style={{textAlign:'center'}}>Equipment ID</th>
+                                    <th style={{textAlign:'center'}}>Address</th>
+                                    <th style={{textAlign:'center'}}>Collected weight (KG)</th>
+                                    <th style={{textAlign:'center'}}>Collected weight (%)</th>
+                                    <th style={{textAlign:'center'}}>Level</th>
+                                </tr>
+                                {compactorInfo}
+                                </table>
+                                {paginationPages}
+                            </Col>
+                        </Row>
+                    </Container>
                     </div>
                 </div>
             )
@@ -946,22 +948,24 @@ if(this.state.handleRedirectToAdminPage){
             if(usertype == 'Admin' || usertype == 'Enginner'){
                 var alarmsSection = 
                 <div className="grid-item grid-item-alarmPage whiteBG">
-                    <Table style={{fontSize: '0.9em'}} striped bordered hover>
-                        <thead>
-                        <tr>
-                            <th style={{textAlign : 'center'}}>TimeStamp</th>
-                            <th style={{textAlign : 'center'}}>Equipment ID</th>
-                            <th style={{textAlign : 'center'}}>Address</th>
-                            <th style={{textAlign : 'center'}}>Fault Type</th>
-                            <th style={{textAlign : 'center'}}>Alarm Status</th>
-                            <th style={{textAlign : 'center'}}>Clear Alarm</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {alarmTable}
-                        </tbody>
-                        <span style={{textAlign: 'center'}}>{paginationAlarmPages}</span>
-                    </Table>
+                    <Container>
+                        <Row>
+                            <Col>
+                                <table style={{fontFamily: "arial, sans-serif", borderCollapse: 'collapse', width: '100%'}}>
+                                    <tr>
+                                        <th style={{textAlign : 'center'}}>TimeStamp</th>
+                                        <th style={{textAlign : 'center'}}>Equipment ID</th>
+                                        <th style={{textAlign : 'center'}}>Address</th>
+                                        <th style={{textAlign : 'center'}}>Fault Type</th>
+                                        <th style={{textAlign : 'center'}}>Alarm Status</th>
+                                        <th style={{textAlign : 'center'}}>Clear Alarm</th>
+                                    </tr>
+                                    {alarmTable}
+                                </table>
+                                {paginationAlarmPages}
+                            </Col>
+                        </Row>
+                    </Container>
                     <button onClick={()=>{this.setState({renderAlarmInformation : false})}}>Back</button>
                 </div>
             }else{

@@ -92,12 +92,11 @@ class ReportPage extends Component {
             </Row>
         </Container>
         if(this.props.renderWeightReportPage){
-            //
             allData = this.props.weightCollectionData
         var tableHeaders = 
         <tr>
             <th style={{textAlign : 'center'}}>Equipment ID</th>
-            <th style={{textAlign : 'center'}}>Short Address</th>
+            <th style={{textAlign : 'center'}}>Address</th>
             <th style={{textAlign : 'center'}}>Weight Collection Time</th>
             <th style={{textAlign : 'center'}}>Amount Collected</th>
             <th style={{textAlign : 'center'}}>Equipment Remaining Weight</th>
@@ -390,21 +389,6 @@ class ReportPage extends Component {
             ))
         }
         const FORMAT = 'DD/MM/YYYY';
-      var today = new Date();
-        var renderedTable = 
-        <Container>
-            <Row> 
-                <Col> 
-                <Table striped bordered hover responsive> 
-                    {tableHeaders}
-                    <tbody>
-                    {allData}
-                    </tbody>
-                </Table>
-                {paginationAlarmPages}
-                </Col>
-            </Row> 
-        </Container>
 
         if(this.state.renderMenu){
             var renderMenu = <div style={{zIndex:'1'}} className="grid-item grid-item-report-searchMenu markBGCompactor">
@@ -501,7 +485,6 @@ class ReportPage extends Component {
             </Container>
             <Container>
             <div>&nbsp;</div>
-    
             <Row>
                 <Col>
                     Search By ID: 
@@ -544,16 +527,15 @@ class ReportPage extends Component {
                     <div>&nbsp;</div>
                     <Container>
                         <Row>
-                            <Col>
-                                
-                    <table style={{fontFamily: "arial, sans-serif", borderCollapse: 'collapse', width: '100%'}}>
-                        {tableHeaders}
-                        {allData}
-                    </table>
-                    {paginationAlarmPages}
-                                    </Col>
-                                </Row>
-                            </Container>
+                            <Col>   
+                                <table style={{fontFamily: "arial, sans-serif", borderCollapse: 'collapse', width: '100%'}}>
+                                    {tableHeaders}
+                                    {allData}
+                                </table>
+                                {paginationAlarmPages}
+                            </Col>
+                        </Row>
+                    </Container>
                         </div>
                     {dashboardArea}
                     {renderMenu}
