@@ -417,7 +417,7 @@ if(this.state.handleRedirectToAdminPage){
         </div>
     )
 }
-        if(this.state.liveAlarmsLoaded){
+        if(this.state.liveAlarmsLoaded && this.state.liveCompactorLoaded){
 
             var alarmsData = this.state.liveAlarmData
             if(this.state.renderReportPage){
