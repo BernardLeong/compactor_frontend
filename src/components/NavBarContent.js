@@ -83,7 +83,7 @@ class NavBarContent extends Component {
             <Navbar.Brand>
               {/* <span><strong>iZee</strong></span><span><strong style={{color: 'rgb(241, 90, 41)'}}>SYNC</strong></span> */}
               <img
-                  src={require('./izeesync.png')}
+                  src={require('./index.jpg')}
                   width="70"
                   height="27"
                   className="d-inline-block align-top"
