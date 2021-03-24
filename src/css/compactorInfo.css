@@ -47,8 +47,16 @@ body{
     display: grid;
     grid-auto-rows: auto;
     grid-gap: 1px;
-    grid-template-rows: 4.8em 22em 22em;
-    grid-template-columns: 14em 1fr 1fr auto;
+    grid-template-rows: 0.1fr 1fr 1fr;
+    grid-template-columns: 0.3fr 1fr 1fr auto;
+}
+
+.grid-container-alarm {
+    display: grid;
+    grid-auto-rows: auto;
+    grid-gap: 1px;
+    grid-template-rows: 0.1fr 1fr 40em;
+    grid-template-columns: 0.3fr 1fr 1fr auto;
 }
 
 .grid-container-map {
@@ -56,15 +64,15 @@ body{
     grid-auto-rows: auto;
     grid-gap: 1px;
     grid-template-rows: 4.8em 22em 22em;
-    grid-template-columns: 14em 1fr 1fr 1fr auto;
+    grid-template-columns: 0.3fr 1fr 1fr auto;
 }
 
 .grid-container-report {
     display: grid;
     grid-auto-rows: auto;
     grid-gap: 1px;
-    grid-template-rows: 4.8em 37em 12em ;
-    grid-template-columns: 14em 1.5fr 1fr auto;
+    grid-template-rows: 0.1fr 1fr 40em;
+    grid-template-columns: 0.3fr 1fr 1fr auto;
 }
 
 .react-calenders {
@@ -81,7 +89,7 @@ body{
     display: grid;
     grid-auto-rows: auto;
     grid-gap: 1px;
-    grid-template-rows: 4.8em 50em 13em;
+    grid-template-rows: 0.1fr 1fr 40em;
     grid-template-columns: 14em 1fr 1fr auto;
 }
 

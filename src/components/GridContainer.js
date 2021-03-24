@@ -6,9 +6,10 @@ import Mapping from './Mapping';
 import ReportPage from './ReportPage';
 import GoogleApiWrapper from './GoogleApiWrapper';
 import NavBarContent from './NavBarContent';
-import { Alert, Table, Container, Row, Col, Form, Button, InputGroup, FormControl } from 'react-bootstrap'
+import { Alert, Table, Container, Breadcrumb, Row, Col, Form, Button, InputGroup, FormControl } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faArrowRight, faStopwatch } from '@fortawesome/free-solid-svg-icons'
+import {Bar, Line, Pie} from 'react-chartjs-2'
 import Calendar from 'react-calendar';
 const sortObjectsArray = require('sort-objects-array');
 const uniq = require("uniq")
@@ -57,6 +58,8 @@ class GridContainer extends Component{
             'handleRedirectToMap' : false,
             'handleRedirectToAdminPage' : false,
             'registeredUser' : false,
+            "showMapOnSide" : true,
+            "showGraphOnSide" : false,
             'paginationDefaultPage' : 1,
             'paginationAlarmDefaultPage' : 1,
             'userTypeOption' : '',
@@ -1091,7 +1094,7 @@ if(this.state.handleRedirectToAdminPage){
             if(this.state.renderAlarmInformation){
                 return(
                     //mark
-                    <div className='grid-container-compactor'>
+                    <div className='grid-container-alarm'>
                          <div className='grid-item grid-item-01-compactor'>
                              
                              <NavBarContent saveCurrentUser={this.saveCurrentUser} userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
@@ -1101,6 +1104,272 @@ if(this.state.handleRedirectToAdminPage){
                     </div>
                 )
             }else{
+                var sideContent = 
+            <Container>
+                <Row>
+                    <Col>
+                        <div><GoogleApiWrapper currentCompactorCoordinates={this.state.currentCompactorCoordinates} currentCompactorID={this.state.currentCompactorID} handleRedirectToMap={this.state.handleRedirectToMap} livealarmData={alarmData} liveAlarmsLoaded={this.state.liveAlarmsLoaded} liveCompactorLoaded={this.state.liveCompactorLoaded} compactorsData={compactorsData} /></div>
+                    </Col>
+                </Row>
+            </Container>
+
+//marking
+
+            var showGraphOnSide = this.state.showGraphOnSide
+            var showMapOnSide = this.state.showMapOnSide
+            if(showGraphOnSide && !showMapOnSide){
+                //create labels very hour
+                // console.log(moment().startOf('day').format())
+                // console.log(moment().format())
+                var endRange = moment().format()
+                endRange = endRange.split('T')
+                var today = endRange[0]
+                endRange = endRange[1].split(':')
+                endRange = parseInt(endRange[0]) + 1
+                var equipmentIDs = [
+                    'DS-809'
+                    ,'DS-810','DS-811'
+                    ,'DS-812','DS-813','DS-814','DS-815','DS-816','DS-817','DS-818',
+                    'DS-819','DS-820','DS-821','DS-822','DS-823','MM10-804','MM10-805','MM10-806','MM10-807','MM10-808',
+                    'MM8-800','MM8-801','MM8-802','MM8-803'
+                ]
+                var weightCollectionData = this.state.weightCollectionData
+                console.log(weightCollectionData)
+
+                var labels = []
+                for(var i=0; i<endRange; i++){
+                    var time = `${i}:00:00`;
+                    if(i < 10){
+                        time = `0${i}:00:00`;
+                    }
+                    // var formatted = moment(time, "HH:mm").format();
+                    labels.push(time)
+                }
+
+                var labelsTime = labels.map((label)=>{
+                    return `${today} ${label}`
+                })
+
+                var datasets = []
+                var weightValues = []
+                for(var i=0; i<equipmentIDs.length; i++){
+                    var equipmentID = equipmentIDs[i]
+                    var obj = {
+                        label: equipmentID,
+                        data: [],
+                        fill: true,
+                        backgroundColor: borderColor
+                    }
+
+
+                    var borderColor = "black"
+
+                    var weightCollection = weightCollectionData.map((weight)=>{
+                        if(weight.EquipmentID == equipmentID){
+                            return weight
+                        }
+                    })
+
+                    // for()
+                    weightCollection = weightCollection.filter(Boolean)
+
+                    
+                    var data = []
+                    for(var x=0; x<labelsTime.length; x++){
+                        var nextIndex = x+1
+                        if(nextIndex > labelsTime.length){
+                            nextIndex = labelsTime.length
+                        }
+
+
+                        if(nextIndex <= labelsTime.length){
+                            var weightColl = weightCollection.map((weight)=>{
+                                var startTime = labelsTime[x]
+                                var endTime = labelsTime[nextIndex]
+                                var withinTS = startTime < weight.collectTS && endTime > weight.collectTS
+
+                                if(withinTS){
+                                    return {data: weight.collectedWeight, labelsTimeIndex: x, collectTS: weight.collectTS, EquipmentID:  equipmentID, startTime: startTime, endTime: endTime}
+                                }
+
+                                if(i % 2){
+                                    borderColor = "rgba(75,192,192,1)"
+                                    obj['backgroundColor'] = borderColor
+                                }
+
+                                })
+                            weightColl = weightColl.filter(Boolean)
+                            weightValues.push(weightColl)
+                        }
+                    }
+                    datasets.push(obj)
+                }
+
+
+                weightValues = weightValues.flat()
+                console.log(weightValues)
+                var datasetsCopy = []
+
+                var objArr = []
+                for(var x=0; x<weightValues.length; x++){
+                    var nextIndex = x+1
+                    var startTime = weightValues[x].startTime
+                    var endTime = weightValues[x].endTime
+                    var withinTS = startTime < data.collectTS && endTime > data.collectTS
+                    
+                }
+                
+                var arr = []
+                for(var x=0; x<labelsTime.length; x++){
+                    arr[x] = 0
+                }
+                
+                weightValues = weightValues.map((weight)=>{
+                    var arrCopy = arr.slice(0)
+                    arrCopy[weight.labelsTimeIndex] = weight.data
+                    
+                    var currentValue = 0
+                    for(var x=0; x<arrCopy.length; x++){
+                        var nextIndex = x+1
+                        if(nextIndex > arrCopy.length){
+                            nextIndex = arrCopy.length
+                        }
+                        // var nextEl = test[nextIndex]
+                        var currentElement = arrCopy[x]
+                        if(currentElement > 0){
+                            currentValue = currentValue + currentElement
+                        }
+                    
+                        if(currentValue > 0){
+                            arrCopy[x] = currentValue
+                        }
+                    }
+                    var obj = {
+                        label: weight.EquipmentID,
+                        data: arrCopy,
+                        fill: false,
+                        borderColor: borderColor
+                    }
+                    return obj
+                })
+                for(var x=0; x<weightValues.length; x++){
+                    if(x%2){
+                        weightValues[x]["borderColor"] = 'blue'
+                    }
+                }
+                weightValues = [...new Map(weightValues.map(item => [item["label"], item])).values()]
+                var lineData = {
+                    labels: labels,
+                    // datasets: 
+                    // [
+                    //   {
+                    //     label: "First dataset",
+                    //     data: [33, 53, 85, 41, 44, 65],
+                    //     fill: true,
+                    //     backgroundColor: "rgba(75,192,192,0.2)",
+                    //     borderColor: "rgba(75,192,192,1)"
+                    //   },
+                    //   {
+                    //     label: "Second dataset",
+                    //     data: [33, 25, 35, 51, 54, 200],
+                    //     fill: false,
+                    //     borderColor: "#742774"
+                    //   }
+                    // ]
+                    datasets : weightValues
+                  };
+                  
+                var chartData = {
+                    labels: [
+                        'Fire Alarm','DischargeMotorTrip','DischargeScrewMotorTrip'
+                    ],
+                    datasets: [
+                        {
+                            label: 'Severe Alarm Raised',
+                            data: [
+                                1,
+                                2,
+                                3
+                            ],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.6)',
+                                'rgba(54, 162, 235, 0.6)',
+                                'rgba(255, 206, 86, 0.6)',
+                            ]
+                        }
+                    ]
+                }
+
+
+                sideContent = 
+                <div>
+            <Container>
+                <Row>
+                    <Col>
+                        Still in Development
+                    </Col>
+                </Row>
+            </Container>
+            <Container>
+                <Row>
+                    <Col>
+                    <div className='chart'>
+                        <Bar
+                            data={chartData}
+                            // width={100}
+                            // height={50}
+                            options={{
+                            title: {
+                                display: true,
+                                text: `Severe Alarm Raised(${today})`,
+                                fontSize: 25
+                            },
+                            scales: {
+                                yAxes: [{
+                                  ticks: {
+                                    beginAtZero: true,
+                                    min: 0
+                                  }    
+                                }]
+                            }
+                            // legend: {
+                            //     display: true,
+                            //     position: 'right'
+                            // }
+                            }
+                        }
+                        />
+                    </div>
+                    </Col>
+                </Row>
+            </Container>
+            <Container>
+                <Row>
+                    <Col>
+                    <div className='chart'>
+                        <Line
+                            data={lineData}
+                            // width={100}
+                            // height={50}
+                            options={{
+                            title: {
+                                display: true,
+                                text: `Weight Collection(${today})`,
+                                fontSize: 25
+                            }
+                            // legend: {
+                            //     display: true,
+                            //     position: 'right'
+                            // }
+                            }
+                        }
+                        />
+                    </div>
+                    </Col>
+                </Row>
+            </Container>
+            </div>
+            }
                 return(
                     //mark
                     <div className='grid-container-compactor'>
@@ -1113,13 +1382,26 @@ if(this.state.handleRedirectToAdminPage){
                         
                         {alarmsSection}
                         <div className="grid-item grid-item-mapDashboard grayBG">
-                            <Container>
-                                <Row>
-                                    <Col>
-                                        <div><GoogleApiWrapper currentCompactorCoordinates={this.state.currentCompactorCoordinates} currentCompactorID={this.state.currentCompactorID} handleRedirectToMap={this.state.handleRedirectToMap} livealarmData={alarmData} liveAlarmsLoaded={this.state.liveAlarmsLoaded} liveCompactorLoaded={this.state.liveCompactorLoaded} compactorsData={compactorsData} /></div>
-                                    </Col>
-                                </Row>
-                            </Container>
+                        <Breadcrumb>
+                            <Breadcrumb.Item onClick={()=>{
+                                this.setState(
+                                    {
+                                        showMapOnSide : true,
+                                        showGraphOnSide : false
+                                    }
+                                )
+                            }} href="#">Map</Breadcrumb.Item>
+                            <Breadcrumb.Item onClick={()=>{
+                                this.setState(
+                                    {
+                                        showMapOnSide : false,
+                                        showGraphOnSide : true
+                                    }
+                                )
+                            }}
+                            href="#">Graph Data</Breadcrumb.Item>
+                        </Breadcrumb>
+                            {sideContent}
                         </div>
                     </div>
                 )
