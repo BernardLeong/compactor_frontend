@@ -81,14 +81,14 @@ class NavBarContent extends Component {
         return(
           <Navbar bg="light" variant="light">
             <Navbar.Brand>
-              <span><strong>iZee</strong></span><span><strong style={{color: 'rgb(241, 90, 41)'}}>SYNC</strong></span>
-              {/* <img
+              {/* <span><strong>iZee</strong></span><span><strong style={{color: 'rgb(241, 90, 41)'}}>SYNC</strong></span> */}
+              <img
                   src={require('./izeesync.png')}
-                  width="50"
-                  height="50"
+                  width="70"
+                  height="27"
                   className="d-inline-block align-top"
                   alt="React Bootstrap logo"
-                /> */}
+                />
             </Navbar.Brand>
             <Form style={{cursor:'pointer'}} inline>
               &nbsp;&nbsp;<span onClick={this.logout} className='welcome'>Log Out</span>
