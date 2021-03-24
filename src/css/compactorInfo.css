@@ -40,7 +40,7 @@ body{
     grid-auto-rows: auto;
     grid-gap: 1px;
     grid-template-rows: 4.8em 40em;
-    grid-template-columns: 1fr 2fr 2fr 1fr;
+    grid-template-columns: 0.3fr 1fr 1fr auto;
 }
 
 .grid-container-compactor {
@@ -90,7 +90,7 @@ body{
     grid-auto-rows: auto;
     grid-gap: 1px;
     grid-template-rows: 0.1fr 1fr 40em;
-    grid-template-columns: 14em 1fr 1fr auto;
+    grid-template-columns: 0.3fr 1fr 1fr auto;
 }
 
 .grid-container-adminPage-dashBoard{

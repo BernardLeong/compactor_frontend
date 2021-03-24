@@ -1134,10 +1134,9 @@ if(this.state.handleRedirectToAdminPage){
                     'MM8-800','MM8-801','MM8-802','MM8-803'
                 ]
                 var weightCollectionData = this.state.weightCollectionData
-                console.log(weightCollectionData)
 
                 var labels = []
-                for(var i=0; i<endRange; i++){
+                for(var i=4; i<endRange; i++){
                     var time = `${i}:00:00`;
                     if(i < 10){
                         time = `0${i}:00:00`;
@@ -1205,12 +1204,8 @@ if(this.state.handleRedirectToAdminPage){
                     datasets.push(obj)
                 }
 
-
                 weightValues = weightValues.flat()
-                console.log(weightValues)
-                var datasetsCopy = []
 
-                var objArr = []
                 for(var x=0; x<weightValues.length; x++){
                     var nextIndex = x+1
                     var startTime = weightValues[x].startTime
@@ -1234,7 +1229,6 @@ if(this.state.handleRedirectToAdminPage){
                         if(nextIndex > arrCopy.length){
                             nextIndex = arrCopy.length
                         }
-                        // var nextEl = test[nextIndex]
                         var currentElement = arrCopy[x]
                         if(currentElement > 0){
                             currentValue = currentValue + currentElement
