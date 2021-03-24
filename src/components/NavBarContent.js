@@ -81,7 +81,7 @@ class NavBarContent extends Component {
         return(
           <Navbar bg="light" variant="light">
             <Navbar.Brand>
-              <span><strong>iZee</strong></span><span><strong style={{color: 'rgb(241, 90, 41)'}}>Sync</strong></span>
+              <span><strong>iZee</strong></span><span><strong style={{color: 'rgb(241, 90, 41)'}}>SYNC</strong></span>
               {/* <img
                   src={require('./izeesync.png')}
                   width="50"
