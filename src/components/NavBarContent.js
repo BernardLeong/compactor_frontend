@@ -82,8 +82,8 @@ class NavBarContent extends Component {
           <Navbar bg="light" variant="light">
             <Navbar.Brand>
               <img
-                  src={require('./iZeeSync_logo.png')}
-                  width="80"
+                  src={require('./izeesync.png')}
+                  width="70"
                   height="30"
                   className="d-inline-block align-top"
                   alt="React Bootstrap logo"

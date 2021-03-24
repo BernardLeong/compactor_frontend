@@ -131,6 +131,17 @@ class GridContainer extends Component{
         })
         .catch(function (error) {
         })
+
+        axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getBarData/today`,config)
+        .then((response)=> {
+            console.log(response)
+            this.setState({
+                barChartData : response.data,
+                liveAlarmsLoaded: true
+            })
+        })
+        .catch(function (error) {
+        })
     }
 
     reduceFunc(total, num){
@@ -1272,18 +1283,20 @@ if(this.state.handleRedirectToAdminPage){
                     // ]
                     datasets : weightValues
                   };
-                  
+                var barData = this.state.barChartData
+
+
                 var chartData = {
                     labels: [
-                        'Fire Alarm','DischargeMotorTrip','DischargeScrewMotorTrip'
+                        'Fire Alarm','DischargeGateMotorTrip','DischargeScrewMotorTrip'
                     ],
                     datasets: [
                         {
                             label: 'Severe Alarm Raised',
                             data: [
-                                1,
-                                2,
-                                3
+                                this.state.barChartData["FireAlarm"],
+                                this.state.barChartData["DischargeGateMotorTrip"],
+                                this.state.barChartData["DischargeScrewMotorTrip"]
                             ],
                             backgroundColor: [
                                 'rgba(255, 99, 132, 0.6)',

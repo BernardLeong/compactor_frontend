@@ -48,7 +48,7 @@ body{
     grid-auto-rows: auto;
     grid-gap: 1px;
     grid-template-rows: 0.1fr 1fr 1fr;
-    grid-template-columns: 0.3fr 1fr 1fr auto;
+    grid-template-columns: 0.3fr 1fr 1fr;
 }
 
 .grid-container-alarm {
