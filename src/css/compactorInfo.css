@@ -195,6 +195,11 @@ body{
     grid-row : 2/4;
 }
 
+.grid-item-mapDashboard_menu {
+    grid-column : 3/4;
+    grid-row : 3/4;
+}
+
 .whiteBG{
     background-color: white;
 }

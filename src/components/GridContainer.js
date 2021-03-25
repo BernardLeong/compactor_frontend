@@ -37,6 +37,7 @@ class GridContainer extends Component{
             'livecompactorData' : [],
             'allAlarmReport' : [],
             'weightCollectionData' : [],
+            'arrayofSelectedIDS' : [],
             'MapEquimentIndex' : 0,
             'count' : 0,
             'countAlarm' : 0,
@@ -63,6 +64,7 @@ class GridContainer extends Component{
             "showGraphOnSide" : false,
             'redirectsToLogin' : false,
             'barDataLoaded' : false,
+            'renderMenuBar' : false,
             'paginationDefaultPage' : 1,
             'paginationAlarmDefaultPage' : 1,
             'userTypeOption' : '',
@@ -1169,6 +1171,73 @@ class GridContainer extends Component{
                         'DS-819','DS-820','DS-821','DS-822','DS-823','MM10-804','MM10-805','MM10-806','MM10-807','MM10-808',
                         'MM8-800','MM8-801','MM8-802','MM8-803'
                     ]
+
+                    var selectedArr = this.state.arrayofSelectedIDS
+                    //if selectTwice remove the id
+                    
+                    // selectedArr = [...new Set(selectedArr)];
+
+                    selectedArr = selectedArr.sort();
+                
+                    var duplicate = []
+                    selectedArr.forEach(function (value, index, arr){
+                
+                        let first_index = arr.indexOf(value);
+                        let last_index = arr.lastIndexOf(value);
+                        if(first_index !== last_index){
+                            duplicate.push(value)
+                        }
+                    });
+
+                    duplicate = [...new Set(duplicate)];
+
+                    selectedArr = selectedArr.filter(item => !duplicate.includes(item))
+
+                    var buttontext = {}
+                    var buttoncolor = {}
+                    for(var i=0;i<equipmentIDs.length;i++){
+                        var equipmentID = equipmentIDs[i]
+                        buttontext[equipmentID] = equipmentID
+                        buttoncolor[equipmentID] = ''
+                    }
+
+                    var renderButtons = equipmentIDs.map((button=> {
+                        var idSelected = selectedArr.length > 0
+            
+                        if(idSelected){
+                            for(var i=0;i<selectedArr.length;i++){
+            
+                                var selectedID = selectedArr[i]
+                                if(selectedID === button){
+                                    buttontext[selectedID] = selectedID + ' ✓'
+                                }
+                            }
+                        }
+            //cater for selected again
+            
+                        if(buttontext[button].includes('✓')){
+                            return <span><button  onClick={()=>{
+                                var selectedIDs = selectedArr.slice(0)
+                                selectedIDs.push(button)
+                                this.setState(
+                                    {
+                                        arrayofSelectedIDS : selectedIDs
+                                    }
+                                )
+                            }} style={{backgroundColor: 'white', color: '#1f4e78', padding: '8px', borderRadius: '8px'}}>{buttontext[button]}</button></span>     
+                        }else{
+                            return <span><button  onClick={()=>{
+                                var selectedIDs = selectedArr.slice(0)
+                                selectedIDs.push(button)
+                                this.setState(
+                                    {
+                                        arrayofSelectedIDS : selectedIDs
+                                    }
+                                )
+                            }} style={{backgroundColor: '#1f4e78', color: 'white', padding: '8px', borderRadius: '8px'}}>{buttontext[button]}</button></span>
+                        }
+                    }))
+
                     var weightCollectionData = this.state.weightCollectionData
     
                     var labels = []
@@ -1185,6 +1254,9 @@ class GridContainer extends Component{
                         return `${today} ${label}`
                     })
     
+                    if(selectedArr.length > 0){
+                        equipmentIDs = selectedArr
+                    }
                     var datasets = []
                     var weightValues = []
                     for(var i=0; i<equipmentIDs.length; i++){
@@ -1339,75 +1411,120 @@ class GridContainer extends Component{
                             }
                         ]
                     }
-    
-    
-                    sideContent = 
-                    <div>
-                <Container>
-                    <Row>
-                        <Col>
-                            Still in Development
-                        </Col>
-                    </Row>
-                </Container>
-                <Container>
-                    <Row>
-                        <Col>
-                        <div className='chart'>
-                            <Bar
-                                data={chartData}
-                                // width={100}
-                                // height={50}
-                                options={{
-                                title: {
-                                    display: true,
-                                    text: `Severe Alarm Raised(${today})`,
-                                    fontSize: 25
-                                },
-                                scales: {
-                                    yAxes: [{
-                                      ticks: {
-                                        beginAtZero: true,
-                                        min: 0
-                                      }    
-                                    }]
-                                }
-                                // legend: {
-                                //     display: true,
-                                //     position: 'right'
-                                // }
-                                }
-                            }
-                            />
-                        </div>
-                        </Col>
-                    </Row>
-                </Container>
-                <Container>
-                    <Row>
-                        <Col>
-                        <div className='chart'>
-                            <Line
-                                data={lineData}
-                                // width={100}
-                                // height={50}
-                                options={{
-                                title: {
-                                    display: true,
-                                    text: `Weight Collection(${today})`,
-                                    fontSize: 25
-                                }
-                                // legend: {
-                                //     display: true,
-                                //     position: 'right'
-                                // }
-                                }
-                            }
-                            />
-                        </div>
-                        </Col>
-                    </Row>
-                </Container>
+                    //markMenu
+                    if(this.state.renderMenuBar){
+                        var menuBar = <div style={{zIndex:'1'}} className="grid-item grid-item-mapDashboard_menu grayBG">
+                               <div style={{marginTop: '0.8em'}}></div>
+                                <Container>
+                                <Row>
+                                    <Col></Col>
+                                    <Col style={{textAlign : 'center', fontSize: '1.4em'}}><strong>Search</strong>
+                                    </Col>
+                                    <Col style={{textAlign : 'right', cursor:'pointer'}} onClick={()=>{
+                                        this.setState(
+                                            {
+                                                renderMenuBar : false
+                                            }
+                                        )
+                                    } 
+                                    }>X</Col>
+                                </Row>
+                                </Container>
+
+                                <Container>
+                                <div>&nbsp;</div>
+                                <Row>
+                                    <Col>
+                                        Search By ID: 
+                                    <div className="searchBorder" style={{position: 'relative', width: '700px', height: '300px', 
+                                    }}>
+                                    {renderButtons}
+                                    </div>
+                                    </Col>
+                                </Row>
+                                
+                                </Container>
+                                            </div>
+                                        }else{
+                                            var menuBar = <span></span>
+                                        }
+                        
+                                        sideContent = 
+                                        <div>
+                                        <div>
+                                    <Container>
+                                        <Row>
+                                            <Col>
+                                            <div className='chart'>
+                                                <Bar
+                                                    data={chartData}
+                                                    // width={100}
+                                                    // height={50}
+                                                    options={{
+                                                    title: {
+                                                        display: true,
+                                                        text: `Severe Alarm Raised(${today})`,
+                                                        fontSize: 25
+                                                    },
+                                                    scales: {
+                                                        yAxes: [{
+                                                        ticks: {
+                                                            beginAtZero: true,
+                                                            min: 0
+                                                        }    
+                                                        }]
+                                                    }
+                                                    // legend: {
+                                                    //     display: true,
+                                                    //     position: 'right'
+                                                    // }
+                                                    }
+                                                }
+                                                />
+                                            </div>
+                                            </Col>
+                                        </Row>
+                                    </Container>
+                                    <div style={{cursor: 'pointer'}}  onClick={()=>{
+                                        this.setState(
+                                            {
+                                                renderMenuBar : true
+                                            }
+                                        )
+                                        }}><img
+                                            src={require('./searchIcon.png')}
+                                            width="35"
+                                            height="30"
+                                            className="d-inline-block align-top"
+                                            alt="React Bootstrap logo"
+                                        />
+                                    </div>
+                                    <Container>
+                                        <Row>
+                                            <Col>
+                                            <div className='chart'>
+                                                <Line
+                                                    data={lineData}
+                                                    // width={100}
+                                                    // height={50}
+                                                    options={{
+                                                    title: {
+                                                        display: true,
+                                                        text: `Weight Collection(${today})`,
+                                                        fontSize: 25
+                                                    }
+                                                    // legend: {
+                                                    //     display: true,
+                                                    //     position: 'right'
+                                                    // }
+                                                    }
+                                                }
+                                                />
+                                            </div>
+                                            </Col>
+                                        </Row>
+                                    </Container>
+                </div>
                 </div>
                 }
                     return(
@@ -1421,6 +1538,7 @@ class GridContainer extends Component{
                             {weight}
                             
                             {alarmsSection}
+
                             <div className="grid-item grid-item-mapDashboard grayBG">
                             <Breadcrumb>
                                 <Breadcrumb.Item onClick={()=>{
@@ -1441,8 +1559,10 @@ class GridContainer extends Component{
                                 }}
                                 href="#">Graph Data</Breadcrumb.Item>
                             </Breadcrumb>
+                               
                                 {sideContent}
                             </div>
+                            {menuBar}
                         </div>
                     )
                 }
