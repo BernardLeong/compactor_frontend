@@ -1319,7 +1319,7 @@ class GridContainer extends Component{
                                 this.state.barChartData["DischargeScrewMotorTrip"]
                             ]
                     }else{
-                        [
+                        var barData = [
                             0,0,0
                         ]
                     }
