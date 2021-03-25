@@ -61,13 +61,14 @@ class GridContainer extends Component{
             'registeredUser' : false,
             "showMapOnSide" : true,
             "showGraphOnSide" : false,
+            'redirectsToLogin' : false,
+            'barDataLoaded' : false,
             'paginationDefaultPage' : 1,
             'paginationAlarmDefaultPage' : 1,
             'userTypeOption' : '',
             'username' : '',
             'password' : '',
             'currentUser': '',
-            'redirectsToLogin' : false
         }
         this.renderWeightInformation = this.renderWeightInformation.bind(this)
         this.toggleAlarmLeftArrow = this.toggleAlarmLeftArrow.bind(this)
@@ -140,7 +141,7 @@ class GridContainer extends Component{
                 console.log(response)
                 this.setState({
                     barChartData : response.data,
-                    liveAlarmsLoaded: true
+                    barDataLoaded: true
                 })
             })
             .catch(function (error) {
@@ -297,10 +298,6 @@ class GridContainer extends Component{
                 return(
                     <Redirect to={{
                         pathname: '/login',
-                        // state: { 
-                        //     userType: this.state.selectOption,
-                        //     token: this.state.token
-                        // }
                     }}
                 />
                 )
@@ -1311,9 +1308,21 @@ class GridContainer extends Component{
                         // ]
                         datasets : weightValues
                       };
-                    var barData = this.state.barChartData
+                    // var barData = this.state.barChartData
     
     
+                    if(this.state.barDataLoaded){
+                        var barData = 
+                            [
+                                this.state.barChartData["FireAlarm"],
+                                this.state.barChartData["DischargeGateMotorTrip"],
+                                this.state.barChartData["DischargeScrewMotorTrip"]
+                            ]
+                    }else{
+                        [
+                            0,0,0
+                        ]
+                    }
                     var chartData = {
                         labels: [
                             'Fire Alarm','DischargeGateMotorTrip','DischargeScrewMotorTrip'
@@ -1321,11 +1330,7 @@ class GridContainer extends Component{
                         datasets: [
                             {
                                 label: 'Severe Alarm Raised',
-                                data: [
-                                    this.state.barChartData["FireAlarm"],
-                                    this.state.barChartData["DischargeGateMotorTrip"],
-                                    this.state.barChartData["DischargeScrewMotorTrip"]
-                                ],
+                                data: barData,
                                 backgroundColor: [
                                     'rgba(255, 99, 132, 0.6)',
                                     'rgba(54, 162, 235, 0.6)',
