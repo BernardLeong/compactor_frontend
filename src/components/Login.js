@@ -11,7 +11,7 @@ class Login extends Component {
         this.state = {
             'username' : '',
             'password' : '',
-            'selectOption' : 'User',
+            'userType' : 'User',
             'error' : ''
         }
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -34,24 +34,17 @@ class Login extends Component {
 
     handleSubmit(){
         //call backend to edit compactor\
-       
-        var type = 'user'
-        if(this.state.selectOption == 'Enginner'){
-            type = 'serviceUser'
-        }
-
-        if(this.state.selectOption == 'Admin'){
-            type = 'admin'
-        }
-
         var body = {
             "username" : this.state.username,
-            "password" : this.state.password,
-            "type" : type
+            "password" : this.state.password
         }
 
         axios.post('http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/loginUser', body).then((result)=>{
-            this.setState({token: result.data.token, success: result.data.success, error: result.data.error})
+            var authObj = {token: result.data.token, success: result.data.success, error: result.data.error}
+            if(result.data.success){
+                authObj['userType'] = result.data.usertype
+            }
+            this.setState(authObj)
         }).catch((err)=>{
             console.log(err)
         })
@@ -67,7 +60,7 @@ class Login extends Component {
                 <Redirect to={{
                     pathname: '/locationData',
                     state: { 
-                        userType: this.state.selectOption,
+                        userType: this.state.userType,
                         token: this.state.token
                     }
                 }}
@@ -88,14 +81,6 @@ class Login extends Component {
                                         </Alert>
                                         <Form>
                                             <Form.Label style={{fontSize: '2em',textAlign: 'center'}} >Login</Form.Label>
-                                            <Form.Group onChange={this.handleSelectChange} controlId="exampleForm.ControlSelect1">
-                                                <Form.Label>User Type</Form.Label>
-                                                <Form.Control as="select">
-                                                <option>User</option>
-                                                <option>Enginner</option>
-                                                <option>Admin</option>
-                                                </Form.Control>
-                                            </Form.Group>
                                             <Form.Group controlId="formBasicEmail">
                                             <div><Form.Label>Username</Form.Label></div>
                                                 <Form.Control onChange={this.handleChange} name='username' placeholder="Enter username" />
@@ -125,14 +110,7 @@ class Login extends Component {
                                     <Col>
                                         <Form>
                                             <Form.Label style={{fontSize: '2em',textAlign: 'center'}} >Login</Form.Label>
-                                            <Form.Group onChange={this.handleSelectChange} controlId="exampleForm.ControlSelect1">
-                                                <Form.Label>User Type</Form.Label>
-                                                <Form.Control as="select">
-                                                <option>User</option>
-                                                <option>Enginner</option>
-                                                <option>Admin</option>
-                                                </Form.Control>
-                                            </Form.Group>
+                                            
                                             <Form.Group controlId="formBasicEmail">
                                             <div><Form.Label>Username</Form.Label></div>
                                                 <Form.Control onChange={this.handleChange} name='username' placeholder="Enter username" />

@@ -10,7 +10,6 @@ class NavBarContent extends Component {
       this.state = 
       {
         'logOut' : false,
-        'currentUser' : ''
       }
       this.logout = this.logout.bind(this)
     }
@@ -20,24 +19,6 @@ class NavBarContent extends Component {
 
       var config = {
           headers: { Authorization: `Bearer ${token}`}
-      }
-
-      var type = 'user'
-      if(this.props.userType == 'Enginner'){
-          type = 'serviceUser'
-      }
-      
-      if(this.props.userType == 'Admin'){
-          type = 'admin'
-      }
-  
-      var apikeys = {
-          'admin' : 'jnjirej9reinvuiriuerhuinui',
-          'serviceUser' : 'juit959fjji44jcion4moij0kc',
-      }
-
-      if(type !== 'user'){
-          config['headers']['apikey'] = apikeys[type]
       }
 
       axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getCurrentUser`,config)

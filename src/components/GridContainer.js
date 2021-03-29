@@ -92,8 +92,14 @@ class GridContainer extends Component{
     componentDidMount(){
         if(typeof(this.props.location.state) !== 'undefined'){
             var token = this.props.location.state.token
+            var userType = this.props.location.state.userType
+
+            var apiKeys = {
+                'admin' : "jnjirej9reinvuiriuerhuinui",
+                'serviceUser' : "juit959fjji44jcion4moij0kc",
+            }
             var config = {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}`, apikey: apiKeys[userType] }
             }
     
             axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getAlarmReport/all`,config)
@@ -109,7 +115,6 @@ class GridContainer extends Component{
     
             axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/alarmCurrentStatus/live`,config)
             .then((response)=> {
-                console.log(response)
                 this.setState({
                     liveAlarmData : response.data.alarms,
                     liveAlarmsLoaded: true
@@ -295,6 +300,16 @@ class GridContainer extends Component{
     }
 
     render(){  
+        var userTypeOptions = {
+            'admin' : "Admin",
+            'serviceUser' : "Enginner",
+            'user' : "User",
+        }
+
+        console.log(this.state.weightCollectionData)
+
+        var usertype = this.props.location.state.userType
+        usertype = userTypeOptions[usertype]
         if(typeof(this.props.location.state) == 'undefined'){
             if(this.state.redirectsToLogin){
                 return(
@@ -309,7 +324,6 @@ class GridContainer extends Component{
                 )
             } 
         }else{
-            var usertype = this.props.location.state.userType
             if(usertype == 'Admin'){
                 var dashboard = 
                 <div className="grid-item grid-item-sideDashboard whiteBG">
@@ -521,7 +535,6 @@ class GridContainer extends Component{
                         }
                         var paginatedAlarms = chunkAlarm(alarms,5)
                         var renderAlarms = paginatedAlarms[this.state.paginationAlarmDefaultPage -1]
-                        var usertype = this.props.location.state.userType
                         if(usertype == 'Admin' || usertype == 'Enginner' ){
                             var alarmTable = renderAlarms.map(al => (
                                 <tr>
@@ -978,7 +991,6 @@ class GridContainer extends Component{
                 </div>
             }
             if(this.state.renderAlarmInformation){
-                var usertype = this.props.location.state.userType
     //mark
                 var alarmsSection = <div className="grid-item grid-item-alarmPage grayBG">
                     hi
