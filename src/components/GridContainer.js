@@ -5,13 +5,13 @@ import 'react-calendar/dist/Calendar.css';
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
 import Mapping from './Mapping';
 import ReportPage from './ReportPage';
+import AdminPage from './AdminPage';
 import GoogleApiWrapper from './GoogleApiWrapper';
 import NavBarContent from './NavBarContent';
 import { Alert, Table, Container, Breadcrumb, Row, Col, Form, Button, InputGroup, FormControl } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faArrowRight, faStopwatch } from '@fortawesome/free-solid-svg-icons'
 import {Bar, Line, Pie} from 'react-chartjs-2'
-import Calendar from 'react-calendar';
 const sortObjectsArray = require('sort-objects-array');
 const uniq = require("uniq")
 const moment = require("moment")
@@ -96,13 +96,25 @@ class GridContainer extends Component{
 
             var apiKeys = {
                 'admin' : "jnjirej9reinvuiriuerhuinui",
+                'superUser' : "rk@RTpmcoQPmoE0renck&#0eor1",
                 'serviceUser' : "juit959fjji44jcion4moij0kc",
             }
+
             var config = {
                 headers: { Authorization: `Bearer ${token}`, apikey: apiKeys[userType] }
             }
+
+            axios.get(`https://cert-manger.izeesyncbackend.com/listOfUsers`,config)
+            .then((response)=> {
+                this.setState({
+                    userLists : response.data.userLists,
+                    usersListLoaded: true
+                })
+            })
+            .catch(function (error) {
+            })
     
-            axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getAlarmReport/all`,config)
+            axios.get(`https://cert-manger.izeesyncbackend.com/getAlarmReport/all`,config)
             .then((response)=> {
                 console.log(response)
                 this.setState({
@@ -113,7 +125,7 @@ class GridContainer extends Component{
             .catch(function (error) {
             })
     
-            axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/alarmCurrentStatus/live`,config)
+            axios.get(`https://cert-manger.izeesyncbackend.com/alarmCurrentStatus/live`,config)
             .then((response)=> {
                 this.setState({
                     liveAlarmData : response.data.alarms,
@@ -123,7 +135,7 @@ class GridContainer extends Component{
             .catch(function (error) {
             })
     
-            axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/CompactorCurrentStatus/live`,config)
+            axios.get(`https://cert-manger.izeesyncbackend.com/CompactorCurrentStatus/live`,config)
             .then((response)=> {
                 this.setState({
                     livecompactorData : response.data.compactorInfo,
@@ -133,7 +145,7 @@ class GridContainer extends Component{
             .catch(function (error) {
             })
     
-            axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getEquipmentWeightCollection/live`,config)
+            axios.get(`https://cert-manger.izeesyncbackend.com/getEquipmentWeightCollection/live`,config)
             .then((response)=> {
                 this.setState({
                     weightCollectionData : response.data.weightCollection,
@@ -143,7 +155,7 @@ class GridContainer extends Component{
             .catch(function (error) {
             })
     
-            axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getBarData/today`,config)
+            axios.get(`https://cert-manger.izeesyncbackend.com/getBarData/today`,config)
             .then((response)=> {
                 console.log(response)
                 this.setState({
@@ -216,7 +228,7 @@ class GridContainer extends Component{
             "type" : type
         }
 
-        axios.post('http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/registerUser', body).then((result)=>{
+        axios.post('https://cert-manger.izeesyncbackend.com/registerUser', body).then((result)=>{
             this.setState({registeredUser: result.data.success, error: result.data.error})
         }).catch((err)=>{
             console.log(err)
@@ -302,6 +314,7 @@ class GridContainer extends Component{
     render(){  
         var userTypeOptions = {
             'admin' : "Admin",
+            'superUser' : 'Super',
             'serviceUser' : "Enginner",
             'user' : "User",
         }
@@ -324,7 +337,7 @@ class GridContainer extends Component{
                 )
             } 
         }else{
-            if(usertype == 'Admin'){
+            if(usertype == 'Admin' || usertype == 'Super'){
                 var dashboard = 
                 <div className="grid-item grid-item-sideDashboard whiteBG">
                     <Container className="blueBG adjustPadding">
@@ -398,79 +411,83 @@ class GridContainer extends Component{
                 </div>
             }
     if(this.state.handleRedirectToAdminPage){
-        if(this.state.registeredUser){
-            var message = 
-            <Alert variant='success'>
-                Successfully Registered User
-            </Alert>
-        }else{
-            var message = <span></span>
-        }
-        return(
-            <div className="grid-container-adminPage">
-                <div className='grid-item grid-item-01-compactor whiteBG'>
-                    <NavBarContent saveCurrentUser={this.saveCurrentUser} userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
-                </div>
-                <div className="grid-item grid-container-adminPage-dashBoard whiteBG">
+        //markAdmin
+        // return(
+        //     <div><AdminPage userLists={this.state.userLists} usersListLoaded={this.state.usersListLoaded} /></div>
+        // )
+        // if(this.state.registeredUser){
+        //     var message = 
+        //     <Alert variant='success'>
+        //         Successfully Registered User
+        //     </Alert>
+        // }else{
+        //     var message = <span></span>
+        // }
+        // return(
+        //     <div className="grid-container-adminPage">
+        //         <div className='grid-item grid-item-01-compactor whiteBG'>
+        //             <NavBarContent saveCurrentUser={this.saveCurrentUser} userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
+        //         </div>
+        //         <div className="grid-item grid-container-adminPage-dashBoard whiteBG">
     
-                    <Container className="blueBG adjustPadding">
-                        <Row>
-                            <Col style={{textAlign : 'center'}}>Admin</Col>
-                        </Row>
-                        </Container>
-                        <Container className="blueBorder adjustPaddingContent">
-                        <Row>
-                            <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
-                                this.setState({handleRedirectToAdminPage : false})
-                            }}>Dashboard</Col>
-                        </Row>
-                        </Container>
-                </div>
-                <div className="grid-item grid-container-adminPage-registerPage whiteBG">
-                    <div>&nbsp;</div>
-                    <Container>
-                        <Row>
-                            <Col style={{textAlign : 'center', fontSize: '1.4em'}}>Register User</Col>
-                        </Row>
-                    </Container>
-                    <div>&nbsp;</div>
-                    <Container>
-                        <Row>
-                            <Col>
-                                {message}
-                                <Form>
-                                    <Form.Group onChange={this.handleRegisterUserType} controlId="exampleForm.ControlSelect1">
-                                        <Form.Label>User Type</Form.Label>
-                                        <Form.Control as="select">
-                                        <option>User</option>
-                                        <option>Enginner</option>
-                                        <option>Admin</option>
-                                        </Form.Control>
-                                    </Form.Group>
-                                    <Form.Group controlId="formBasicEmail">
-                                    <div><Form.Label>Username</Form.Label></div>
-                                        <Form.Control onChange={this.handleRegisterCreditials} name='username' type="username" placeholder="Enter username" />
-                                    </Form.Group>
-                                    <Form.Group controlId="formBasicPassword">
-                                        <Form.Label>Password</Form.Label>
-                                        <Form.Control onChange={this.handleRegisterCreditials} name='password' type="password" placeholder="Password" />
-                                    </Form.Group>
-                                    <Button onClick={this.handleRegisterUser} variant="primary">
-                                        Submit
-                                    </Button>
-                                    <span>&nbsp;</span>
-                                    <Button onClick={()=>{
-                                        this.setState({handleRedirectToAdminPage : false})
-                                    }} variant="primary">
-                                        Back
-                                    </Button>
-                                </Form>
-                            </Col>
-                        </Row>
-                    </Container>
-                </div>
-            </div>
-        )
+        //             <Container className="blueBG adjustPadding">
+        //                 <Row>
+        //                     <Col style={{textAlign : 'center'}}>Admin</Col>
+        //                 </Row>
+        //                 </Container>
+        //                 <Container className="blueBorder adjustPaddingContent">
+        //                 <Row>
+        //                     <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
+        //                         this.setState({handleRedirectToAdminPage : false})
+        //                     }}>Dashboard</Col>
+        //                 </Row>
+        //                 </Container>
+        //         </div>
+        //         <div className="grid-item grid-container-adminPage-registerPage whiteBG">
+        //             <div>&nbsp;</div>
+        //             <Container>
+        //                 <Row>
+        //                     <Col style={{textAlign : 'center', fontSize: '1.4em'}}>Register User</Col>
+        //                 </Row>
+        //             </Container>
+        //             <div>&nbsp;</div>
+        //             <Container>
+        //                 <Row>
+        //                     <Col>
+        //                         {message}
+        //                         <Form>
+        //                             <Form.Group onChange={this.handleRegisterUserType} controlId="exampleForm.ControlSelect1">
+        //                                 <Form.Label>User Type</Form.Label>
+        //                                 <Form.Control as="select">
+        //                                 <option>User</option>
+        //                                 <option>Enginner</option>
+        //                                 <option>Admin</option>
+        //                                 </Form.Control>
+        //                             </Form.Group>
+        //                             <Form.Group controlId="formBasicEmail">
+        //                             <div><Form.Label>Username</Form.Label></div>
+        //                                 <Form.Control onChange={this.handleRegisterCreditials} name='username' type="username" placeholder="Enter username" />
+        //                             </Form.Group>
+        //                             <Form.Group controlId="formBasicPassword">
+        //                                 <Form.Label>Password</Form.Label>
+        //                                 <Form.Control onChange={this.handleRegisterCreditials} name='password' type="password" placeholder="Password" />
+        //                             </Form.Group>
+        //                             <Button onClick={this.handleRegisterUser} variant="primary">
+        //                                 Submit
+        //                             </Button>
+        //                             <span>&nbsp;</span>
+        //                             <Button onClick={()=>{
+        //                                 this.setState({handleRedirectToAdminPage : false})
+        //                             }} variant="primary">
+        //                                 Back
+        //                             </Button>
+        //                         </Form>
+        //                     </Col>
+        //                 </Row>
+        //             </Container>
+        //         </div>
+        //     </div>
+        // )
     }
             if(this.state.liveAlarmsLoaded && this.state.liveCompactorLoaded){
     
@@ -535,7 +552,7 @@ class GridContainer extends Component{
                         }
                         var paginatedAlarms = chunkAlarm(alarms,5)
                         var renderAlarms = paginatedAlarms[this.state.paginationAlarmDefaultPage -1]
-                        if(usertype == 'Admin' || usertype == 'Enginner' ){
+                        if(usertype == 'Super' || usertype == 'Admin' || usertype == 'Enginner' ){
                             var alarmTable = renderAlarms.map(al => (
                                 <tr>
                                     <th style={{textAlign: 'center',fontWeight: 'normal'}}><div>{al['ts']}</div></th>
@@ -554,7 +571,7 @@ class GridContainer extends Component{
                                             "type" : al.Type, 
                                             "username" : this.state.currentUser
                                         }
-                                        axios.post(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/publishMQTT`, body , config)
+                                        axios.post(`https://cert-manger.izeesyncbackend.com/publishMQTT`, body , config)
                                         .then((response)=> {
                                             console.log(response)
                                         })
@@ -995,7 +1012,7 @@ class GridContainer extends Component{
                 var alarmsSection = <div className="grid-item grid-item-alarmPage grayBG">
                     hi
                 </div>
-                if(usertype == 'Admin' || usertype == 'Enginner'){
+                if(usertype == 'Super' || usertype == 'Admin' || usertype == 'Enginner'){
                     var alarmsSection = 
                     <div className="grid-item grid-item-alarmPage whiteBG">
                         <Container>
