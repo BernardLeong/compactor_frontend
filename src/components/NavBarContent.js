@@ -21,7 +21,7 @@ class NavBarContent extends Component {
           headers: { Authorization: `Bearer ${token}`}
       }
 
-      axios.get(`http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/getCurrentUser`,config)
+      axios.get(`https://cert-manger.izeesyncbackend.com/getCurrentUser`,config)
       .then((response)=> {
         this.setState({
           currentUser : response.data.username,
@@ -38,7 +38,7 @@ class NavBarContent extends Component {
       var body = {
         "token" : this.props.token
       }
-      axios.post('http://ec2-18-191-176-57.us-east-2.compute.amazonaws.com/logout', body).then((result)=>{
+      axios.post('https://cert-manger.izeesyncbackend.com/logout', body).then((result)=>{
       }).catch((err)=>{
         console.log(err)
       })
