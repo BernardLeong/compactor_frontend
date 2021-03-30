@@ -494,7 +494,8 @@ class GridContainer extends Component{
                 var alarmsData = this.state.liveAlarmData
                 if(this.state.renderReportPage){
                     return(
-                        <ReportPage livecompactorData={this.state.livecompactorData} weightCollectionData={this.state.weightCollectionData} WeightReportPage={this.renderWeightReportPage} renderWeightReportPage={this.state.renderWeightReportPage} weightCollectionData={this.state.weightCollectionData} userType={this.props.location.state.userType} renderReportPage={this.renderReportPage} liveAlarmReport={this.state.liveAlarmReport} userType={this.props.location.state.userType} allAlarmReport={this.state.allAlarmReport} token={this.props.location.state.token} />
+                        <div>hii</div>
+                        // <ReportPage livecompactorData={this.state.livecompactorData} weightCollectionData={this.state.weightCollectionData} WeightReportPage={this.renderWeightReportPage} renderWeightReportPage={this.state.renderWeightReportPage} weightCollectionData={this.state.weightCollectionData} userType={this.props.location.state.userType} renderReportPage={this.renderReportPage} liveAlarmReport={this.state.liveAlarmReport} userType={this.props.location.state.userType} allAlarmReport={this.state.allAlarmReport} token={this.props.location.state.token} />
                     )
                 }
                 var alarms = []
