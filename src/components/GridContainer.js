@@ -199,8 +199,8 @@ class GridContainer extends Component{
         this.setState({handleRedirectToMap : true})
     }
 
-    handleRedirectToAdminPage(){
-        this.setState({handleRedirectToAdminPage : true})
+    handleRedirectToAdminPage(page=true){
+        this.setState({handleRedirectToAdminPage : page})
     }
 
     handleRegisterUserType(event){ 
@@ -421,85 +421,11 @@ class GridContainer extends Component{
                     </Container>
                 </div>
             }
-    if(this.state.handleRedirectToAdminPage && this.state.currentUserLoaded){
+    if(this.state.handleRedirectToAdminPage){
         //markAdmin
-        console.log(this.state.currentUserID)
         return(
-            <div><AdminPage userType={this.props.location.state.userType} token={this.props.location.state.token} currentUserID={this.state.currentUserID} userLists={this.state.userLists} usersListLoaded={this.state.usersListLoaded} /></div>
+            <div><AdminPage handleRedirectToAdminPage={this.handleRedirectToAdminPage} userType={this.props.location.state.userType} token={this.props.location.state.token} userLists={this.state.userLists} usersListLoaded={this.state.usersListLoaded} /></div>
         )
-        // if(this.state.registeredUser){
-        //     var message = 
-        //     <Alert variant='success'>
-        //         Successfully Registered User
-        //     </Alert>
-        // }else{
-        //     var message = <span></span>
-        // }
-        // return(
-        //     <div className="grid-container-adminPage">
-        //         <div className='grid-item grid-item-01-compactor whiteBG'>
-        //             <NavBarContent saveCurrentUser={this.saveCurrentUser} userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
-        //         </div>
-        //         <div className="grid-item grid-container-adminPage-dashBoard whiteBG">
-    
-        //             <Container className="blueBG adjustPadding">
-        //                 <Row>
-        //                     <Col style={{textAlign : 'center'}}>Admin</Col>
-        //                 </Row>
-        //                 </Container>
-        //                 <Container className="blueBorder adjustPaddingContent">
-        //                 <Row>
-        //                     <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
-        //                         this.setState({handleRedirectToAdminPage : false})
-        //                     }}>Dashboard</Col>
-        //                 </Row>
-        //                 </Container>
-        //         </div>
-        //         <div className="grid-item grid-container-adminPage-registerPage whiteBG">
-        //             <div>&nbsp;</div>
-        //             <Container>
-        //                 <Row>
-        //                     <Col style={{textAlign : 'center', fontSize: '1.4em'}}>Register User</Col>
-        //                 </Row>
-        //             </Container>
-        //             <div>&nbsp;</div>
-        //             <Container>
-        //                 <Row>
-        //                     <Col>
-        //                         {message}
-        //                         <Form>
-        //                             <Form.Group onChange={this.handleRegisterUserType} controlId="exampleForm.ControlSelect1">
-        //                                 <Form.Label>User Type</Form.Label>
-        //                                 <Form.Control as="select">
-        //                                 <option>User</option>
-        //                                 <option>Enginner</option>
-        //                                 <option>Admin</option>
-        //                                 </Form.Control>
-        //                             </Form.Group>
-        //                             <Form.Group controlId="formBasicEmail">
-        //                             <div><Form.Label>Username</Form.Label></div>
-        //                                 <Form.Control onChange={this.handleRegisterCreditials} name='username' type="username" placeholder="Enter username" />
-        //                             </Form.Group>
-        //                             <Form.Group controlId="formBasicPassword">
-        //                                 <Form.Label>Password</Form.Label>
-        //                                 <Form.Control onChange={this.handleRegisterCreditials} name='password' type="password" placeholder="Password" />
-        //                             </Form.Group>
-        //                             <Button onClick={this.handleRegisterUser} variant="primary">
-        //                                 Submit
-        //                             </Button>
-        //                             <span>&nbsp;</span>
-        //                             <Button onClick={()=>{
-        //                                 this.setState({handleRedirectToAdminPage : false})
-        //                             }} variant="primary">
-        //                                 Back
-        //                             </Button>
-        //                         </Form>
-        //                     </Col>
-        //                 </Row>
-        //             </Container>
-        //         </div>
-        //     </div>
-        // )
     }
             if(this.state.liveAlarmsLoaded && this.state.liveCompactorLoaded){
     

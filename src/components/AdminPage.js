@@ -187,8 +187,7 @@ class AdminPage extends Component {
                            <Container className="blueBorder adjustPaddingContent">
                            <Row>
                                <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
-
-                                   this.setState({handleRedirectToAdminPage : false})
+                                   this.props.handleRedirectToAdminPage(false)
                                }}>Dashboard</Col>
                            </Row>
                            </Container>
@@ -290,7 +289,7 @@ class AdminPage extends Component {
                            <Container className="blueBorder adjustPaddingContent">
                            <Row>
                                <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
-                                   this.setState({handleRedirectToAdminPage : false})
+                                   this.props.handleRedirectToAdminPage(false)
                                }}>Dashboard</Col>
                            </Row>
                            </Container>
