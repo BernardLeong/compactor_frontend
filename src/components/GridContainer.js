@@ -65,6 +65,7 @@ class GridContainer extends Component{
             'redirectsToLogin' : false,
             'barDataLoaded' : false,
             'renderMenuBar' : false,
+            'currentUserLoaded' : false,
             'paginationDefaultPage' : 1,
             'paginationAlarmDefaultPage' : 1,
             'userTypeOption' : '',
@@ -103,6 +104,16 @@ class GridContainer extends Component{
             var config = {
                 headers: { Authorization: `Bearer ${token}`, apikey: apiKeys[userType] }
             }
+
+            axios.get(`https://cert-manger.izeesyncbackend.com/getCurrentUser`,config)
+            .then((response)=> {
+                this.setState({
+                    currentUserLoaded: true,
+                    currentUserID : response.data.userid
+                })
+            })
+            .catch(function (error) {
+            })
 
             axios.get(`https://cert-manger.izeesyncbackend.com/listOfUsers`,config)
             .then((response)=> {
@@ -410,11 +421,12 @@ class GridContainer extends Component{
                     </Container>
                 </div>
             }
-    if(this.state.handleRedirectToAdminPage){
+    if(this.state.handleRedirectToAdminPage && this.state.currentUserLoaded){
         //markAdmin
-        // return(
-        //     <div><AdminPage userLists={this.state.userLists} usersListLoaded={this.state.usersListLoaded} /></div>
-        // )
+        console.log(this.state.currentUserID)
+        return(
+            <div><AdminPage userType={this.props.location.state.userType} token={this.props.location.state.token} currentUserID={this.state.currentUserID} userLists={this.state.userLists} usersListLoaded={this.state.usersListLoaded} /></div>
+        )
         // if(this.state.registeredUser){
         //     var message = 
         //     <Alert variant='success'>

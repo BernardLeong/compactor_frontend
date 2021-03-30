@@ -10,6 +10,7 @@ class NavBarContent extends Component {
       this.state = 
       {
         'logOut' : false,
+        
       }
       this.logout = this.logout.bind(this)
     }
@@ -24,7 +25,7 @@ class NavBarContent extends Component {
       axios.get(`https://cert-manger.izeesyncbackend.com/getCurrentUser`,config)
       .then((response)=> {
         this.setState({
-          currentUser : response.data.username,
+          currentUser : response.data.username
         })
 
         this.props.saveCurrentUser(response.data.username)

@@ -11,16 +11,42 @@ class AdminPage extends Component {
             "userListPage" : 1,
             "renderEditUser" : false,
             "selectedUserName" : '',
+            "selectedUserID" : '',
+            "selectedPassword" : '',
             "selectedUserType" : '',
-            'uDetails' : {}
+            'uDetails' : {
+                'password' : ''
+            },
+            "editUserLists" : false
         }
+        this.handleEditUser = this.handleEditUser.bind(this)
     }
 
     handleEditUser(){
 
-        var body = this.state.uDetails
+        var token = this.props.token
+        var userType = this.props.userType
 
-        axios.post('https://cert-manger.izeesyncbackend.com/edituser', body).then((result)=>{
+        var apiKeys = {
+            'admin' : "jnjirej9reinvuiriuerhuinui",
+            'serviceUser' : "juit959fjji44jcion4moij0kc",
+        }
+
+        var config = {
+            headers: { Authorization: `Bearer ${token}`, apikey: apiKeys[userType] }
+        }
+
+        var body = this.state.uDetails
+        body['userid'] = this.state.selectedUserID
+
+        this.setState(
+            {
+                editUserLists : true,
+                renderEditUser : false
+            }
+        )
+
+        axios.post('https://cert-manger.izeesyncbackend.com/edituser', body, config).then((result)=>{
             console.log(result)
         }).catch((err)=>{
             console.log(err)
@@ -28,13 +54,39 @@ class AdminPage extends Component {
     }
 
     render(){
-        var body = this.state.uDetails
 
-        console.log(body)
         var userLists = []
         if(this.props.usersListLoaded){
             //render 
             userLists = this.props.userLists
+            var userTypeOptions = {
+                "Admin" : 'admin',
+                "Enginner" : 'serviceUser',
+                "User" : 'user'
+            }
+
+            var userTypeOptionsTwo = {
+                'admin' : "Admin",
+                'serviceUser' : "Enginner",
+                'user' : "User"
+            }
+
+            if(this.state.editUserLists){
+                
+                //basically edit userList
+                userLists = userLists.map((user)=>{
+                    if(user.id == this.state.selectedUserID){
+                        if(this.state.selectedUserName){
+                            user['username'] = this.state.selectedUserName
+                        }
+                        
+                        if(this.state.selectedUserType){
+                            user['userType'] = this.state.selectedUserType
+                        }
+                    }
+                    return user
+                })
+            }
             userLists = sortObjectsArray(userLists, 'userType')
 
             var tableHeaders = 
@@ -95,6 +147,7 @@ class AdminPage extends Component {
                                 renderEditUser : true,
                                 selectedUserName: user.username,
                                 selectedUserType: user.userType,
+                                selectedUserID: user.id,
                             }
                         )
                     }} style={{textAlign: 'center', cursor: 'pointer', fontWeight: 'normal'}} >{user.username}</th>
@@ -121,11 +174,6 @@ class AdminPage extends Component {
         }
 
         if(this.state.renderEditUser){
-            var userTypeOptions = {
-                'admin' : "Admin",
-                'serviceUser' : "Enginner",
-                'user' : "User",
-            }
     
             return(
                 <div className="grid-container-adminPage">
@@ -158,7 +206,19 @@ class AdminPage extends Component {
                                 <Form>
                                     <Form.Group onChange={this.handleRegisterUserType} controlId="exampleForm.ControlSelect1">
                                         <Form.Label>User Type</Form.Label>
-                                        <Form.Control defaultValue={userTypeOptions[this.state.selectedUserType]} as="select">
+                                        <Form.Control defaultValue={userTypeOptionsTwo[this.state.selectedUserType]} as="select"
+                                        onChange={(event)=>{
+                                            var obj = this.state.uDetails
+                                            obj['userType'] = userTypeOptions[event.target.value]
+                                            this.setState(
+                                                {
+                                                    selectedUserType: userTypeOptions[event.target.value],
+                                                    uDetails : obj
+                                                }
+                                            )
+
+                                        }}
+                                        >
                                             <option>User</option>
                                             <option>Enginner</option>
                                             <option>Admin</option>
@@ -167,25 +227,43 @@ class AdminPage extends Component {
                                     <Form.Group controlId="formBasicEmail">
                                     <div><Form.Label>Username</Form.Label></div>
                                         <Form.Control value={this.state.selectedUserName} onChange={(event)=>{
-                                            // console.log(event.target.username)
+                                            var obj = this.state.uDetails
+                                            obj['username'] = event.target.value
                                             this.setState(
                                                 {
-                                                    selectedUserName: event.target.username
+                                                    selectedUserName: event.target.value,
+                                                    uDetails : obj
                                                 }
                                             )
+
                                         }} name='username' type="username" placeholder="Enter username" />
                                     </Form.Group>
                                     <Form.Group controlId="formBasicPassword">
                                         <Form.Label>Password</Form.Label>
-                                        <Form.Control value="" name='password' type="password" placeholder="Password" />
+                                        <Form.Control value={this.state.selectedPassword} onChange={(event)=>{
+                                            var obj = this.state.uDetails
+                                            obj['password'] = event.target.value
+                                            this.setState(
+                                                {
+                                                    selectedPassword: event.target.value,
+                                                    uDetails : obj
+                                                }
+                                            )
+
+                                        }} name='password' type="password" placeholder="Password" />
                                     </Form.Group>
-                                    <Button onClick={this.handleRegisterUser} variant="primary">
+                                    <Button onClick={this.handleEditUser}
+                                    variant="primary">
                                         Submit
                                     </Button>
                                     <span>&nbsp;</span>
-                                    <Button onClick={()=>{
-                                        this.setState({handleRedirectToAdminPage : false})
-                                    }} variant="primary">
+                                    <Button variant="primary" onClick={()=>{
+                                        this.setState(
+                                            {
+                                                renderEditUser : false
+                                            }
+                                        )
+                                    }}>
                                         Back
                                     </Button>
                                 </Form>
