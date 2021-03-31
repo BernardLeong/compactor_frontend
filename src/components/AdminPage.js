@@ -17,6 +17,7 @@ class AdminPage extends Component {
             "selectedUserID" : '',
             "selectedPassword" : '',
             "selectedUserType" : '',
+            "removeUser" : "",
             'uDetails' : {
                 'password' : ''
             },
@@ -48,6 +49,12 @@ class AdminPage extends Component {
         var body = {
             "userid" : userid
         }
+
+        this.setState(
+            {
+                removeUser : userid
+            }
+        )
 
         axios.post('https://cert-manger.izeesyncbackend.com/deleteUser', body, config).then((result)=>{
             console.log(result)
@@ -149,6 +156,15 @@ class AdminPage extends Component {
                     }
                     return user
                 })
+            }
+
+            if(this.state.removeUser !== ""){
+                userLists = userLists.map((user)=>{
+                    if(user.id !== this.state.removeUser){
+                        return user
+                    }
+                })
+                userLists = userLists.filter(Boolean)
             }
             userLists = sortObjectsArray(userLists, 'userType')
 
@@ -482,7 +498,7 @@ class AdminPage extends Component {
                            <Row>
                                <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
                                    this.props.handleRedirectToAdminPage(false)
-                               }}>Dashboards</Col>
+                               }}>Dashboard</Col>
                            </Row>
                            </Container>
                    </div>
