@@ -12,6 +12,7 @@ class AdminPage extends Component {
         {
             "userListPage" : 1,
             "renderEditUser" : false,
+            "renderCreateUser" : false,
             "selectedUserName" : '',
             "selectedUserID" : '',
             "selectedPassword" : '',
@@ -19,9 +20,45 @@ class AdminPage extends Component {
             'uDetails' : {
                 'password' : ''
             },
+            "addUserDetails" : {
+                'type' : 'user'
+            },
+            "addUserName" : '',
+            "addUserType" : '',
+            "addUserPassword" : '',
             "editUserLists" : false
         }
+        this.handleAddUser = this.handleAddUser.bind(this)
         this.handleEditUser = this.handleEditUser.bind(this)
+    }
+
+    handleAddUser(){
+        var token = this.props.token
+        var userType = this.props.userType
+
+        var apiKeys = {
+            'admin' : "jnjirej9reinvuiriuerhuinui",
+            'serviceUser' : "juit959fjji44jcion4moij0kc",
+        }
+
+        var config = {
+            headers: { Authorization: `Bearer ${token}`, apikey: apiKeys[userType] }
+        }
+
+        var body = this.state.addUserDetails
+
+        this.setState(
+            {
+                editUserLists : true,
+                renderCreateUser : false
+            }
+        )
+
+        axios.post('https://cert-manger.izeesyncbackend.com/addUser', body, config).then((result)=>{
+            console.log(result)
+        }).catch((err)=>{
+            console.log(err)
+        })
     }
 
     handleEditUser(){
@@ -161,6 +198,24 @@ class AdminPage extends Component {
         <div className="grid-item grid-container-adminPage-registerPage whiteBG">        
         {title}
         <div>&nbsp;</div>
+        <Container>
+                <Row>
+                    <Col></Col>
+                    <Col></Col>
+                    <Col style={{textAlign : 'right', cursor:'pointer'}}>   
+                    <img onClick={()=>{
+                        this.setState({renderCreateUser : true})
+                    }}
+                        src={require('./addIcon.png')}
+                        width="30"
+                        height="30"
+                        className="d-inline-block align-top"
+                        alt="React Bootstrap logo"
+                    />
+                    </Col>
+                </Row>
+            </Container>
+        <div>&nbsp;</div>
             <Container>
                 <Row>
                     <Col>   
@@ -172,28 +227,126 @@ class AdminPage extends Component {
                     </Col>
                 </Row>
             </Container>
+
         </div>
         }
 
-        if(this.state.renderEditUser){
+        var sideDashboard = 
+        <div className="grid-item grid-container-adminPage-dashBoard whiteBG">
+            <div>&nbsp;</div>
+            <Container className="blueBG adjustPadding">
+                <Row>
+                    <Col style={{textAlign : 'center'}}>Admin</Col>
+                </Row>
+                </Container>
+                <Container className="blueBorder adjustPaddingContent">
+                <Row>
+                    <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
+                        this.props.handleRedirectToAdminPage(false)
+                    }}>Dashboard</Col>
+                </Row>
+            </Container>
+        </div>
+
+        if(this.state.renderCreateUser && (!(this.state.addUserDetails['password'] && this.state.addUserDetails['username']) ) ){
+            var submitButton = 
+            <Button onClick={this.handleAddUser}
+            variant="primary" disabled>
+            Submit
+            </Button>
+        }else{
+            var submitButton = 
+            <Button onClick={this.handleAddUser}
+                variant="primary">
+            Submit
+            </Button>
+        }
+        if(this.state.renderCreateUser){
+            return(
+                <div className="grid-container-adminPage">
+                    {sideDashboard}
+                    <div className="grid-item grid-container-adminPage-registerPage whiteBG">        
+                        <Container>
+                        <Row>
+                            <Col style={{textAlign : 'center', fontSize: '1.4em'}}>Add User</Col>
+                        </Row>
+                        </Container>
+                        <div>&nbsp;</div>
+                        <Container>
+                        <Row>
+                            <Col>
+                                <Form>
+                                    <Form.Group controlId="exampleForm.ControlSelect1">
+                                        <Form.Label>User Type</Form.Label>
+                                        <Form.Control as="select"
+                                        onChange={(event)=>{
+                                            var obj = this.state.addUserDetails
+                                            obj['type'] = userTypeOptions[event.target.value]
+                                            this.setState(
+                                                {
+                                                    addUserType : userTypeOptions[event.target.value],
+                                                    addUserDetails : obj
+                                                }
+                                            )
+
+                                        }}
+                                        >
+                                            <option>User</option>
+                                            <option>Enginner</option>
+                                            <option>Admin</option>
+                                        </Form.Control>
+                                    </Form.Group>
+                                    <Form.Group controlId="formBasicEmail">
+                                    <div><Form.Label>Username</Form.Label></div>
+                                        <Form.Control value={this.state.addUserName} onChange={(event)=>{
+                                            var obj = this.state.addUserDetails
+                                            obj['username'] = event.target.value
+                                            this.setState(
+                                                {
+                                                    addUserName : event.target.value,
+                                                    addUserDetails : obj
+                                                }
+                                            )
+
+                                        }} name='username' type="username" placeholder="Enter username" />
+                                    </Form.Group>
+                                    <Form.Group controlId="formBasicPassword">
+                                        <Form.Label>Password</Form.Label>
+                                        <Form.Control onChange={(event)=>{
+                                            var obj = this.state.addUserDetails
+                                            obj['password'] = event.target.value
+                                            this.setState(
+                                                {
+                                                    addUserPassword : event.target.value,
+                                                    addUserDetails : obj
+                                                }
+                                            )
+
+                                        }} name='password' type="password" placeholder="Password" />
+                                    </Form.Group>
+                                    {submitButton}
+                                    <span>&nbsp;</span>
+                                    <Button variant="primary" onClick={()=>{
+                                        this.setState(
+                                            {
+                                                renderCreateUser : false
+                                            }
+                                        )
+                                    }}>
+                                        Back
+                                    </Button>
+                                </Form>
+                            </Col>
+                        </Row>
+                        </Container>
+                    </div>
+                </div>
+            )
+        }else if(this.state.renderEditUser){
     
             return(
                 <div className="grid-container-adminPage">
-                    <div className="grid-item grid-container-adminPage-dashBoard whiteBG">
-                       <div>&nbsp;</div>
-                       <Container className="blueBG adjustPadding">
-                           <Row>
-                               <Col style={{textAlign : 'center'}}>Admin</Col>
-                           </Row>
-                           </Container>
-                           <Container className="blueBorder adjustPaddingContent">
-                           <Row>
-                               <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
-                                   this.props.handleRedirectToAdminPage(false)
-                               }}>Dashboard</Col>
-                           </Row>
-                           </Container>
-                   </div>
+                    {sideDashboard}
                     <div className="grid-item grid-container-adminPage-registerPage whiteBG">        
                         <Container>
                         <Row>
@@ -292,7 +445,7 @@ class AdminPage extends Component {
                            <Row>
                                <Col style={{textAlign : 'center', cursor: 'pointer'}} onClick={()=>{
                                    this.props.handleRedirectToAdminPage(false)
-                               }}>Dashboard</Col>
+                               }}>Dashboards</Col>
                            </Row>
                            </Container>
                    </div>
