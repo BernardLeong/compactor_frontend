@@ -132,6 +132,7 @@ class AdminPage extends Component {
             <tr>
             <th style={{textAlign: 'center'}}>User Name</th>
             <th style={{textAlign: 'center'}}>User Access</th>
+            <th style={{textAlign: 'center'}}>Revoke User</th>
         </tr>
          var title = 
          <Container>
@@ -191,6 +192,15 @@ class AdminPage extends Component {
                         )
                     }} style={{textAlign: 'center', cursor: 'pointer', fontWeight: 'normal'}} >{user.username}</th>
                     <th style={{textAlign: 'center', cursor: 'pointer', fontWeight: 'normal'}} >{user.userType}</th>
+                    <th style={{textAlign: 'center', cursor: 'pointer', fontWeight: 'normal'}} >
+                    <img
+                        src={require('./deletebutton.png')}
+                        width="20"
+                        height="20"
+                        className="d-inline-block align-top"
+                        alt="React Bootstrap logo"
+                    />
+                    </th>
                 </tr>
             ))
 
