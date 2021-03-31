@@ -32,6 +32,30 @@ class AdminPage extends Component {
         this.handleEditUser = this.handleEditUser.bind(this)
     }
 
+    handleDeleteUser(userid){
+        var token = this.props.token
+        var userType = this.props.userType
+
+        var apiKeys = {
+            'admin' : "jnjirej9reinvuiriuerhuinui",
+            'serviceUser' : "juit959fjji44jcion4moij0kc",
+        }
+
+        var config = {
+            headers: { Authorization: `Bearer ${token}`, apikey: apiKeys[userType] }
+        }
+
+        var body = {
+            "userid" : userid
+        }
+
+        axios.post('https://cert-manger.izeesyncbackend.com/deleteUser', body, config).then((result)=>{
+            console.log(result)
+        }).catch((err)=>{
+            console.log(err)
+        })
+    }
+
     handleAddUser(){
         var token = this.props.token
         var userType = this.props.userType
@@ -149,7 +173,7 @@ class AdminPage extends Component {
 
         var columns = (arr, size) =>
         Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
-        arr.slice(i * size, i * size + size)
+            arr.slice(i * size, i * size + size)
         );
 
         var maxLength = 22
@@ -194,6 +218,9 @@ class AdminPage extends Component {
                     <th style={{textAlign: 'center', cursor: 'pointer', fontWeight: 'normal'}} >{user.userType}</th>
                     <th style={{textAlign: 'center', cursor: 'pointer', fontWeight: 'normal'}} >
                     <img
+                        onClick={()=>{
+                            this.handleDeleteUser(user.id)
+                        }}
                         src={require('./deletebutton.png')}
                         width="20"
                         height="20"

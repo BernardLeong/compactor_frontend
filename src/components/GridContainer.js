@@ -1131,9 +1131,6 @@ class GridContainer extends Component{
                     ]
 
                     var selectedArr = this.state.arrayofSelectedIDS
-                    //if selectTwice remove the id
-                    
-                    // selectedArr = [...new Set(selectedArr)];
 
                     selectedArr = selectedArr.sort();
                 
