@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import { Alert, Table, Container, Row, Col, Form, Button, InputGroup, FormControl } from 'react-bootstrap'
+import NavBarContent from './NavBarContent';
 const axios = require('axios');
 const sortObjectsArray = require('sort-objects-array');
+
 
 class AdminPage extends Component {
     constructor(props){
@@ -275,9 +277,9 @@ class AdminPage extends Component {
         }else{
             return(
                 <div className="grid-container-adminPage">
-                   {/* <div className='grid-item grid-item-01-compactor whiteBG'>
-                       <NavBarContent saveCurrentUser={this.saveCurrentUser} userType={this.props.location.state.userType} handleRedirect={this.handleRedirect} token={this.props.location.state.token} />
-                   </div> */}
+                   <div className='grid-item grid-item-01-compactor whiteBG'>
+                       <NavBarContent saveCurrentUser={this.props.saveCurrentUser} userType={this.props.userType} handleRedirect={this.props.handleRedirect} token={this.props.token} />
+                   </div>
                    <div className="grid-item grid-container-adminPage-dashBoard whiteBG">
                        
                        <div>&nbsp;</div>

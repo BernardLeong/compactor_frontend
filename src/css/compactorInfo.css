@@ -39,7 +39,7 @@ body{
     display: grid;
     grid-auto-rows: auto;
     grid-gap: 1px;
-    grid-template-rows: 4.8em 40em;
+    grid-template-rows: 0.1fr 1fr 40em;
     grid-template-columns: 0.3fr 1fr 1fr auto;
 }
 

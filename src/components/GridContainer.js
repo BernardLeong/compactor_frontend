@@ -105,16 +105,6 @@ class GridContainer extends Component{
                 headers: { Authorization: `Bearer ${token}`, apikey: apiKeys[userType] }
             }
 
-            axios.get(`https://cert-manger.izeesyncbackend.com/getCurrentUser`,config)
-            .then((response)=> {
-                this.setState({
-                    currentUserLoaded: true,
-                    currentUserID : response.data.userid
-                })
-            })
-            .catch(function (error) {
-            })
-
             axios.get(`https://cert-manger.izeesyncbackend.com/listOfUsers`,config)
             .then((response)=> {
                 this.setState({
@@ -424,7 +414,7 @@ class GridContainer extends Component{
     if(this.state.handleRedirectToAdminPage){
         //markAdmin
         return(
-            <div><AdminPage handleRedirectToAdminPage={this.handleRedirectToAdminPage} userType={this.props.location.state.userType} token={this.props.location.state.token} userLists={this.state.userLists} usersListLoaded={this.state.usersListLoaded} /></div>
+            <div><AdminPage handleRedirect={this.handleRedirect} saveCurrentUser={this.saveCurrentUser} handleRedirectToAdminPage={this.handleRedirectToAdminPage} userType={this.props.location.state.userType} token={this.props.location.state.token} userLists={this.state.userLists} usersListLoaded={this.state.usersListLoaded} /></div>
         )
     }
             if(this.state.liveAlarmsLoaded && this.state.liveCompactorLoaded){
