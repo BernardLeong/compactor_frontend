@@ -56,7 +56,7 @@ class AdminPage extends Component {
             }
         )
 
-        axios.post('https://cert-manger.izeesyncbackend.com/deleteUser', body, config).then((result)=>{
+        axios.post('https://api.izeesync.com/deleteUser', body, config).then((result)=>{
             console.log(result)
         }).catch((err)=>{
             console.log(err)
@@ -85,7 +85,7 @@ class AdminPage extends Component {
             }
         )
 
-        axios.post('https://cert-manger.izeesyncbackend.com/addUser', body, config).then((result)=>{
+        axios.post('https://api.izeesync.com/addUser', body, config).then((result)=>{
             console.log(result)
         }).catch((err)=>{
             console.log(err)
@@ -116,7 +116,7 @@ class AdminPage extends Component {
             }
         )
 
-        axios.post('https://cert-manger.izeesyncbackend.com/edituser', body, config).then((result)=>{
+        axios.post('https://api.izeesync.com/edituser', body, config).then((result)=>{
             console.log(result)
         }).catch((err)=>{
             console.log(err)

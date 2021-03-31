@@ -105,7 +105,7 @@ class GridContainer extends Component{
                 headers: { Authorization: `Bearer ${token}`, apikey: apiKeys[userType] }
             }
 
-            axios.get(`https://cert-manger.izeesyncbackend.com/listOfUsers`,config)
+            axios.get(`https://api.izeesync.com/listOfUsers`,config)
             .then((response)=> {
                 this.setState({
                     userLists : response.data.userLists,
@@ -115,7 +115,7 @@ class GridContainer extends Component{
             .catch(function (error) {
             })
     
-            axios.get(`https://cert-manger.izeesyncbackend.com/getAlarmReport/all`,config)
+            axios.get(`https://api.izeesync.com/getAlarmReport/all`,config)
             .then((response)=> {
                 console.log(response)
                 this.setState({
@@ -126,7 +126,7 @@ class GridContainer extends Component{
             .catch(function (error) {
             })
     
-            axios.get(`https://cert-manger.izeesyncbackend.com/alarmCurrentStatus/live`,config)
+            axios.get(`https://api.izeesync.com/alarmCurrentStatus/live`,config)
             .then((response)=> {
                 this.setState({
                     liveAlarmData : response.data.alarms,
@@ -136,7 +136,7 @@ class GridContainer extends Component{
             .catch(function (error) {
             })
     
-            axios.get(`https://cert-manger.izeesyncbackend.com/CompactorCurrentStatus/live`,config)
+            axios.get(`https://api.izeesync.com/CompactorCurrentStatus/live`,config)
             .then((response)=> {
                 this.setState({
                     livecompactorData : response.data.compactorInfo,
@@ -146,7 +146,7 @@ class GridContainer extends Component{
             .catch(function (error) {
             })
     
-            axios.get(`https://cert-manger.izeesyncbackend.com/getEquipmentWeightCollection/live`,config)
+            axios.get(`https://api.izeesync.com/getEquipmentWeightCollection/live`,config)
             .then((response)=> {
                 this.setState({
                     weightCollectionData : response.data.weightCollection,
@@ -156,7 +156,7 @@ class GridContainer extends Component{
             .catch(function (error) {
             })
     
-            axios.get(`https://cert-manger.izeesyncbackend.com/getBarData/today`,config)
+            axios.get(`https://api.izeesync.com/getBarData/today`,config)
             .then((response)=> {
                 console.log(response)
                 this.setState({
@@ -229,7 +229,7 @@ class GridContainer extends Component{
             "type" : type
         }
 
-        axios.post('https://cert-manger.izeesyncbackend.com/registerUser', body).then((result)=>{
+        axios.post('https://api.izeesync.com/registerUser', body).then((result)=>{
             this.setState({registeredUser: result.data.success, error: result.data.error})
         }).catch((err)=>{
             console.log(err)
@@ -500,7 +500,7 @@ class GridContainer extends Component{
                                             "type" : al.Type, 
                                             "username" : this.state.currentUser
                                         }
-                                        axios.post(`https://cert-manger.izeesyncbackend.com/publishMQTT`, body , config)
+                                        axios.post(`https://api.izeesync.com/publishMQTT`, body , config)
                                         .then((response)=> {
                                             console.log(response)
                                         })

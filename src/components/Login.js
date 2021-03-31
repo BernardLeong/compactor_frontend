@@ -39,7 +39,7 @@ class Login extends Component {
             "password" : this.state.password
         }
 
-        axios.post('https://cert-manger.izeesyncbackend.com/loginUser', body).then((result)=>{
+        axios.post('https://api.izeesync.com/loginUser', body).then((result)=>{
             var authObj = {token: result.data.token, success: result.data.success, error: result.data.error}
             if(result.data.success){
                 authObj['userType'] = result.data.usertype
