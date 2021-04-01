@@ -46,7 +46,7 @@ class MapTest extends Component {
   render() {
 
     if(this.props.handleRedirectToMap){
-      var mapStyle = { width: '68em', height: '46em'}
+      var mapStyle = { width: '98%', height: '43em'}
     }else{
       var mapStyle = { width: '95%', height: '40em'}
     }
